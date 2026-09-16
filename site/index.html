@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Board</title>
+<style>
+  :root{--bg:#0f1419;--card:#1a2230;--edge:#2a3547;--ink:#e6edf3;--dim:#8b98a9;
+        --hi:#4da3ff;--good:#39d98a;--warn:#ffb454;--chip:#243044;}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{padding:16px 24px;border-bottom:1px solid var(--edge);position:sticky;top:0;background:#0f1419f2;backdrop-filter:blur(6px);z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  h1{margin:0;font-size:19px}h1 b{color:var(--hi)}
+  .meta{color:var(--dim);font-size:12.5px;margin-top:3px}
+  .navbtn{background:var(--card);border:1px solid var(--edge);color:var(--ink);padding:7px 12px;border-radius:8px;font-size:13px;cursor:pointer}
+  .navbtn:hover{border-color:var(--hi)}
+  .wrap{max-width:1020px;margin:0 auto;padding:18px 24px 60px}
+  .card,.bar,.panel{background:var(--card);border:1px solid var(--edge);border-radius:12px}
+  .panel{padding:18px 20px;margin-bottom:16px}
+  .panel h2{margin:0 0 4px;font-size:16px}.panel p.sub{color:var(--dim);font-size:13px;margin:0 0 12px}
+  label.fldlbl{display:block;font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px;margin:12px 0 5px}
+  textarea{width:100%;min-height:120px;background:var(--bg);border:1px solid var(--edge);color:var(--ink);border-radius:8px;padding:10px;font:13px/1.5 monospace;resize:vertical}
+  input[type=file]{font-size:13px;color:var(--dim)}
+  input[type=search],select{background:var(--bg);border:1px solid var(--edge);color:var(--ink);padding:8px 11px;border-radius:8px;font-size:14px}
+  .btn{background:var(--hi);color:#04101f;border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer}
+  .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--edge);font-weight:500}
+  .btn:disabled{opacity:.5;cursor:default}
+  .row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+  .fld{display:flex;flex-direction:column;gap:4px}.fld label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
+  .fld.grow{flex:1}.fld.grow input{width:100%}
+  .kw{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .kw .tag{font-size:12px;padding:3px 8px 3px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--edge);color:var(--ink);display:flex;align-items:center;gap:6px}
+  .kw .tag b{color:var(--good);cursor:pointer}
+  .kwadd{display:flex;gap:6px;margin-top:8px}
+  .hint{color:var(--dim);font-size:11.5px;margin-top:8px}
+  .count{color:var(--dim);font-size:13px;margin:14px 2px 12px}
+  .job{padding:14px 16px;margin-bottom:12px;display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:start;border:1px solid var(--edge);border-radius:12px;background:var(--card)}
+  .score{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px}
+  .s-hi{background:#123a2a;color:var(--good);border:1px solid #1f6b4a}.s-mid{background:#3a2f12;color:var(--warn);border:1px solid #6b551f}.s-lo{background:#2a2230;color:var(--dim)}
+  .title{font-weight:600;font-size:16px}.title a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--dim)}.title a:hover{color:var(--hi)}
+  .subl{color:var(--dim);font-size:13px;margin:3px 0 8px}
+  .snip{font-size:13px;color:#c3ccd8;margin:2px 0 8px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .chip{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--dim);border:1px solid var(--edge)}
+  .chip.src{color:var(--hi)}.chip.sk{color:var(--good);border-color:#1f6b4a}.chip.arr{color:#7fd1ff;border-color:#26506b}.chip.ind{color:#c9a2ff;border-color:#4a3a6b}.chip.spon{color:var(--good);border-color:#1f6b4a}
+  .why{color:var(--dim);font-size:11.5px;margin-top:8px;font-style:italic}
+  .empty{color:var(--dim);padding:30px;text-align:center;border:1px dashed var(--edge);border-radius:12px}
+  .banner{background:#2a2230;border:1px solid #5a4a22;color:var(--warn);padding:8px 12px;border-radius:8px;font-size:12.5px;margin-bottom:14px}
+  .gapbox{margin-top:10px;padding:10px 12px;border-top:1px dashed var(--edge)}
+  .gaprow{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+  .gaplbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px;margin-top:6px}
+  .chip.miss{color:var(--warn);border-color:#5a4a22}
+  .gapline{font-size:13px;color:var(--ink);margin:2px 0 4px}
+  .jdtool{margin-bottom:14px}
+  footer{color:var(--dim);font-size:12px;text-align:center;padding:20px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>try{if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}catch(e){}</script>
+</head>
+<body>
+<header>
+  <div><h1 id="h1"><b>Job Board</b></h1><div class="meta" id="meta"></div></div>
+  <div><button class="navbtn" id="toSetup" style="display:none">⚙ Setup</button></div>
+</header>
+<div class="wrap">
+
+  <!-- SETUP VIEW -->
+  <div id="setupView">
+    <div class="panel">
+      <h2>Set up your board</h2>
+      <p class="sub">Paste your CV (and optionally a cover letter). We extract keywords in your browser — nothing is uploaded — then rank the loaded roles against them. You can edit the keywords before saving.</p>
+      <label class="fldlbl">Your CV — paste text (or choose a .txt/.md file)</label>
+      <textarea id="cvText" placeholder="Paste your CV text here…"></textarea>
+      <input type="file" id="cvFile" accept=".txt,.md,.text,.docx,.pdf">
+      <label class="fldlbl">Cover letter — optional</label>
+      <textarea id="clText" placeholder="Optional: paste a cover letter to add its keywords…" style="min-height:80px"></textarea>
+      <input type="file" id="clFile" accept=".txt,.md,.text,.docx,.pdf">
+      <div style="margin-top:14px"><button class="btn" id="analyzeBtn">Analyze →</button></div>
+      <div class="hint">Word (.docx) and PDF are read in your browser (needs internet for the reader); or paste the text. Extraction is keyword-frequency based (not semantic), so review the list below.</div>
+    </div>
+
+    <div class="panel" id="reviewPanel" style="display:none">
+      <h2>Review your keywords</h2>
+      <p class="sub">These drive your matches. Remove noise, add anything missing. <b id="detected"></b></p>
+      <label class="fldlbl">Job titles you match (title triggers)</label>
+      <div class="kw" id="titleTags"></div>
+      <div class="kwadd"><input type="search" id="addTitle" placeholder="add a title keyword… (e.g. embedded engineer)"><button class="btn ghost" id="addTitleBtn">Add</button></div>
+      <label class="fldlbl">Skills / keywords (confirmers)</label>
+      <div class="kw" id="skillTags"></div>
+      <div class="kwadd"><input type="search" id="addSkill" placeholder="add a skill keyword… (e.g. altium)"><button class="btn ghost" id="addSkillBtn">Add</button></div>
+      <div class="row" style="margin-top:16px">
+        <div class="fld"><label>Your name</label><input type="search" id="yourName" placeholder="Your Name"></div>
+        <div class="fld"><label>Home city (for distance)</label><input type="search" id="homeCity" placeholder="London"></div>
+        <button class="btn" id="saveBtn">Save &amp; see matches →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOARD VIEW -->
+  <div id="boardView" style="display:none">
+    <div id="demoBanner" class="banner" style="display:none">Showing <b>demo data</b> — sample roles to preview the board. Live roles populate when the fetcher runs (GitHub Action or <code>python build_board.py</code>).</div>
+    <div class="bar" style="padding:12px 14px;margin-bottom:6px">
+      <div class="row">
+        <div class="fld grow"><label for="q">Search (company · title · skill)</label><input type="search" id="q" placeholder="e.g. embedded, Altium, ZTR…"></div>
+        <div class="fld"><label for="arrangement">Work arrangement</label><select id="arrangement"><option value="">Any</option><option value="onsite">On-site</option><option value="hybrid">Hybrid</option><option value="remote">Remote</option></select></div>
+        <div class="fld"><label for="country">Country</label><select id="country"><option value="">Any</option></select></div>
+        <div class="fld"><label for="industry">Industry</label><select id="industry"><option value="">Any</option></select></div>
+        <div class="fld"><label for="minScore">Min score</label><select id="minScore"><option value="0">Show all</option><option value="4">4+</option><option value="6">6+</option><option value="7">7+ (strong)</option><option value="8">8+</option></select></div>
+      </div>
+      <div class="hint">Every role, ranked by fit to your CV. Nothing hidden — set a minimum score if you want to trim the list.</div>
+    </div>
+    <div class="bar jdtool" style="padding:12px 14px;margin-bottom:10px">
+      <div class="row"><div class="fld grow"><label>Check any job description (paste it — free gap analysis vs your CV)</label>
+        <textarea id="jdIn" style="min-height:70px" placeholder="Paste a job description to see what you match and what's missing…"></textarea></div></div>
+      <div style="margin-top:8px"><button class="btn ghost" id="jdBtn">Analyze JD</button></div>
+      <div id="jdOut"></div>
+    </div>
+    <div class="count" id="count"></div>
+    <div id="matches"></div>
+  </div>
+
+</div>
+<footer>Deterministic ATS pull + your CV-derived keywords. No LLM in the loop. · <span id="foot"></span></footer>
+
+<script>
+const $=s=>document.querySelector(s);
+const STOP=new Set(("a an the and or of to in for with on at by from as is are be been being this that these those i you he she it we they my your our their will would can could should may might must have has had do does did not no yes am was were our us me him her them their its it's also more most very much such into over under out up down off then than so if but each per etc via using use used work working experience years year including include included ability able strong excellent good team teams role responsibilities requirements required preferred plus knowledge skills skill new well across within about which who whom whose when where why how what all any both few other some own same job company").split(" "));
+const ROLE_WORDS=["engineer","developer","manager","analyst","designer","technician","specialist","accountant","scientist","architect","consultant","coordinator","administrator","nurse","technologist","lead","director","officer","supervisor","planner"];
+let JOBS={matches:[],below:[],facets:{}}, POOL=[], PROFILE=null;
+
+/* ---------- keyword extraction (browser, no LLM) ---------- */
+function tokens(t){return (t.toLowerCase().match(/[a-z][a-z+#.\-]{1,}/g)||[]).filter(w=>w.length>2&&!STOP.has(w));}
+function extractName(cv){
+  const lines=cv.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  for(const l of lines.slice(0,8)){
+    if(/\d/.test(l)) continue;
+    const core=l.split(/[,|]/)[0].trim();
+    const w=core.split(/\s+/);
+    if(w.length>=2&&w.length<=4&&w.every(x=>/^[A-Z][a-zA-Z.'-]*$/.test(x))){
+      return {name:core, initials:w.map(x=>x[0]).join('').toUpperCase().slice(0,3)};
+    }
+  }
+  return {name:'', initials:''};
+}
+function extract(cv, cl){
+  const text=(cv+"\n"+cl);
+  const toks=tokens(text);
+  const freq={}; toks.forEach(w=>freq[w]=(freq[w]||0)+1);
+  // bigrams
+  for(let i=0;i<toks.length-1;i++){const bg=toks[i]+" "+toks[i+1]; freq[bg]=(freq[bg]||0)+1.5;}
+  const ranked=Object.entries(freq).filter(([k,v])=>v>=2||k.includes(" ")).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+  const skills=[...new Set(ranked)].slice(0,28);
+  // titles: phrases ending in a role word, from CV first
+  const titles=new Set();
+  const re=new RegExp("([a-z]+\\s)?([a-z]+\\s)?("+ROLE_WORDS.join("|")+")","g");
+  let m; const low=cv.toLowerCase();
+  while((m=re.exec(low))){const p=m[0].trim(); if(p.split(" ").length<=3) titles.add(p);}
+  ROLE_WORDS.forEach(r=>{if(low.includes(r))titles.add(r);});
+  // home + years
+  const cityM=text.match(/\b(london|kitchener|waterloo|cambridge|guelph|toronto|mississauga|oakville|hamilton|ottawa|montreal|vancouver|calgary|edmonton|halifax|markham|brampton)\b/i);
+  const yrM=text.match(/(\d{1,2})\s*\+?\s*years/i);
+  return {skills, titles:[...titles].slice(0,12), home:cityM?cityM[1][0].toUpperCase()+cityM[1].slice(1):"", years:yrM?+yrM[1]:null};
+}
+
+/* ---------- browser scorer (mirrors jobfilter core, profile-driven) ---------- */
+const EXCL=["technician","operator","assembler","millwright","welder","machinist","cnc","sales","marketing"," hr ","recruit","administrative","receptionist","clerk","custodian","driver","intern","co-op","student","apprentice"];
+function scoreJob(j, p){
+  const title=(j.title||"").toLowerCase(), body=(j.text||j.snippet||"").toLowerCase(), loc=(j.location||"").toLowerCase();
+  const has=(t,arr)=>arr.filter(n=>t.includes(n));
+  if(has(" "+title+" ",EXCL).length) return {verdict:"excluded"};
+  const titleHit=p.titles.filter(t=>title.includes(t));
+  const conf=[...new Set(p.skills.filter(s=>body.includes(s)))];
+  if(!titleHit.length && conf.length<2) return {verdict:"excluded"};
+  let score = titleHit.length?4:2, reasons=[];
+  reasons.push(titleHit.length?("title match: "+titleHit.slice(0,2).join(", ")):"keyword-only match");
+  const bump = conf.length>=8?3:conf.length>=4?2:conf.length>=1?1:0;
+  score+=bump; if(conf.length)reasons.push("skills x"+conf.length); else{score-=1;reasons.push("no skills in body");}
+  if(/senior|lead|principal|staff/.test(title)){score+=1;reasons.push("senior/lead(+1)");}
+  const home=(p.home||"").toLowerCase();
+  if((home&&loc.includes(home))||loc.includes("remote")){score+=1;reasons.push("home/remote(+1)");}
+  score=Math.max(1,Math.min(10,score));
+  return {verdict: score>=7?"match":"below", score, reasons, matched:[...titleHit,...conf].slice(0,8)};
+}
+
+/* ---------- JD capture + short gap analysis (free, deterministic) ---------- */
+function gapAnalysis(jdText){
+  const jd=(jdText||'').toLowerCase();
+  const skills=(PROFILE&&PROFILE.skills)||[], titles=(PROFILE&&PROFILE.titles)||[];
+  const have=[...new Set(skills.filter(sx=>jd.includes(sx)))];
+  const toks=tokens(jd); const fr={}; toks.forEach(w=>fr[w]=(fr[w]||0)+1);
+  for(let i=0;i<toks.length-1;i++){const bg=toks[i]+' '+toks[i+1]; fr[bg]=(fr[bg]||0)+1.5;}
+  const own=new Set([...skills,...titles]);
+  const missing=Object.entries(fr).filter(([k,v])=>v>=2||k.includes(' ')).sort((a,b)=>b[1]-a[1])
+    .map(x=>x[0]).filter(k=>!own.has(k)&&!have.includes(k)&&k.length>3).slice(0,8);
+  const keyTerms=have.length+missing.length;
+  return {have,missing,line:`You match ${have.length} of ~${keyTerms} key terms in this JD.`};
+}
+function gapHtml(g){
+  return `<div class="gapbox"><div class="gapline">${g.line}</div>
+    <div class="gaplbl">You have</div><div class="gaprow">${g.have.length?g.have.map(x=>`<span class="chip sk">${x}</span>`).join(''):'<span class="chip">—</span>'}</div>
+    <div class="gaplbl">Gaps to address</div><div class="gaprow">${g.missing.length?g.missing.map(x=>`<span class="chip miss">${x}</span>`).join(''):'<span class="chip">none obvious</span>'}</div>
+    <div class="hint">Short gap analysis (keyword overlap). The deep gap narrative, tailored CV & cover letter are Pro.</div></div>`;
+}
+window.gap=function(bucket,i){const j=(window.VIS&&window.VIS[bucket]&&window.VIS[bucket][i]);if(!j)return;
+  const box=document.getElementById(bucket+'gap'+i);if(!box)return;
+  if(box.innerHTML){box.innerHTML='';box.style.display='none';return;}
+  box.innerHTML=gapHtml(gapAnalysis(j.text||j.snippet||''));box.style.display='block';};
+
+/* ---------- render ---------- */
+const sc=s=>s>=8?'s-hi':s>=7?'s-mid':'s-lo';
+function jobCard(j,bucket,i){
+  const arr={onsite:'On-site',hybrid:'Hybrid',remote:'Remote'}[j.arrangement]||'';
+  const facet=[arr?`<span class="chip arr">${arr}</span>`:'',j.country&&j.country!=='?'?`<span class="chip">${j.country}</span>`:'',j.industry&&j.industry!=='other'?`<span class="chip ind">${j.industry}</span>`:'',j.sponsorship==='yes'?`<span class="chip spon">sponsors visas</span>`:''].join('');
+  const skills=(j.matched||[]).slice(0,6).map(s=>`<span class="chip sk">${s}</span>`).join('');
+  const ring=j.ring!=null?`Ring ${j.ring}`:'';const km=j.km!=null?` · ${j.km} km`:'';const sal=j.salary?` · ${j.salary}`:'';
+  const posted=j.posted?new Date(j.posted).toLocaleDateString('en-CA'):'';
+  const link=j.url?`<a href="${j.url}" target="_blank" rel="noopener">${j.title}</a>`:j.title;
+  return `<div class="job"><div class="score ${sc(j.score)}">${j.score}</div><div>
+    <div class="title">${link}</div>
+    <div class="subl">${j.company} · ${j.location}${ring?' · '+ring:''}${km}${sal}${posted?' · '+posted:''}</div>
+    ${j.snippet?`<div class="snip">${j.snippet}</div>`:''}
+    <div class="chips"><span class="chip src">${j.source||'ats'}</span>${facet}${skills}</div>
+    <div class="why">why: ${(j.reasons||[]).join(' · ')}</div>
+    <button class="navbtn" style="margin-top:8px;font-size:12px;padding:5px 10px" onclick="gap('${bucket}',${i})">▾ Gap check</button>
+    <div class="gapbox" id="${bucket}gap${i}" style="display:none;padding:0"></div></div></div>`;
+}
+function rescore(){
+  POOL=[...JOBS.matches,...JOBS.below];
+  if(PROFILE){POOL=POOL.map(j=>{const r=scoreJob(j,PROFILE); return {...j,score:r.score,reasons:r.reasons,matched:r.matched,verdict:r.verdict};}).filter(j=>j.verdict!=='excluded');}
+  POOL.sort((a,b)=>b.score-a.score);
+}
+function renderBoard(){
+  const q=$('#q').value.toLowerCase(),arr=$('#arrangement').value,cty=$('#country').value,ind=$('#industry').value,mn=+($('#minScore').value||0);
+  const f=j=>j.score>=mn&&(!q||(j.company+' '+j.title+' '+(j.matched||[]).join(' ')).toLowerCase().includes(q))&&(arr===''||j.arrangement===arr)&&(cty===''||j.country===cty)&&(ind===''||j.industry===ind);
+  const m=POOL.filter(f);
+  window.VIS={m};
+  $('#matches').innerHTML=m.length?m.map((j,i)=>jobCard(j,'m',i)).join(''):`<div class="empty">No roles at this minimum score. Lower "Min score" or widen your keywords in Setup.</div>`;
+  const strong=m.filter(j=>j.score>=7).length;
+  $('#count').textContent=`${m.length} role${m.length!==1?'s':''} shown${mn?` (score ${mn}+)`:''} · ${strong} strong (7+)`;
+}
+function showBoard(){
+  $('#setupView').style.display='none';$('#boardView').style.display='block';$('#toSetup').style.display='inline-block';
+  const who=(PROFILE&&(PROFILE.initials||PROFILE.person))||'';
+  $('#h1').innerHTML=`<b>${who?who+' · ':''}Job Board</b>`;
+  $('#meta').innerHTML=PROFILE?`${PROFILE.person?PROFILE.person+' · ':''}home: <b>${PROFILE.home||'?'}</b> · ${PROFILE.skills.length} keywords · scored in your browser`:'';
+  const fc=JOBS.facets||{};
+  $('#country').innerHTML='<option value="">Any</option>'+(fc.country||[]).map(v=>`<option>${v}</option>`).join('');
+  $('#industry').innerHTML='<option value="">Any</option>'+(fc.industry||[]).map(v=>`<option>${v}</option>`).join('');
+  if(JOBS.mode==='demo')$('#demoBanner').style.display='block';
+  rescore();renderBoard();
+}
+function showSetup(){$('#boardView').style.display='none';$('#setupView').style.display='block';$('#toSetup').style.display='none';$('#h1').innerHTML='<b>Job Board</b>';$('#meta').textContent='';}
+
+/* ---------- setup interactions ---------- */
+let draft={titles:[],skills:[],home:'',years:null};
+function chip(txt,onDel){const s=document.createElement('span');s.className='tag';s.innerHTML=`${txt} <b title="remove">✕</b>`;s.querySelector('b').onclick=onDel;return s;}
+function renderTags(){
+  const tt=$('#titleTags');tt.innerHTML='';draft.titles.forEach((t,i)=>tt.appendChild(chip(t,()=>{draft.titles.splice(i,1);renderTags();})));
+  const st=$('#skillTags');st.innerHTML='';draft.skills.forEach((t,i)=>st.appendChild(chip(t,()=>{draft.skills.splice(i,1);renderTags();})));
+}
+async function parseFile(f){
+  const ext=(f.name.split('.').pop()||'').toLowerCase();
+  if(ext==='docx'){if(!window.mammoth)throw new Error('docx reader not loaded (need internet)');const ab=await f.arrayBuffer();return (await mammoth.extractRawText({arrayBuffer:ab})).value;}
+  if(ext==='pdf'){if(!window.pdfjsLib)throw new Error('pdf reader not loaded (need internet)');const ab=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:ab}).promise;let t='';for(let i=1;i<=pdf.numPages;i++){const pg=await pdf.getPage(i);const c=await pg.getTextContent();t+=c.items.map(x=>x.str).join(' ')+'\n';}return t;}
+  return await f.text();
+}
+function hookFile(input,ta){input.addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;ta.value='Reading '+f.name+' …';try{ta.value=await parseFile(f);}catch(err){ta.value='';alert('Could not read '+f.name+': '+err.message+'\nYou can paste the text instead.');}});}
+hookFile($('#cvFile'),$('#cvText'));hookFile($('#clFile'),$('#clText'));
+$('#analyzeBtn').onclick=()=>{
+  const cv=$('#cvText').value.trim();if(!cv){alert('Paste your CV text first.');return;}
+  const ex=extract(cv,$('#clText').value.trim());
+  const nm=extractName(cv);
+  draft={titles:ex.titles,skills:ex.skills,home:ex.home,years:ex.years,name:nm.name,initials:nm.initials};
+  $('#homeCity').value=ex.home;
+  $('#yourName').value=nm.name;
+  $('#detected').textContent=`Detected: ${nm.name?nm.name+' — ':''}${ex.titles.length} titles, ${ex.skills.length} skills`+(ex.years?`, ~${ex.years} yrs`:'')+(ex.home?`, home ${ex.home}`:'');
+  renderTags();$('#reviewPanel').style.display='block';$('#reviewPanel').scrollIntoView({behavior:'smooth'});
+};
+$('#addTitleBtn').onclick=()=>{const v=$('#addTitle').value.trim().toLowerCase();if(v){draft.titles.push(v);$('#addTitle').value='';renderTags();}};
+$('#addSkillBtn').onclick=()=>{const v=$('#addSkill').value.trim().toLowerCase();if(v){draft.skills.push(v);$('#addSkill').value='';renderTags();}};
+$('#saveBtn').onclick=()=>{
+  if(!draft.skills.length&&!draft.titles.length){alert('Add at least one keyword.');return;}
+  const home=$('#homeCity').value.trim()||draft.home;
+  const person=($('#yourName').value.trim()||draft.name||'');
+  const initials=person?person.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,3):'';
+  PROFILE={person,titles:draft.titles,skills:draft.skills,home,years:draft.years,initials};
+  try{localStorage.setItem('jobboard_profile',JSON.stringify(PROFILE));}catch(e){}
+  showBoard();
+};
+$('#toSetup').onclick=showSetup;
+$('#jdBtn').onclick=()=>{const t=$('#jdIn').value.trim();$('#jdOut').innerHTML=t?gapHtml(gapAnalysis(t)):'<div class="hint">Paste a job description first.</div>';};
+['q','arrangement','country','industry','minScore'].forEach(id=>$('#'+id).addEventListener('input',renderBoard));
+
+/* ---------- boot ---------- */
+function init(d){
+  JOBS=d;$('#foot').textContent=`generated ${new Date(d.generated).toLocaleString('en-CA')} · ${d.mode}`;
+  try{const p=localStorage.getItem('jobboard_profile');if(p){PROFILE=JSON.parse(p);}}catch(e){}
+  if(PROFILE)showBoard(); else showSetup();
+}
+fetch('./data/jobs.json?_='+Date.now()).then(r=>r.json()).then(init).catch(e=>{$('#meta').textContent='Could not load data/jobs.json — run the fetcher first.';showSetup();});
+</script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+{
+  "generated_from": "BarneyBT_Master_CV.docx",
+  "person": "Bharanidharan Thamizhchelvan",
+  "initials": "BT",
+  "home": "London",
+  "years_general": 11,
+  "confirmers_backed_by_cv": 31,
+  "confirmers_total_base": 48,
+  "model": {
+    "title_triggers": {
+      "core": [
+        "electronics design engineer",
+        "electronics engineer",
+        "hardware engineer",
+        "hardware design engineer",
+        "embedded engineer",
+        "embedded software",
+        "firmware engineer",
+        "firmware developer",
+        "pcb",
+        "mixed-signal",
+        "mixed signal"
+      ],
+      "adjacent": [
+        "systems engineer",
+        "mechatronics",
+        "product engineer",
+        "sensor engineer",
+        "rf engineer",
+        "power electronics",
+        "hardware test",
+        "hardware validation",
+        "design engineer",
+        "electrical design",
+        "avionics",
+        "electrical engineer"
+      ],
+      "fpga": [
+        "fpga",
+        "verilog",
+        "vhdl",
+        "rtl",
+        "asic verification",
+        "design verification",
+        "verification engineer",
+        "digital design"
+      ]
+    },
+    "skill_confirmers": [
+      "altium",
+      "analog",
+      "arm cortex",
+      "battery",
+      "ble",
+      "bring-up",
+      "component selection",
+      "cortex-m",
+      "dfm",
+      "dft",
+      "digital",
+      "embedded c",
+      "firmware",
+      "fpga",
+      "kicad",
+      "logic analyzer",
+      "low-power",
+      "ltspice",
+      "mixed-signal",
+      "nordic",
+      "oscilloscope",
+      "pcb layout",
+      "rtos",
+      "schematic",
+      "scpi",
+      "spi",
+      "stm32",
+      "vivado",
+      "vna",
+      "xilinx",
+      "zephyr"
+    ],
+    "boosters": {
+      "medical": [
+        "iso 13485",
+        "design controls",
+        "iso 14971",
+        "medical device",
+        "iec 62304",
+        "dhf",
+        "nebulizer",
+        "inhalation",
+        "aerosol",
+        "pulmonary",
+        "respiratory",
+        "drug delivery",
+        "spirometry",
+        "eeg",
+        "biosignal"
+      ],
+      "iec60601": [
+        "iec 60601",
+        "60601-1",
+        "iec 61010"
+      ],
+      "space": [
+        "satellite",
+        "payload",
+        "space-qualified",
+        "gnss",
+        "magnetometer",
+        "quantum sensor",
+        "low-noise",
+        "photodetector"
+      ],
+      "verification": [
+        "systemverilog",
+        "uvm",
+        "design verification",
+        "functional verification"
+      ]
+    },
+    "exclusions": {
+      "power": [
+        "substation",
+        "distribution",
+        "high-voltage grid",
+        "building services",
+        "hvac",
+        "protection & control",
+        "protection and control",
+        "power system"
+      ],
+      "software": [
+        "full-stack",
+        "full stack",
+        "frontend",
+        "front-end",
+        "back-end",
+        "backend",
+        ".net",
+        "salesforce",
+        "web developer",
+        "data engineer",
+        "data analyst",
+        "ui/ux",
+        "react developer"
+      ],
+      "level": [
+        "technician",
+        "operator",
+        "assembler",
+        "millwright",
+        "welder",
+        "machinist",
+        "cnc",
+        "sales",
+        "marketing",
+        " hr ",
+        "recruit",
+        "administrative",
+        "receptionist",
+        "clerk",
+        "custodian",
+        "driver",
+        "intern",
+        "co-op",
+        "co op",
+        "student",
+        "apprentice"
+      ],
+      "power_context": [
+        "substation",
+        "distribution",
+        "high-voltage grid",
+        "building services",
+        "hvac",
+        "protection & control",
+        "protection and control",
+        "power system",
+        "kv ",
+        "megawatt",
+        "switchgear",
+        "transformer design"
+      ]
+    },
+    "params": {
+      "report_threshold": 7,
+      "fresh_days": 30
+    }
+  },
+  "cv_evidence": {
+    "confirmers": {
+      "backed": [
+        "analog",
+        "digital",
+        "mixed-signal",
+        "schematic",
+        "pcb layout",
+        "dfm",
+        "dft",
+        "component selection",
+        "embedded c",
+        "firmware",
+        "arm cortex",
+        "cortex-m",
+        "stm32",
+        "nordic",
+        "zephyr",
+        "rtos",
+        "low-power",
+        "battery",
+        "ble",
+        "spi",
+        "oscilloscope",
+        "logic analyzer",
+        "vna",
+        "scpi",
+        "bring-up",
+        "altium",
+        "kicad",
+        "ltspice",
+        "fpga",
+        "vivado",
+        "xilinx"
+      ],
+      "unbacked": [
+        "signal integrity",
+        "power supply",
+        "bom",
+        "microcontroller",
+        "low power",
+        "bluetooth low energy",
+        "i2c",
+        "i²c",
+        "uart",
+        "usb",
+        "impedance analyzer",
+        "bring up",
+        "v&v",
+        "verilog",
+        "vhdl",
+        "rtl",
+        "quartus"
+      ]
+    },
+    "medical": {
+      "backed": [
+        "iso 13485",
+        "design controls",
+        "iso 14971",
+        "medical device",
+        "iec 62304",
+        "dhf",
+        "respiratory",
+        "eeg",
+        "biosignal"
+      ],
+      "unbacked": [
+        "nebulizer",
+        "inhalation",
+        "aerosol",
+        "pulmonary",
+        "drug delivery",
+        "spirometry"
+      ]
+    },
+    "iec60601": {
+      "backed": [
+        "iec 60601",
+        "60601-1",
+        "iec 61010"
+      ],
+      "unbacked": []
+    },
+    "space": {
+      "backed": [
+        "satellite"
+      ],
+      "unbacked": [
+        "payload",
+        "space-qualified",
+        "gnss",
+        "magnetometer",
+        "quantum sensor",
+        "low-noise",
+        "photodetector"
+      ]
+    },
+    "verification": {
+      "backed": [],
+      "unbacked": [
+        "systemverilog",
+        "uvm",
+        "design verification",
+        "functional verification"
+      ]
+    },
+    "title_core": {
+      "backed": [
+        "electronics design engineer",
+        "electronics engineer",
+        "hardware engineer",
+        "embedded engineer",
+        "pcb",
+        "mixed-signal"
+      ],
+      "unbacked": [
+        "hardware design engineer",
+        "embedded software",
+        "firmware engineer",
+        "firmware developer",
+        "mixed signal"
+      ]
+    }
+  }
+}

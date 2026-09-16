@@ -1,0 +1,20 @@
+name,color,description
+type:feature,1f883d,New capability
+type:bug,d1242f,Something broken
+type:chore,6e7781,Maintenance / infra / CI
+type:docs,0969da,Documentation
+type:spike,8250df,Research / investigation
+area:engine,fbca04,Python fetch+score engine
+area:site,0e8a16,Website / UI
+area:registry,c5def5,Company + ATS registry
+area:ci,bfdadc,GitHub Action / Pages
+area:quality,d4c5f9,PDS / requirements / testing / audit
+priority:P0,b60205,Must ship this sprint
+priority:P1,d93f0b,Should ship
+priority:P2,fbca04,Nice to have / stretch
+phase:P1,c2e0c6,MVP (done)
+phase:P2,bfd4f2,Pipeline
+phase:P2.5,bfd4f2,Sponsorship/LMIA
+phase:P3,bfd4f2,Tailoring
+phase:P4,bfd4f2,Pipeline ops
+phase:P5,bfd4f2,Interview prep

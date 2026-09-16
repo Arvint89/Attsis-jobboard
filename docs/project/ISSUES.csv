@@ -1,0 +1,19 @@
+title,body,labels,milestone
+JB-1 Host on GitHub Pages,Push repo; Settings>Pages>GitHub Actions; run job-sweep,type:chore area:ci priority:P0,M0 v1 Live
+JB-2 Create GitHub Project board,Create Project (Board); import labels/milestones/issues; add columns,type:chore area:ci priority:P0,M0 v1 Live
+JB-3 Resolve first ATS batch,Fill platform+slug for ZTR/BinSentry/VueReal/Tenstorrent; probe Nicoya/Miovision/Voltera/Geotab/Profound/Kepler,type:feature area:registry priority:P0,M0 v1 Live
+JB-4 First live fetch returns real roles,Run build_board live; verify board renders real roles,type:feature area:engine priority:P0,M0 v1 Live
+JB-5 Resolve remaining resolve companies,One ATS probe per remaining company,type:feature area:registry priority:P1,M1 Real data
+JB-6 Salary prominent on cards,Show salary clearly; make it a sortable field,type:feature area:site priority:P2,M1 Real data
+JB-7 Initials render reliably in header,Verify initials next to Job Board across inputs,type:bug area:site priority:P2,M1 Real data
+JB-8 Persist filters and min-score,Remember filter/min-score in localStorage,type:chore area:site priority:P2,M1 Real data
+JB-9 Job Board and Pipeline tabs,Two tabs one page; switch without reload,type:feature area:site priority:P1 phase:P2,M2 Pipeline
+JB-10 Stage model + kanban,Saved>Applied>Interviewing>Offer>Closed columns,type:feature area:site priority:P1 phase:P2,M2 Pipeline
+JB-11 Needs-action strip,Compute follow-up/thank-you items from stage+dates,type:feature area:site priority:P1 phase:P2,M2 Pipeline
+JB-12 Board export to tracker,Export changed rows to paste into the xlsx tracker,type:feature area:site priority:P1 phase:P2,M2 Pipeline
+JB-13 Expandable job card,Header + Snapshot/Why/Gaps/JD/Contact/Actions sections,type:feature area:site priority:P1 phase:P2,M2 Pipeline
+JB-14 Deep gap analysis,Edge/Gap/Proof/Screen/Close narrative (Pro),type:feature area:engine priority:P2 phase:P2,M2 Pipeline
+JB-15 LMIA sponsorship data,Quarterly LMIA list + manual pull; label the quarter,type:feature area:engine priority:P2 phase:P2.5,M4 Breadth
+JB-16 Non-tech vertical seed,Add one non-tech vertical via registry+seed,type:spike area:registry priority:P2,M4 Breadth
+JB-17 CSA testing pass and audit,Run CSA_Testing protocol; log AUDIT entry,type:chore area:quality priority:P1,M0 v1 Live
+JB-18 Accessibility and mobile pass,WCAG basics + mobile layout,type:chore area:site priority:P2,M1 Real data

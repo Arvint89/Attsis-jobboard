@@ -1,0 +1,257 @@
+[
+  {
+    "company": "BinSentry",
+    "title": "Electronics Engineer",
+    "location": "Kitchener, ON",
+    "url": "https://binsentry.bamboohr.com/careers/296",
+    "posted": "2026-09-11",
+    "source": "bamboohr",
+    "description": "Design digital, analog and power circuits in Altium: schematic capture, PCB layout, footprint creation. Prove systems through bring-up with oscilloscope and DMM. Ensure regulatory compliance and guide products through certification. UART, SPI, I2C, Ethernet, MCUs, switching power supplies. Some firmware in C on MCU/RTOS. Environmental-chamber reliability testing.",
+    "_industry": "agtech"
+  },
+  {
+    "company": "Natus Medical",
+    "title": "Senior Electrical Engineer",
+    "location": "Oakville, ON (Hybrid)",
+    "url": "https://example.com/natus",
+    "posted": "2026-09-05",
+    "source": "greenhouse",
+    "description": "Mixed-signal PCB design for EEG and neurodiagnostic devices. Analog front-end, low-noise signal chain, battery-powered design. ISO 13485 design controls, IEC 60601-1 and -1-2. Altium, schematic capture, V&V, DFMEA. Embedded C on ARM Cortex-M.",
+    "_industry": "medical"
+  },
+  {
+    "company": "Decisive Technologies",
+    "title": "Senior Embedded Firmware Lead",
+    "location": "Ottawa, ON",
+    "url": "https://example.com/decisive",
+    "posted": "2026-08-24",
+    "source": "lever",
+    "description": "GNSS positioning embedded systems. Firmware in C, ARM Cortex-M, RTOS, low-power design. SPI, I2C, UART. Satellite and payload adjacent. Requirements and V&V.",
+    "_industry": "GNSS/positioning"
+  },
+  {
+    "company": "LMI Technologies",
+    "title": "FPGA Design & Verification Engineer",
+    "location": "Remote, Canada",
+    "url": "https://example.com/lmi",
+    "posted": "2026-09-10",
+    "source": "greenhouse",
+    "description": "FPGA RTL design in Verilog and VHDL, Vivado and Xilinx. Design verification, SystemVerilog. High-speed digital design, DSP. 3D vision hardware.",
+    "_industry": "machine vision",
+    "_sponsors": true
+  },
+  {
+    "company": "ZTR Control Systems",
+    "title": "Senior Embedded Software Developer",
+    "location": "London, ON",
+    "url": "https://ztr.bamboohr.com/careers/288",
+    "posted": "2026-09-08",
+    "source": "bamboohr",
+    "description": "Firmware for rail telematics. Embedded C, RTOS, Zephyr, BLE, cellular. ARM Cortex-M. OTA updates. Low-power design. SPI, I2C, UART.",
+    "_industry": "rail/industrial"
+  },
+  {
+    "company": "Some Utility Co",
+    "title": "Electrical Engineer",
+    "location": "London, ON",
+    "url": "https://example.com/util",
+    "posted": "2026-09-09",
+    "source": "greenhouse",
+    "description": "Substation protection and control. Power distribution, switchgear, transformer design, high-voltage grid. Building services and HVAC coordination.",
+    "_industry": "energy/power"
+  },
+  {
+    "company": "Marwood",
+    "title": "CNC Process Technician",
+    "location": "London, ON",
+    "url": "https://example.com/marwood",
+    "posted": "2026-09-14",
+    "source": "greenhouse",
+    "description": "Operate CNC machines. Tooling setup, machinist duties on the shop floor.",
+    "_industry": "manufacturing"
+  },
+  {
+    "company": "PheedLoop",
+    "title": "Embedded & Electrical Systems Engineer",
+    "location": "Toronto, ON",
+    "url": "https://example.com/pheedloop",
+    "posted": "2026-06-01",
+    "source": "lever",
+    "description": "Embedded and electrical systems for event hardware. Some PCB and firmware. Older posting.",
+    "_industry": "events tech"
+  },
+  {
+    "company": "Voltera",
+    "title": "Product Engineer",
+    "location": "Kitchener, ON",
+    "url": "https://example.com/voltera",
+    "posted": "2026-09-12",
+    "source": "ashby",
+    "description": "Product engineering for PCB-printing hardware. Some schematic and component selection, DFM. Cross-functional with firmware and mechanical.",
+    "_industry": "hardware/PCB"
+  },
+  {
+    "company": "VueReal",
+    "title": "Hardware Engineer, Micro-LED",
+    "location": "Waterloo, ON",
+    "url": "https://vuereal.bamboohr.com/careers",
+    "posted": "2026-09-13",
+    "source": "bamboohr",
+    "description": "Mixed-signal PCB design, schematic capture, Altium, driver electronics for micro-LED displays, bring-up, signal integrity, embedded C.",
+    "_industry": "display/micro-LED"
+  },
+  {
+    "company": "Tenstorrent",
+    "title": "Senior Embedded Engineer, AI IP",
+    "location": "Toronto, ON",
+    "url": "https://boards.greenhouse.io/tenstorrent",
+    "posted": "2026-09-09",
+    "source": "greenhouse",
+    "description": "Embedded firmware, ARM, RTOS, PCB bring-up for AI silicon boards. C, low-power, SPI, I2C. Digital design, FPGA.",
+    "_industry": "semiconductor",
+    "_reg_flags": [
+      "relocation"
+    ]
+  },
+  {
+    "company": "Canada Rocket Company",
+    "title": "Avionics Hardware Engineer",
+    "location": "Toronto, ON",
+    "url": "https://ats.rippling.com/canada-rocket-company/jobs",
+    "posted": "2026-09-11",
+    "source": "rippling",
+    "description": "Design avionics PCBs, mixed-signal, power supply, schematic capture, Altium, bring-up, sensor interfaces for launch vehicles.",
+    "_industry": "aerospace/space",
+    "_reg_flags": [
+      "eligibility",
+      "relocation"
+    ]
+  },
+  {
+    "company": "e-Zinc",
+    "title": "Embedded Software Engineer",
+    "location": "Mississauga, ON",
+    "url": "https://ats.rippling.com/e-zinc/jobs",
+    "posted": "2026-09-08",
+    "source": "rippling",
+    "description": "Firmware in C for battery energy storage, ARM Cortex-M, RTOS, CAN, MODBUS, low-power, sensor interfaces.",
+    "_industry": "energy/power",
+    "_reg_flags": [
+      "relocation"
+    ]
+  },
+  {
+    "company": "Kepler Communications",
+    "title": "Embedded Software Designer",
+    "location": "Toronto, ON",
+    "url": "https://kepler.space/careers",
+    "posted": "2026-09-05",
+    "source": "greenhouse",
+    "description": "Embedded C, firmware, ARM, RTOS, satellite payload, SPI, I2C, test automation, Python, bring-up.",
+    "salary": "CAD 156,100-181,100",
+    "_industry": "aerospace/space"
+  },
+  {
+    "company": "Profound Medical",
+    "title": "Senior Electrical Developer",
+    "location": "Mississauga, ON (Hybrid)",
+    "url": "https://profoundmedical.com/careers",
+    "posted": "2026-09-07",
+    "source": "greenhouse",
+    "description": "Full-lifecycle electrical design, mixed-signal Altium, ultrasound drive, ISO 13485, IEC 60601, V&V, requirements, embedded C.",
+    "_industry": "medical",
+    "_reg_flags": [
+      "relocation"
+    ]
+  },
+  {
+    "company": "Geotab",
+    "title": "Lead Developer, Embedded Engineering",
+    "location": "Oakville, ON (Hybrid)",
+    "url": "https://www.geotab.com/careers",
+    "posted": "2026-09-10",
+    "source": "greenhouse",
+    "description": "Embedded firmware, telematics, reads schematics, hardware-informed, C, RTOS, Linux, test, low-power.",
+    "salary": "CAD 116,200-155,000",
+    "_industry": "transportation/IoT",
+    "_reg_flags": [
+      "relocation"
+    ]
+  },
+  {
+    "company": "Synaptive Medical",
+    "title": "Electronics Design Engineer",
+    "location": "Toronto, ON",
+    "url": "https://www.synaptivemedical.com/careers",
+    "posted": "2026-09-06",
+    "source": "greenhouse",
+    "description": "Analog and digital PCB design, schematic capture, Altium, medical imaging electronics, ISO 13485, bring-up, signal integrity.",
+    "_industry": "medical",
+    "_reg_flags": [
+      "relocation"
+    ]
+  },
+  {
+    "company": "Decisive Technologies",
+    "title": "Systems Architect, Embedded",
+    "location": "Ottawa, ON",
+    "url": "https://www.decisive-technologies.com/careers",
+    "posted": "2026-08-24",
+    "source": "lever",
+    "description": "GNSS positioning, embedded C, ARM, RTOS, low-power, SPI, sensor interfaces, requirements, V&V.",
+    "salary": "CAD 120,000-160,000",
+    "_industry": "GNSS/positioning",
+    "_reg_flags": [
+      "relocation"
+    ]
+  },
+  {
+    "company": "Ross Video",
+    "title": "PCB Designer / Electronics",
+    "location": "Ottawa, ON",
+    "url": "https://www.rossvideo.com/careers",
+    "posted": "2026-09-04",
+    "source": "greenhouse",
+    "description": "High-speed PCB layout, schematic capture, signal integrity, broadcast electronics, component selection, DFM, library management.",
+    "_industry": "broadcast",
+    "_reg_flags": [
+      "relocation"
+    ]
+  },
+  {
+    "company": "StarFish Medical",
+    "title": "Electrical Engineer, Medical Devices",
+    "location": "Victoria, BC",
+    "url": "https://starfishmedical.com/careers",
+    "posted": "2026-09-09",
+    "source": "greenhouse",
+    "description": "Mixed-signal PCB, analog, ISO 13485, IEC 60601, schematic, Altium, V&V, embedded, sensor front-end.",
+    "_industry": "medical",
+    "_reg_flags": [
+      "relocation"
+    ]
+  },
+  {
+    "company": "Kraken Robotics",
+    "title": "Embedded Hardware Engineer",
+    "location": "Dartmouth, NS",
+    "url": "https://krakenrobotics.com/careers",
+    "posted": "2026-09-03",
+    "source": "greenhouse",
+    "description": "Subsea electronics, PCB design, power supply, embedded C, ARM, sensor interfaces, bring-up, harsh environment.",
+    "_industry": "subsea/marine",
+    "_reg_flags": [
+      "relocation"
+    ]
+  },
+  {
+    "company": "Miovision",
+    "title": "Firmware Developer",
+    "location": "Kitchener, ON (Hybrid)",
+    "url": "https://miovision.com/careers",
+    "posted": "2026-09-12",
+    "source": "greenhouse",
+    "description": "Embedded firmware C, ARM Cortex-M, RTOS, BLE, low-power, traffic IoT hardware, SPI, I2C, UART.",
+    "_industry": "transportation/IoT"
+  }
+]
