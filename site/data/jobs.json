@@ -16,31 +16,21 @@
   },
   "facets": {
     "arrangement": [
-      "hybrid",
-      "onsite",
-      "remote"
+      "onsite"
     ],
     "country": [
-      "Canada"
+      "Canada",
+      "US"
     ],
     "industry": [
-      "GNSS/positioning",
       "aerospace/space",
       "agtech",
-      "broadcast",
       "display/micro-LED",
-      "energy/power",
-      "hardware/PCB",
-      "machine vision",
-      "medical",
       "rail/industrial",
-      "semiconductor",
-      "subsea/marine",
-      "transportation/IoT"
+      "semiconductor"
     ],
     "sponsorship": [
-      "unknown",
-      "yes"
+      "unknown"
     ]
   },
   "min_score": 7,
@@ -48,7 +38,7 @@
     "matches": 5,
     "below": 15,
     "errors": 0,
-    "unresolved": 0
+    "unresolved": 23
   },
   "matches": [
     {
@@ -194,10 +184,10 @@
     },
     {
       "company": "Tenstorrent",
-      "title": "Senior Embedded Engineer, AI IP",
-      "location": "Toronto, ON",
-      "url": "https://boards.greenhouse.io/tenstorrent",
-      "posted": "2026-09-09",
+      "title": "Sr Staff Engineer, SoC RTL Design",
+      "location": "Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4553078007",
+      "posted": "2026-09-02T17:54:04-04:00",
       "source": "greenhouse",
       "salary": "",
       "ring": 2,
@@ -231,171 +221,75 @@
   ],
   "below": [
     {
-      "company": "Voltera",
-      "title": "Product Engineer",
-      "location": "Kitchener, ON",
-      "url": "https://example.com/voltera",
-      "posted": "2026-09-12",
-      "source": "ashby",
-      "salary": "",
-      "ring": 1,
-      "km": 80,
-      "score": 6,
-      "flags": [],
-      "arrangement": "onsite",
-      "country": "Canada",
-      "industry": "hardware/PCB",
-      "sponsorship": "unknown",
-      "reasons": [
-        "title match: product engineer",
-        "skills x4"
-      ],
-      "matched": [
-        "component selection",
-        "dfm",
-        "firmware",
-        "product engineer",
-        "schematic"
-      ],
-      "snippet": "Product engineering for PCB-printing hardware. Some schematic and component selection, DFM. Cross-functional with firmware and mechanical.",
-      "text": "Product Engineer. Product engineering for PCB-printing hardware. Some schematic and component selection, DFM. Cross-functional with firmware and mechanical."
-    },
-    {
-      "company": "VueReal",
-      "title": "Hardware Engineer, Micro-LED",
-      "location": "Waterloo, ON",
-      "url": "https://vuereal.bamboohr.com/careers",
-      "posted": "2026-09-13",
-      "source": "bamboohr",
-      "salary": "",
-      "ring": 1,
-      "km": 79,
-      "score": 6,
-      "flags": [],
-      "arrangement": "onsite",
-      "country": "Canada",
-      "industry": "display/micro-LED",
-      "sponsorship": "unknown",
-      "reasons": [
-        "title match: hardware engineer",
-        "skills x5"
-      ],
-      "matched": [
-        "altium",
-        "bring-up",
-        "embedded c",
-        "hardware engineer",
-        "mixed-signal",
-        "schematic"
-      ],
-      "snippet": "Mixed-signal PCB design, schematic capture, Altium, driver electronics for micro-LED displays, bring-up, signal integrity, embedded C.",
-      "text": "Hardware Engineer, Micro-LED. Mixed-signal PCB design, schematic capture, Altium, driver electronics for micro-LED displays, bring-up, signal integrity, embedded C."
-    },
-    {
-      "company": "Canada Rocket Company",
-      "title": "Avionics Hardware Engineer",
-      "location": "Toronto, ON",
-      "url": "https://ats.rippling.com/canada-rocket-company/jobs",
-      "posted": "2026-09-11",
-      "source": "rippling",
-      "salary": "",
-      "ring": 2,
-      "km": 168,
-      "score": 6,
-      "flags": [
-        "eligibility",
-        "relocation"
-      ],
-      "arrangement": "onsite",
-      "country": "Canada",
-      "industry": "aerospace/space",
-      "sponsorship": "unknown",
-      "reasons": [
-        "title match: hardware engineer, avionics",
-        "skills x4"
-      ],
-      "matched": [
-        "altium",
-        "avionics",
-        "bring-up",
-        "hardware engineer",
-        "mixed-signal",
-        "schematic"
-      ],
-      "snippet": "Design avionics PCBs, mixed-signal, power supply, schematic capture, Altium, bring-up, sensor interfaces for launch vehicles.",
-      "text": "Avionics Hardware Engineer. Design avionics PCBs, mixed-signal, power supply, schematic capture, Altium, bring-up, sensor interfaces for launch vehicles."
-    },
-    {
-      "company": "e-Zinc",
-      "title": "Embedded Software Engineer",
-      "location": "Mississauga, ON",
-      "url": "https://ats.rippling.com/e-zinc/jobs",
-      "posted": "2026-09-08",
-      "source": "rippling",
-      "salary": "",
-      "ring": 2,
-      "km": 146,
-      "score": 6,
-      "flags": [
-        "relocation"
-      ],
-      "arrangement": "onsite",
-      "country": "Canada",
-      "industry": "energy/power",
-      "sponsorship": "unknown",
-      "reasons": [
-        "title match: embedded software",
-        "skills x6"
-      ],
-      "matched": [
-        "arm cortex",
-        "battery",
-        "cortex-m",
-        "embedded software",
-        "firmware",
-        "low-power",
-        "rtos"
-      ],
-      "snippet": "Firmware in C for battery energy storage, ARM Cortex-M, RTOS, CAN, MODBUS, low-power, sensor interfaces.",
-      "text": "Embedded Software Engineer. Firmware in C for battery energy storage, ARM Cortex-M, RTOS, CAN, MODBUS, low-power, sensor interfaces."
-    },
-    {
-      "company": "Kepler Communications",
-      "title": "Embedded Software Designer",
-      "location": "Toronto, ON",
-      "url": "https://kepler.space/careers",
-      "posted": "2026-09-05",
+      "company": "Tenstorrent",
+      "title": "CPU Core Design Verification Testbench Lead",
+      "location": "Austin, Texas, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5138858007",
+      "posted": "2026-09-02T17:54:04-04:00",
       "source": "greenhouse",
-      "salary": "CAD 156,100-181,100",
+      "salary": "",
       "ring": 2,
-      "km": 168,
+      "km": null,
       "score": 6,
-      "flags": [],
+      "flags": [
+        "C++",
+        "US",
+        "relocation"
+      ],
       "arrangement": "onsite",
-      "country": "Canada",
-      "industry": "aerospace/space",
+      "country": "US",
+      "industry": "semiconductor",
       "sponsorship": "unknown",
       "reasons": [
-        "title match: embedded software",
-        "skills x5"
+        "title match: design verification",
+        "skills x2",
+        "senior/lead(+1)"
       ],
       "matched": [
-        "bring-up",
-        "embedded c",
-        "embedded software",
-        "firmware",
-        "rtos",
-        "spi"
+        "ble",
+        "design verification",
+        "digital"
       ],
-      "snippet": "Embedded C, firmware, ARM, RTOS, satellite payload, SPI, I2C, test automation, Python, bring-up.",
-      "text": "Embedded Software Designer. Embedded C, firmware, ARM, RTOS, satellite payload, SPI, I2C, test automation, Python, bring-up."
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "CPU Core Design Verification Testbench Lead. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  At Tenstorrent, we build open, state of the art compute for real workloads and real developers.  You will own CPU core-level testbench development and verification, shaping how our out-of-order RISC-V CPUs behave in silicon.  This role is hybrid, based out of Austin, TX or Santa Clara, CA.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are    You bring 8+ years in CPU verification, CPU testbench development, or closely related digital design.  You have deep hands-on experience building and owning CPU core-level testbenches, not just using existing environments.  You know high-performance out-of-order CPU microarchi"
     },
     {
-      "company": "Synaptive Medical",
-      "title": "Electronics Design Engineer",
-      "location": "Toronto, ON",
-      "url": "https://www.synaptivemedical.com/careers",
-      "posted": "2026-09-06",
+      "company": "Tenstorrent",
+      "title": "CPU Core Design Verification Test Generator Lead",
+      "location": "Austin, Texas, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5137633007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 6,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design verification",
+        "skills x1",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "design verification"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "CPU Core Design Verification Test Generator Lead. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  At Tenstorrent, we build open, state of the art compute for real workloads and real developers.  You will own CPU focused test generator development and verification strategy, shaping how our out-of-order RISC-V CPUs are validated against complex ISA and microarchitectural behavior.   This role is hybrid, based out of Austin, TX or Santa Clara, CA.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are    You bring 8+ years in CPU design verification, test generation, or closely related CPU validation work.  You have led development of test generators for x86, ARM, or RISC-V ISA environments.  You understand CPU I"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Design Verification Lead, AI Hardware",
+      "location": "Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4659518007",
+      "posted": "2026-09-02T17:54:04-04:00",
       "source": "greenhouse",
       "salary": "",
       "ring": 2,
@@ -406,227 +300,1110 @@
       ],
       "arrangement": "onsite",
       "country": "Canada",
-      "industry": "medical",
+      "industry": "semiconductor",
       "sponsorship": "unknown",
       "reasons": [
-        "title match: electronics design engineer, design engineer",
-        "skills x5"
+        "title match: design verification",
+        "skills x2",
+        "senior/lead(+1)"
       ],
       "matched": [
-        "altium",
-        "analog",
+        "ble",
+        "design verification",
+        "fpga"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Design Verification Lead, AI Hardware. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We are seeking a Verification Lead for our next-generation AI hardware. You’ll guide a top-tier team of Verification Engineers, shaping test strategies to validate functionality and performance of our AI core. This role requires expertise in AI-specific data types, common AI data-movement compute patterns, and on-chip network validation, combined with strong leadership and collaboration skills.  This role is hybrid, based out Toronto, ON.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   A Seasoned Verification Leader: An experienced ASIC/SoC lead with proven track record of leading teams through complex tape-outs.  A"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "(India) System IP Design Engineer",
+      "location": "Bengaluru, Karnataka, India",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5164498007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 6,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer",
+        "skills x4"
+      ],
+      "matched": [
+        "ble",
         "bring-up",
         "design engineer",
-        "digital",
-        "electronics design engineer",
-        "schematic"
+        "firmware",
+        "low-power"
       ],
-      "snippet": "Analog and digital PCB design, schematic capture, Altium, medical imaging electronics, ISO 13485, bring-up, signal integrity.",
-      "text": "Electronics Design Engineer. Analog and digital PCB design, schematic capture, Altium, medical imaging electronics, ISO 13485, bring-up, signal integrity."
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "(India) System IP Design Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We’re looking for a hands-on RTL Design Engineer to own the microarchitecture and RTL implementation of the Power Management Subsystem/Interrupt Controllers/AXI Interconnect/Cache Controller . You’ll collaborate with cross-functional teams—architecture, firmware, software, DV, and PD—to define, design, and optimize power management solutions for next-generation RISC-V/ARM-based SoCs.  This role is hybrid, based out of Bangalore, India.  We welcome candidates at various experience levels. During the interview process, you will beevaluated and offered a level that aligns with your experience, which may differ from the one in this posting.  Who You Are   5–10 years of experience in ASIC/SOC/IP design, with hands-on experience in microarchitecture and RTL development  Skilled in Verilog/SystemVerilog and comfortable working "
     },
     {
-      "company": "Ross Video",
-      "title": "PCB Designer / Electronics",
-      "location": "Ottawa, ON",
-      "url": "https://www.rossvideo.com/careers",
-      "posted": "2026-09-04",
+      "company": "Tenstorrent",
+      "title": "PCB Layout Engineer",
+      "location": "Santa Clara, California, United States; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5089673007",
+      "posted": "2026-09-02T17:54:04-04:00",
       "source": "greenhouse",
       "salary": "",
-      "ring": 4,
-      "km": 518,
+      "ring": 2,
+      "km": 168,
       "score": 6,
       "flags": [
+        "US",
         "relocation"
       ],
       "arrangement": "onsite",
-      "country": "Canada",
-      "industry": "broadcast",
+      "country": "US",
+      "industry": "semiconductor",
       "sponsorship": "unknown",
       "reasons": [
         "title match: pcb",
-        "skills x4"
+        "skills x6"
       ],
       "matched": [
-        "component selection",
+        "altium",
+        "ble",
         "dfm",
+        "dft",
         "pcb",
         "pcb layout",
         "schematic"
       ],
-      "snippet": "High-speed PCB layout, schematic capture, signal integrity, broadcast electronics, component selection, DFM, library management.",
-      "text": "PCB Designer / Electronics. High-speed PCB layout, schematic capture, signal integrity, broadcast electronics, component selection, DFM, library management."
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "PCB Layout Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a Layout Engineer with expertise in board layout for high-performance computing and  AI hardware. This role requires direct experience with multi-layer boards, HDI vias, blind vias, back drilling, DFM, DFA and routing / layout of interfaces like GDDR, LPDDR, DDR, PCIe Gen 5 & 6, Ethernet IEEE 802.3bj, cd, cf, USB, etc. The ideal candidate will work closely with cross-functional teams consisting of engineers from systems, power, signal integrity and mechanical to ensure that our products meet the layout margins and cutting-edge specifications for mass production boards for data centers, workstations, and consumer computing applications.  This role is hybrid, based out of Toronto, ON or Santa Clara, CA.  We welcome candidates at various experience levels for this role. During the interview process, candidates will"
     },
     {
-      "company": "StarFish Medical",
-      "title": "Electrical Engineer, Medical Devices",
-      "location": "Victoria, BC",
-      "url": "https://starfishmedical.com/careers",
-      "posted": "2026-09-09",
+      "company": "Tenstorrent",
+      "title": "Physical Design Engineer, PnR",
+      "location": "Austin, Texas, United States; Fort Collins, Colorado, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5126996007",
+      "posted": "2026-09-02T17:54:04-04:00",
       "source": "greenhouse",
       "salary": "",
-      "ring": 4,
-      "km": 3283,
+      "ring": 2,
+      "km": null,
+      "score": 6,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer",
+        "skills x4"
+      ],
+      "matched": [
+        "analog",
+        "ble",
+        "design engineer",
+        "dft",
+        "mixed-signal"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Physical Design Engineer, PnR. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking talented Physical Design Engineers to implement high-performance partitions for an industry-leading AI SOC. You'll own the complete implementation flow from synthesis to tapeout, working alongside world-class engineers to push the boundaries of performance, power, and area. If you're passionate about crafting silicon that powers the future of AI computing and thrive on solving complex design challenges, we want you on our team.  This role is hybrid, based out of Austin,TX or Santa Clara, CA or Fort Collins, CO.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who you are   Experienced with synthesis and place-and-ro"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Senior Embedded Engineer, AI IP",
+      "location": "Belgrade, Serbia; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5149441007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 6,
+      "flags": [
+        "C++",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "Canada",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: embedded engineer",
+        "skills x2",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "embedded engineer",
+        "rtos"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Senior Embedded Engineer, AI IP. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We are seeking a Software Driver Developer to create reference drivers for our AI-IP in a reference system.  You will also support our AI-IP customer optimizing our reference driver into our customer specific systems.    This role is hybrid, based out of Toronto, ON or Belgrade, Serbia.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Deep systems engineer with 7+ years of experience in device drivers or low-level systems programming.  Strong proficiency in C and C++ with a solid understanding of hardware-software interfaces.  Hands-on experience developing Linux kernel drivers, including kernel architecture, debugging, an"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Sr. Staff Engineer, SoC Design Verification",
+      "location": "Boston, Massachusetts, United States; Ottawa, Ontario, Canada; Santa Clara, California, United States; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5223715007",
+      "posted": "2026-09-09T08:09:47-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 6,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design verification",
+        "skills x2",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "design verification",
+        "firmware"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Sr. Staff Engineer, SoC Design Verification. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We are looking for a Sr. Staff Design Verification Engineer to lead end-to-end verification efforts for our advanced CPU and AI compute platforms. This role is ideal for seasoned engineers with deep expertise in CPU verification who excel at driving complex test plans to closure, mentoring teams, and leveraging modern AI tools to accelerate innovation.  This role is hybrid, based out of Boston, Toronto, Ottawa or Santa Clara.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Proven track record leading end-to-end CPU verification across processor cores, caches, interconnects, interrupts, MMU/IOMMU, and cache coh"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Staff Design Verification Engineer, AI HW",
+      "location": "Austin, Texas, United States; Belgrade, Serbia; Toronto, Ontario, Canada; Zürich, Switzerland",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4118635007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 6,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design verification, verification engineer",
+        "skills x2",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "design verification",
+        "firmware",
+        "verification engineer"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Staff Design Verification Engineer, AI HW. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Our Tensix team is building custom AI compute cores, RISC-V CPUs, and chiplet-based architectures for datacenter, edge, and automotive AI. Design Verification Engineers on this team validate compute IP and subsystems and build scalable DV infrastructure to keep verification fast, automated, and production-grade.  This role is hybrid, based out of Toronto, ON, Austin, TX or Belgrade, Serbia.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Experienced in modern verification methodologies with strong SystemVerilog skills and exposure to structured testbench development.  Comfortable working from block-level to syst"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "System IP RTL Design Lead",
+      "location": "Bengaluru, Karnataka, India",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5146176007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 6,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: rtl",
+        "skills x3",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "firmware",
+        "rtl"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "System IP RTL Design Lead. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We are seeking an experienced and motivated System IP RTL Design Lead to drive the definition and implementation of complex datacenter class IP for our next-generation semiconductor products. The ideal candidate possesses a deep understanding of System IP and SoC architecture, IP integration challenges, and is adept at leading a design team to deliver high-quality, scalable IP solutions. This role requires strong hands-on technical leadership, excellent communication skills, and a proven track record in the successful delivery of silicon IP.  This role is   hybrid, based out of Bangalore, India.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting."
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Systems Engineer, Data Center Debug",
+      "location": "Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5143663007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
       "score": 6,
       "flags": [
         "relocation"
       ],
       "arrangement": "onsite",
       "country": "Canada",
-      "industry": "medical",
+      "industry": "semiconductor",
       "sponsorship": "unknown",
       "reasons": [
-        "title match: electrical engineer",
-        "skills x4"
+        "title match: systems engineer",
+        "skills x6"
       ],
       "matched": [
-        "altium",
-        "analog",
-        "electrical engineer",
-        "mixed-signal",
-        "schematic"
-      ],
-      "snippet": "Mixed-signal PCB, analog, ISO 13485, IEC 60601, schematic, Altium, V&V, embedded, sensor front-end.",
-      "text": "Electrical Engineer, Medical Devices. Mixed-signal PCB, analog, ISO 13485, IEC 60601, schematic, Altium, V&V, embedded, sensor front-end."
-    },
-    {
-      "company": "Miovision",
-      "title": "Firmware Developer",
-      "location": "Kitchener, ON (Hybrid)",
-      "url": "https://miovision.com/careers",
-      "posted": "2026-09-12",
-      "source": "greenhouse",
-      "salary": "",
-      "ring": 1,
-      "km": 80,
-      "score": 6,
-      "flags": [],
-      "arrangement": "hybrid",
-      "country": "Canada",
-      "industry": "transportation/IoT",
-      "sponsorship": "unknown",
-      "reasons": [
-        "title match: firmware developer",
-        "skills x7"
-      ],
-      "matched": [
-        "arm cortex",
         "ble",
-        "cortex-m",
+        "bring-up",
         "firmware",
-        "firmware developer",
-        "low-power",
-        "rtos",
-        "spi"
+        "logic analyzer",
+        "oscilloscope",
+        "schematic",
+        "systems engineer"
       ],
-      "snippet": "Embedded firmware C, ARM Cortex-M, RTOS, BLE, low-power, traffic IoT hardware, SPI, I2C, UART.",
-      "text": "Firmware Developer. Embedded firmware C, ARM Cortex-M, RTOS, BLE, low-power, traffic IoT hardware, SPI, I2C, UART."
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Systems Engineer, Data Center Debug. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is building next-generation CPU and AI silicon. You’ll work at the forefront of hardware innovation, diagnosing complex issues across chips, systems, firmware, and software while collaborating with some of the brightest engineers in the industry. This role offers the opportunity to solve challenging technical problems, build impactful debug solutions, and directly influence the reliability and performance of cutting-edge AI compute platforms.  This role is hybrid, based out of Toronto, Canada.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Experienced in hardware debug and post-silicon bring-up for CPU, S"
     },
     {
-      "company": "Decisive Technologies",
-      "title": "Senior Embedded Firmware Lead",
-      "location": "Ottawa, ON",
-      "url": "https://example.com/decisive",
-      "posted": "2026-08-24",
-      "source": "lever",
+      "company": "ZTR Control Systems",
+      "title": "Senior Firmware Developer",
+      "location": "London, Ontario",
+      "url": "https://ztr.bamboohr.com/careers/290",
+      "posted": null,
+      "source": "bamboohr",
       "salary": "",
-      "ring": 4,
-      "km": 518,
+      "ring": 0,
+      "km": 0,
       "score": 5,
       "flags": [],
       "arrangement": "onsite",
       "country": "Canada",
-      "industry": "GNSS/positioning",
+      "industry": "rail/industrial",
       "sponsorship": "unknown",
       "reasons": [
-        "keyword-only match",
-        "skills x6",
-        "senior/lead(+1)"
+        "title match: firmware developer",
+        "no skills in body",
+        "senior/lead(+1)",
+        "home/remote(+1)"
       ],
       "matched": [
-        "arm cortex",
-        "cortex-m",
-        "firmware",
-        "low-power",
-        "rtos",
-        "spi"
+        "firmware developer"
       ],
-      "snippet": "GNSS positioning embedded systems. Firmware in C, ARM Cortex-M, RTOS, low-power design. SPI, I2C, UART. Satellite and payload adjacent. Requirements and V&V.",
-      "text": "Senior Embedded Firmware Lead. GNSS positioning embedded systems. Firmware in C, ARM Cortex-M, RTOS, low-power design. SPI, I2C, UART. Satellite and payload adjacent. Requirements and V&V."
+      "snippet": "",
+      "text": "Senior Firmware Developer. "
     },
     {
-      "company": "Kraken Robotics",
-      "title": "Embedded Hardware Engineer",
-      "location": "Dartmouth, NS",
-      "url": "https://krakenrobotics.com/careers",
-      "posted": "2026-09-03",
+      "company": "ZTR Control Systems",
+      "title": "Senior Embedded Software Developer",
+      "location": "London, Ontario",
+      "url": "https://ztr.bamboohr.com/careers/296",
+      "posted": null,
+      "source": "bamboohr",
+      "salary": "",
+      "ring": 0,
+      "km": 0,
+      "score": 5,
+      "flags": [],
+      "arrangement": "onsite",
+      "country": "Canada",
+      "industry": "rail/industrial",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: embedded software",
+        "no skills in body",
+        "senior/lead(+1)",
+        "home/remote(+1)"
+      ],
+      "matched": [
+        "embedded software"
+      ],
+      "snippet": "",
+      "text": "Senior Embedded Software Developer. "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Chiplet Physical Design Engineer",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5045929007",
+      "posted": "2026-09-02T17:54:04-04:00",
       "source": "greenhouse",
       "salary": "",
-      "ring": null,
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer",
+        "skills x1"
+      ],
+      "matched": [
+        "ble",
+        "design engineer"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Chiplet Physical Design Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  As a Senior Chiplet Physical Design Engineer at Tenstorrent, you will work on a high-profile, cutting-edge program designing and integrating multiple chiplets into a System-in-Package (SiP). You’ll collaborate closely with Tenstorrent experts and leaders across the USA, Japan, and other global sites, as well as external partners, to deliver world-class CPU and AI silicon. In this role, you will own critical aspects of synthesis and place-and-route for high-speed CPU core designs, contributing directly to performance, power, and area outcomes on advanced process nodes.  This role is remote, based out of The United States.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may dif"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "CPU Core Design Verification Manager",
+      "location": "Bengaluru, Karnataka, India",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5231981007",
+      "posted": "2026-09-08T12:13:02-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
       "km": null,
       "score": 5,
       "flags": [
         "relocation"
       ],
       "arrangement": "onsite",
+      "country": "?",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design verification",
+        "skills x1"
+      ],
+      "matched": [
+        "ble",
+        "design verification"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "CPU Core Design Verification Manager. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  At Tenstorrent, we build open, state of the art compute for real workloads and real developers.  You will lead our Bangalore-based CPU Core Design Verification team, driving both the technical strategy and the people leadership behind verification of our high-performance, out-of-order RISC-V CPUs. You will manage a team of core-level verification engineers, partner closely with our Santa Clara and Austin sites, and own delivery of core verification from architecture definition through tapeout readiness.  This role is hybrid based out of Bangalore, India, with regular collaboration across our globally distributed CPU organization.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Director, Customer Hardware Engineering",
+      "location": "Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5115500007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 5,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "onsite",
       "country": "Canada",
-      "industry": "subsea/marine",
+      "industry": "semiconductor",
       "sponsorship": "unknown",
       "reasons": [
         "title match: hardware engineer",
+        "skills x1"
+      ],
+      "matched": [
+        "ble",
+        "hardware engineer"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Director, Customer Hardware Engineering. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  At Tenstorrent, we are building open, scalable compute for real AI workloads. As Director, Customer Hardware Engineering, you own the technical relationship with strategic customers and FAEs, turning their silicon needs into precise requirements for our hardware and software teams. You connect customer architectures to Tenstorrent platforms so their models run efficiently on our silicon.  This role is hybrid, based out of Toronto, Austin, TX or Belgrade, Serbia.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Experienced leader of customer-facing technical teams and Field Application Engineering organizations.  St"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Electrical Engineer, PCB Design",
+      "location": "Belgrade, Serbia; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5178453007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 5,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "Canada",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: pcb, electrical engineer",
+        "skills x3"
+      ],
+      "matched": [
+        "altium",
+        "ble",
+        "electrical engineer",
+        "pcb",
+        "schematic"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Electrical Engineer, PCB Design. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We’re looking for a talented and detail-oriented Electrical Engineer to help bring our next-generation products to life. In this role, you’ll take full ownership of designing complex, high-speed, multi-layer PCBs that sit at the heart of our cutting-edge systems. You will be designing desktop and server grade boards and PCIe cards based on AI CPUs built by Tenstorrent. You’ll work across disciplines, drive innovation from concept to production, and see your designs directly power real-world performance.  This role is   on-site, based out of Toronto, Canada or Belgrade, Serbia.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Full-Chip Physical Design Verification Engineer",
+      "location": "Austin, Texas, United States; Fort Collins, Colorado, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5126693007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design verification, verification engineer",
         "skills x2"
       ],
       "matched": [
-        "bring-up",
-        "embedded c",
-        "hardware engineer"
+        "ble",
+        "design verification",
+        "dfm",
+        "verification engineer"
       ],
-      "snippet": "Subsea electronics, PCB design, power supply, embedded C, ARM, sensor interfaces, bring-up, harsh environment.",
-      "text": "Embedded Hardware Engineer. Subsea electronics, PCB design, power supply, embedded C, ARM, sensor interfaces, bring-up, harsh environment."
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Full-Chip Physical Design Verification Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a SoC Physical Design Verification Engineer to drive full-chip signoff and ensure manufacturable, high-quality silicon across advanced technology nodes. You’ll lead physical verification closure (DRC, LVS, ERC, etc.), debug issues using standard industry PV tools, and collaborate across RTL, PD, CAD, and packaging teams to achieve successful tapeouts. If you thrive in a fast-paced environment and enjoy solving complex challenges in cutting-edge silicon, we’d love to hear from you.  This role is hybrid , based out of Santa Clara, CA or Austin, TX or Fort Collins, CO.   We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one "
     },
     {
-      "company": "Some Utility Co",
-      "title": "Electrical Engineer",
-      "location": "London, ON",
-      "url": "https://example.com/util",
-      "posted": "2026-09-09",
+      "company": "Tenstorrent",
+      "title": "Midcore Design Verification Engineer",
+      "location": "Santa Clara, California, United States; Spain",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5238216007",
+      "posted": "2026-09-16T13:40:08-04:00",
       "source": "greenhouse",
       "salary": "",
-      "ring": 0,
-      "km": 0,
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "C++",
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design verification, verification engineer",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "design verification",
+        "digital",
+        "verification engineer"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Midcore Design Verification Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is looking for a Mid Core Design Verification Engineer to help verify the next generation of high-performance RISC-V CPU cores. You’ll work closely with CPU architects, RTL designers, and software engineers to develop verification strategies, build robust test environments, and uncover the corner cases that matter in a modern out-of-order processor. This is a hands-on role where you’ll have the opportunity to own meaningful portions of the verification effort—from developing test plans and architecting test benches to debugging failures and driving issues to closure.  This role is remote, based out of North America or Spain.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Physical Design Engineer",
+      "location": "Austin, Texas, United States; Fort Collins, Colorado, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5126178007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "design engineer",
+        "low-power"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Physical Design Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a talented Physical Design Engineer to implement high-performance blocks for our industry-leading CPU and AI/ML architectures. You'll own the complete implementation flow from synthesis to tapeout, working alongside world-class engineers to push the boundaries of performance, power, and area. If you're passionate about crafting silicon that powers the future of AI computing and thrive on solving complex design challenges, we want you on our team.  This role is hybrid, based out of Austin, TX or Santa Clara, CA or Fort Collins, CO.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   A hands-on engineer with dee"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Physical Design Engineer, AI Accelerator IP",
+      "location": "Austin, Texas, United States; Belgrade, Serbia; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5198590007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "design engineer",
+        "low-power"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Physical Design Engineer, AI Accelerator IP. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent licenses RISC-V and AI IP to customers who need hardened, PPA-proven deliverables on their target node and foundry. This role owns physical implementation of those IP blocks end to end, from synthesis through PnR, timing closure, and GDSII signoff, and directly determines how fast we can commit to a customer's timeline.  This role is   hybrid, based out of Toronto, ON; Austin, TX; or Belgrade, Serbia.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   A hands-on physical design engineer who owns blocks end to end, with a track record of block-level and IP tapeouts on advanced nodes.  Driven by PPA out"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Physical Design Engineer: Die-to-Die Interface (RTL to GDSII)",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5062499007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: rtl, design engineer",
+        "skills x3"
+      ],
+      "matched": [
+        "analog",
+        "ble",
+        "design engineer",
+        "digital",
+        "rtl"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Physical Design Engineer: Die-to-Die Interface (RTL to GDSII). Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking  a highly skilled Physical Design Engineer to drive the critical Die-to-Die (D2D) Physical Implementation from RTL to GDSII. This role demands deep expertise in full physical design flow with a specific focus on closing high-speed D2D interfaces for multi-die/chiplet architectures.  This role is remote role open to any location in the U.S.   We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   A seasoned ASIC Physical Design Engineer with 5+ years at advanced nodes (7nm or below) and multiple successful tapeouts.  Strong in full-chip implementation, comfortable owning blocks "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Physical Design Engineer - STA",
+      "location": "Austin, Texas, United States; Fort Collins, Colorado, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4780846007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "design engineer",
+        "dft",
+        "spi"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Physical Design Engineer - STA. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We’re looking for a Timing Engineer to join our silicon team. In this role, you’ll drive static timing analysis and closure for complex, high-performance designs. You’ll collaborate closely with logic, DFT, and physical design teams to debug constraints, optimize paths, and ensure our chips meet performance targets across corners and modes.  This role is hybrid , based out of Austin, TX, Fort Collins, CO, or Santa Clara, CA .  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Experienced in STA and passionate about enabling silicon to meet aggressive performance goals.  Analytical and detail-oriented, with a strong understand"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "RISC-V CPU Microarchitecture / RTL",
+      "location": "Santa Clara, California, United States; Spain",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4738082007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: rtl",
+        "skills x1"
+      ],
+      "matched": [
+        "ble",
+        "rtl"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "RISC-V CPU Microarchitecture / RTL. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  RISC-V CPU RTL owner will play a key role in developing next-generation CPU design. This position requires a deep understanding of CPU design including Architecture, RTL, Design Verification, Physical Design Flow. The ideal candidate will drive the unit specification, RTL design, and unit verification.  This role is Remote, based out of The United States or Spain.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Key Responsibilities:   RISC-V CPU Unit Microarchitecture Specification: Define and develop microarchitecture specifications for the assigned unit (branch predictor, rename, instruction scheduling, vector execution, load/stor"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Senior DFT Engineer, Architecture",
+      "location": "Tokyo, Japan",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4556198007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x4",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "dft",
+        "digital"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Senior DFT Engineer, Architecture. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Job title   Senior DFT Engineer  Job description   We are looking for a person ready to take up the challenge of working in a high-profile project where we design and integrate multiple chiplets into a System-in-package, in collaboration with external stakeholders. You will work with Tenstorrent worldwide experts and leaders in the USA, Japan and other countries, and help us make our IP even better.  In this role, you will be responsible for DFT implementation using industry standard tools for high-speed CPU core design.     Your responsibilities   Integrate and verify test features in digital designs for effective manufacturing testing and silicon debug. Key responsibilities include:  Building entire chip-level DFT strategies   Inserting DFTs, including scan chains, memory BIST, and JTAG   Collaborating with RTL, physic"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Silicon Power & Characterization Lead",
+      "location": "Austin, Texas, United States; Santa Clara, California, United States; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5098165007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x5",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "digital",
+        "mixed-signal",
+        "oscilloscope"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Silicon Power & Characterization Lead. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a highly skilled and experienced Engineer to lead post-silicon power characterization and correlation activities for cutting-edge semiconductor products. In this role, you will be responsible for developing and executing detailed power measurement strategies on silicon, correlating results with pre-silicon models, and driving improvements across power architecture, design, and modeling methodologies. You will serve as a key technical leader, interfacing across design, architecture, validation, and systems teams to ensure silicon meets power and performance specifications under all operating conditions.  This role is hybrid, based out of Toronto, ON or Austin, TX or Santa Clara, CA.  We welcome candidates at various experience levels for this role. During the interview process, candidates will b"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Sr. Engineer, CPU RTL Design",
+      "location": "Austin, Texas, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5145404007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: rtl",
+        "skills x1"
+      ],
+      "matched": [
+        "ble",
+        "rtl"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Sr. Engineer, CPU RTL Design. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We are looking for a talented engineer to join our CPU design team to define and implement RTL for high-performance CPUs. You’ll work on a CPU based on RISC-V ISA, collaborating with DV, PD, and performance teams to deliver a functional, timing, and power-converged design.  This role is   hybrid, based out of Austin, TX or Santa Clara, CA.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Experienced in CPU microarchitecture with expertise in Rename, Scheduler, ROB, Load Store, Branch Prediction, Cache or Datapath.  Skilled in RTL coding (Verilog/VHDL) and familiar with industry-standard tools for simulation, synthesis, and po"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Sr. Engineer, SoC Design Verification",
+      "location": "Boston, Massachusetts, United States; Santa Clara, California, United States; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4819642007",
+      "posted": "2026-09-04T09:05:24-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 5,
+      "flags": [
+        "C++",
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design verification",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "design verification",
+        "firmware"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Sr. Engineer, SoC Design Verification. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a SoC Design Verification Engineer to lead pre-silicon verification of the Beowulf SoC, with focus on the Compute Subsystem (CSS), DDR memory subsystem, and Fabric NoC. This role will drive coverage, coherency, memory traffic, connectivity, error handling, and bring-up features critical to silicon success.  This role is hybrid, based out of Boston, MA; Toronto, ON; or Santa Clara, CA.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are  Deeply curious about SoC architecture, compute systems, DDR behavior, and Fabric NoC/interconnect verification.  Expert in UVM, SystemVerilog, coverage-driven verifi"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Sr. Engineer, SoC Design Verification Engineer, System Management Controller",
+      "location": "Boston, Massachusetts, United States; Santa Clara, California, United States; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5221743007",
+      "posted": "2026-09-10T06:57:36-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 5,
+      "flags": [
+        "C++",
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design verification, verification engineer",
+        "skills x1"
+      ],
+      "matched": [
+        "ble",
+        "design verification",
+        "verification engineer"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Sr. Engineer, SoC Design Verification Engineer, System Management Controller. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a SoC Design Verification Engineer to validate the System Management Controller (SMC) and enable seamless multi-chip integration. In this role, you will design and execute tests, build infrastructure, and debug issues across chiplet-based SoCs. You’ll have the opportunity to work with remote mentorship while contributing to the foundation of scalable multi-die systems.  This role is   hybrid, based out of Toronto, Ontario, Boston, MA or Santa Clara, CA.   We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Proficient in SystemVerilog, SV-UVM, Python, and C/C++"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Top Level Physical Design Engineer",
+      "location": "Austin, Texas, United States; Fort Collins, Colorado, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5108447007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer",
+        "skills x1"
+      ],
+      "matched": [
+        "ble",
+        "design engineer"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Top Level Physical Design Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking an exceptional Senior-level Physical Design Engineer to drive top-level implementation of our complex AI and CPU System-on-Chip designs. You'll orchestrate cross-disciplinary collaboration, implementing sophisticated floorplans, power grids, and clock networks while ensuring design closure at the chip level. If you excel at managing the complexity of full-chip physical design and want to deliver next-generation AI hardware, we need your expertise.  This role is hybrid , based out of Santa Clara, CA or Austin, TX or Fort Collins, CO.   We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   A seasoned phys"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Verification Engineer",
+      "location": "Japan",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4653985007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 5,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: verification engineer",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "digital",
+        "firmware",
+        "verification engineer"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Verification Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We are looking for a person ready to take up the challenge of working in a high-profile project where we integrate multiple chiplets into a System-in-package, in collaboration with external stakeholders. You will work with Tenstorrent worldwide experts and leaders in the USA, Japan and other countries, and help us make our IP even better.  In this role, you will ensure functionality and performance of the system.  This role is   based out of Tokyo, Japan and offer flexible Hybrid work style.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Responsibilities:   Verify Tenstorrent’s digital IP and SoC logic at chiplet integration level, using indust"
+    },
+    {
+      "company": "BinSentry",
+      "title": "Senior Embedded Software Developer",
+      "location": "Kitchener, Ontario",
+      "url": "https://binsentry.bamboohr.com/careers/278",
+      "posted": null,
+      "source": "bamboohr",
+      "salary": "",
+      "ring": 1,
+      "km": 80,
       "score": 4,
       "flags": [],
       "arrangement": "onsite",
       "country": "Canada",
-      "industry": "energy/power",
+      "industry": "agtech",
       "sponsorship": "unknown",
       "reasons": [
-        "title match: electrical engineer",
+        "title match: embedded software",
         "no skills in body",
-        "home/remote(+1)"
+        "senior/lead(+1)"
       ],
       "matched": [
-        "electrical engineer"
+        "embedded software"
       ],
-      "snippet": "Substation protection and control. Power distribution, switchgear, transformer design, high-voltage grid. Building services and HVAC coordination.",
-      "text": "Electrical Engineer. Substation protection and control. Power distribution, switchgear, transformer design, high-voltage grid. Building services and HVAC coordination."
+      "snippet": "",
+      "text": "Senior Embedded Software Developer. "
     },
     {
-      "company": "Profound Medical",
-      "title": "Senior Electrical Developer",
-      "location": "Mississauga, ON (Hybrid)",
-      "url": "https://profoundmedical.com/careers",
-      "posted": "2026-09-07",
+      "company": "Canada Rocket Company",
+      "title": "Senior Electrical Design Engineer",
+      "location": "n/a",
+      "url": "https://ats.rippling.com/canada-rocket-company/jobs/6973f12b-c351-4d06-a40b-938f719908fb",
+      "posted": null,
+      "source": "rippling",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 4,
+      "flags": [
+        "eligibility",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "aerospace/space",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer, electrical design",
+        "no skills in body",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "design engineer",
+        "electrical design"
+      ],
+      "snippet": "",
+      "text": "Senior Electrical Design Engineer. "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "CPU Verification Fellow, RISC-V High-Performance Processor",
+      "location": "Austin, Texas, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5148052007",
+      "posted": "2026-09-02T17:54:04-04:00",
       "source": "greenhouse",
       "salary": "",
       "ring": 2,
-      "km": 146,
+      "km": null,
+      "score": 4,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x4"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "firmware",
+        "fpga"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "CPU Verification Fellow, RISC-V High-Performance Processor. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a CPU Verification Fellow to lead verification strategy and execution for next-generation RISC-V high-performance processors. This role requires deep CPU verification expertise, strong microarchitecture understanding, and the ability to guide large engineering teams from early design through tapeout and post-silicon validation. The ideal candidate has verified complex out-of-order, speculative, superscalar CPUs and can define scalable methodology across simulation, formal verification, emulation, FPGA, and silicon bring-up.  This role is hybrid, based out of Santa Clara, CA or Austin, TX.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that leve"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "RISC-V AI / HPC & Agentic Software Engineering Lead",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5056085007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 4,
+      "flags": [
+        "C++",
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "bring-up"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "RISC-V AI / HPC & Agentic Software Engineering Lead. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is building next-generation RISC-V CPUs optimized for AI, high-performance computing, and emerging autonomous AI systems. As the RISC-V AI / HPC & Agentic Software Engineering Lead, you will operate at the hardware–software boundary, enabling AI, HPC, and agentic AI software stacks on Tenstorrent’s RISC-V processors. This role is responsible for integrating and optimizing Tenstorrent’s LLK (Low-Level Kernel) infrastructure for CPU execution, while leading the bring-up of a RISC-V-native agentic AI software stack — including runtime orchestration, distributed execution frameworks, memory systems, and developer tools required for goal-driven AI systems. You will work closely with CPU architects, microarchitecture teams, compiler engineers, and AI kernel developers to ensure tight alignment bet"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Sr. Engineer, Ethernet IP",
+      "location": "Santa Clara, California, United States; Vancouver, British Columbia, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4722600007",
+      "posted": "2026-09-15T13:13:53-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 4,
+      "km": 3258,
+      "score": 4,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x5"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "firmware",
+        "logic analyzer",
+        "oscilloscope"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Sr. Engineer, Ethernet IP. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  This role sits at the deep-tech intersection of silicon development, low-level firmware, and high-speed networking. You won't just be writing drivers; you’ll be the bridge between our AI silicon and the network. You will work with best-in-class Ethernet IP and in-house designs to architect, enable, and optimize the firmware that powers next-generation AI infrastructure. The role is focused on the hardware-software boundary, spanning silicon bring-up, SerDes/PHY configuration, and performance tuning to ensure seamless, high-performance connectivity across complex, large-scale platforms.  This role is hybrid, based out of Toronto, Canada or Vancouver Canada.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align w"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Sr. Engineer, Systems Debug",
+      "location": "Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5190766007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
       "score": 4,
       "flags": [
         "relocation"
       ],
-      "arrangement": "hybrid",
+      "arrangement": "onsite",
       "country": "Canada",
-      "industry": "medical",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x6"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "firmware",
+        "logic analyzer",
+        "oscilloscope",
+        "schematic"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Sr. Engineer, Systems Debug. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Join Tenstorrent and help bring next-generation AI accelerator technology from silicon bring-up to production. You’ll work at the forefront of hardware innovation, diagnosing complex issues across chips, systems, firmware, and software while collaborating with some of the brightest engineers in the industry. This role offers the opportunity to solve challenging technical problems, build impactful debug solutions, and directly influence the reliability and performance of cutting-edge AI compute platforms.  This role is   hybrid, based out of Toronto, Canada.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   A hands-on hardware d"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Sr. Staff Engineer, PCIe Validation",
+      "location": "Austin, Texas, United States; Santa Clara, California, United States; Toronto, Ontario, Canada; Vancouver, British Columbia, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4723400007",
+      "posted": "2026-09-09T12:28:12-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 4,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
       "sponsorship": "unknown",
       "reasons": [
         "keyword-only match",
@@ -634,12 +1411,12 @@
         "senior/lead(+1)"
       ],
       "matched": [
-        "altium",
-        "embedded c",
-        "mixed-signal"
+        "ble",
+        "firmware",
+        "oscilloscope"
       ],
-      "snippet": "Full-lifecycle electrical design, mixed-signal Altium, ultrasound drive, ISO 13485, IEC 60601, V&V, requirements, embedded C.",
-      "text": "Senior Electrical Developer. Full-lifecycle electrical design, mixed-signal Altium, ultrasound drive, ISO 13485, IEC 60601, V&V, requirements, embedded C."
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Sr. Staff Engineer, PCIe Validation. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Curious about how cutting-edge hardware actually comes to life? We're looking for someone who’s excited to dive into the core of next-gen systems and help make them real. In this role, you’ll validate high-speed interfaces, solve complex system-level puzzles, and collaborate across teams to shape the future of AI/ML computing. If firmware, hardware, and hands-on debugging sound like your kind of fun — let’s chat!  This role is hybrid and based in Vancouver, Canada.   We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   You love bringing hardware to life and enjoy the thrill of solving tricky problems across the hardware–fir"
     },
     {
       "company": "Geotab",
@@ -688,20 +1465,824 @@
       ],
       "arrangement": "onsite",
       "country": "Canada",
-      "industry": "GNSS/positioning",
+      "industry": "semiconductor",
       "sponsorship": "unknown",
       "reasons": [
         "keyword-only match",
-        "skills x4"
+        "skills x2",
+        "senior/lead(+1)"
       ],
       "matched": [
-        "embedded c",
-        "low-power",
-        "rtos",
-        "spi"
+        "ble",
+        "firmware"
       ],
-      "snippet": "GNSS positioning, embedded C, ARM, RTOS, low-power, SPI, sensor interfaces, requirements, V&V.",
-      "text": "Systems Architect, Embedded. GNSS positioning, embedded C, ARM, RTOS, low-power, SPI, sensor interfaces, requirements, V&V."
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Staff Engineer, Diagnostic Development. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  At Tenstorrent, we're building cutting-edge AI compute solutions. Developing diagnostics programs to validate the functionality and stress the performance of our solutions is a critical part of delivering exceptional products. We are looking for Engineers to join our Diagnostics Development team. These engineers will work closely with our firmware, software, board, ASIC design and verification teams to ensure that the ASICs, boards, and AI compute systems meet the highest standards of quality and performance.  This role is   hybrid, based out of Toronto, Canada.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   You'r"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Staff Engineer, Physical Design",
+      "location": "Austin, Texas, United States; Fort Collins, Colorado, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4205288007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 4,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "low-power"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Staff Engineer, Physical Design. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking talented Physical Design Engineers to implement high-performance blocks for our industry-leading CPU and AI/ML architectures. You'll own the complete implementation flow from synthesis to tapeout, working alongside world-class engineers to push the boundaries of performance, power, and area. If you're passionate about crafting silicon that powers the future of AI computing and thrive on solving complex design challenges, we want you on our team.  This role is hybrid , based out of Austin, TX, Santa Clara, CA or Fort Collins, CO.   We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   A hands-on engineer wi"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Staff Field Application Engineer",
+      "location": "Boston, Massachusetts, United States; Santa Clara, California, United States; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5121908007",
+      "posted": "2026-09-03T16:33:28-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 4,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "ble",
+        "fpga"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Staff Field Application Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We’re looking for a Field Application Engineer who’s wired for AI/ML, fluent in real-world problem-solving, and excited to build with the people actually using what we make. You will collaborate closely with the sales team and enterprise customers, leveraging your deep technical knowledge in AI to drive the adoption of our products and solutions. This is a customer-facing role that requires both technical expertise and excellent communication skills to convey complex technical concepts to non-technical stakeholders.  This role is remote based out of North America with preference near one of our main hubs Santa Clara, CA; Boston, MA; or Toronto,ON.    We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align w"
+    },
+    {
+      "company": "VueReal",
+      "title": "Systems Engineer",
+      "location": "Waterloo, Ontario",
+      "url": "https://vuereal.bamboohr.com/careers/201",
+      "posted": null,
+      "source": "bamboohr",
+      "salary": "",
+      "ring": 1,
+      "km": 79,
+      "score": 3,
+      "flags": [],
+      "arrangement": "onsite",
+      "country": "Canada",
+      "industry": "display/micro-LED",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: systems engineer",
+        "no skills in body"
+      ],
+      "matched": [
+        "systems engineer"
+      ],
+      "snippet": "",
+      "text": "Systems Engineer. "
+    },
+    {
+      "company": "BinSentry",
+      "title": "Electronics Engineer",
+      "location": "Kitchener, Ontario",
+      "url": "https://binsentry.bamboohr.com/careers/296",
+      "posted": null,
+      "source": "bamboohr",
+      "salary": "",
+      "ring": 1,
+      "km": 80,
+      "score": 3,
+      "flags": [],
+      "arrangement": "onsite",
+      "country": "Canada",
+      "industry": "agtech",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: electronics engineer",
+        "no skills in body"
+      ],
+      "matched": [
+        "electronics engineer"
+      ],
+      "snippet": "",
+      "text": "Electronics Engineer. "
+    },
+    {
+      "company": "BinSentry",
+      "title": "Mechanical Design Engineer",
+      "location": "Kitchener, Ontario",
+      "url": "https://binsentry.bamboohr.com/careers/297",
+      "posted": null,
+      "source": "bamboohr",
+      "salary": "",
+      "ring": 1,
+      "km": 80,
+      "score": 3,
+      "flags": [],
+      "arrangement": "onsite",
+      "country": "Canada",
+      "industry": "agtech",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer",
+        "no skills in body"
+      ],
+      "matched": [
+        "design engineer"
+      ],
+      "snippet": "",
+      "text": "Mechanical Design Engineer. "
+    },
+    {
+      "company": "Canada Rocket Company",
+      "title": "Test Stand Design Engineer",
+      "location": "n/a",
+      "url": "https://ats.rippling.com/canada-rocket-company/jobs/246e12fc-9441-4b64-8fed-4bec42ef9855",
+      "posted": null,
+      "source": "rippling",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "eligibility",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "aerospace/space",
+      "sponsorship": "unknown",
+      "reasons": [
+        "title match: design engineer",
+        "no skills in body"
+      ],
+      "matched": [
+        "design engineer"
+      ],
+      "snippet": "",
+      "text": "Test Stand Design Engineer. "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "AI/ML Physical Design Flow Engineer",
+      "location": "Austin, Texas, United States; Fort Collins, Colorado, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5098932007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "dft",
+        "low-power"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "AI/ML Physical Design Flow Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking an Physical Design Engineer to lead  cross-functional efforts to solve complex physical design challenges and develop end-to-end RTL-to-GDS methodologies across advanced nodes, with a strong focus on PPA and runtime improvements. The engineer will architect, integrate, and deploy AI/ML-driven solutions into production physical design flows, creating custom CAD tools and partnering with internal teams and EDA vendors to drive next-generation, ML-enabled capabilities.   This role is hybrid, based out of Santa Clara, CA or Austin, TX or Fort Collins, CO.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who you ar"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Chiplet Design Architect",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5182681007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "firmware"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Chiplet Design Architect. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  As a CPU Chiplet Architect at Tenstorrent, you will define the architecture for next-generation chiplet-based compute platforms, enabling high-performance RISC-V CPUs within scalable System-in-Package (SiP) solutions. You will own key platform subsystems—including PCIe, die-to-die connectivity, system management, and confidential computing—and work closely with architecture, hardware, software, and external IP partners to deliver robust, production-ready chiplet architectures.  This role is remote, based out of The United States.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Wh You Are   An experienced SoC or chiplet architect with a passio"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Corporate Controller",
+      "location": "Austin, Texas, United States; Boston, Massachusetts, United States; Raleigh, North Carolina, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5233849007",
+      "posted": "2026-09-14T15:59:15-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "embedded c"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Corporate Controller. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  The Corporate Controller builds a trusted global accounting function that scales with the company. Success means predictable closes, trusted balance sheets, documented accounting positions, well-managed audits, embedded controls, managed risks, clear ownership, strong talent, and less manual work. The mission for this role is to build an accounting organization that the company can trust and that will not need to be rebuilt every time the company scales.  This role is remote, based out of the United States.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Senior accounting leader with deep technical judgment and strong operational di"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "DFT Engineer",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5175862007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "dft"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "DFT Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is looking for a person ready to take up the challenge of working in a high-profile project where we design and integrate multiple chiplets into a System-in-package, in collaboration with external stakeholders. You will work with Tenstorrent worldwide experts and leaders in the USA, Japan and other countries, and help us make our IP even better. In this role, you will be responsible for DFT implementation using industry standard tools for high-speed CPU core design.   This role is remote based out of the United States.   We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who you are   You have a Bachelor’s, Master’s, or PhD in Electrical Engineer"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "DFT Engineer, Automotive Robotics",
+      "location": "Munich, Germany",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5064078007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "dft"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "DFT Engineer, Automotive Robotics. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  As part of Tenstorrent’s Automotive Robotics team, you will help design and deliver the core hardware modules inside our next generation chiplet based SoCs for automotive products. You will be the bridge between silicon design, DFT, OSAT partners, and customers to ensure our multi die SiP platforms meet aggressive performance, quality, and safety targets.  This role is remote, based in Munich, Germany.   We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.   Who You Are   Experienced with industry standard ATPG and DFx insertion CAD tools.  Fluent in RTL coding for DFx logic including lock-up latches, clock gates, and scan anchors.  Able to"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Engineering Program Manager, RISCV",
+      "location": "Austin, Texas, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4953547007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "dft"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Engineering Program Manager, RISCV. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We’re looking for a driven Engineering Program Manager—or a hands-on technical lead ready to step into program management—to help lead the charge on our RISC-V CPU team. In this role, you’ll be at the center of the action, working across architecture, design, verification, physical design, and DFT to drive the full lifecycle of a high-performance CPU—from spec to tapeout to post-silicon debug. You’ll partner with key stakeholders to define bold objectives, lock in milestones, and align the resources needed to bring next-gen compute to life.  This role is hybrid, based out of Austin, TX or Santa Clara, CA.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the o"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Field Application Engineer - AI Software & Hardware",
+      "location": "Belgrade, Serbia; Munich, Germany; Warszawa, Masovian Voivodeship, Poland",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5174078007",
+      "posted": "2026-09-08T10:12:06-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "fpga"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Field Application Engineer - AI Software & Hardware. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  We’re looking for a Field Application Engineer who’s wired for AI/ML, fluent in real-world problem-solving, and excited to build with the people actually using what we make. You will collaborate closely with the sales team and enterprise customers, leveraging your deep technical knowledge in AI to drive the adoption of our products and solutions. This is a customer-facing role that requires both technical expertise and excellent communication skills to convey complex technical concepts to non-technical stakeholders.  This role is remote based out of Munich, Germany; Poland or Serbia.    We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "High Speed AI Interconnect Signal Integrity Engineer",
+      "location": "Austin, Texas, United States; Santa Clara, California, United States; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5063781007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "dfm",
+        "vna"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "High Speed AI Interconnect Signal Integrity Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a senior High Speed Interconnect / Signal Integrity Engineer to design and validate high-bandwidth links for large-scale AI systems. You will define, model, and qualify interconnect solutions across copper and optical technologies for next-generation AI inference and training clusters.   This role is on-site in Santa Clara, CA, Austin, TX, or Toronto, Canada.  We welcome candidates at various experience levels. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting  Who You Are   An experienced electrical engineer with a Bachelor’s or Master’s in Electrical Engineering.  5+ years working on high-speed communications (100G–1.6T), including signal integrity, channels, "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Interconnect and Compute Architect",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5062896007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "low-power"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Interconnect and Compute Architect. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking an Interconnect and Compute Architect  to help define and build next-generation CPU networking architecture for both datacenter and emerging robotics/automotive applications. You will contribute to our current datacenter networking efforts while also helping to seed and specify future medium- to low-power robotics/automotive devices for AI/ML compute and sensor ingest. The initial focus will be datacenter networking, with robotics as the first target within the automotive/robotics space.  This role is remote, based out of North America.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   You thrive w"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Manufacturing Engineer Packaging & OSAT",
+      "location": "新北市, New Taipei City, Taiwan",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5238675007",
+      "posted": "2026-09-15T23:08:58-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "bring-up"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Manufacturing Engineer Packaging & OSAT. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is looking for a hands-on Manufacturing Engineer to own the manufacturing interface between package design, semiconductor assembly, package test, board assembly, and final product integration.  This role is focused on making advanced packages manufacturable and transferable from design engineering into qualified OSAT processes and downstream board/system assembly. You will work closely with Packaging Engineering, Silicon Manufacturing and Test, Quality, Supply Chain, PCB/board design, and external partners such as substrate suppliers, OSATs, test houses, and contract manufacturers.  The ideal candidate understands how package decisions—such as package size, substrate construction, bump and ball design, warpage, underfill, materials, and assembly location—affect package yield, package test, PCB footprint"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Physical Design CPU Methodology Engineer",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5210079007",
+      "posted": "2026-09-10T14:50:43-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "dft",
+        "digital"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Physical Design CPU Methodology Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is looking for a Physical Design CPU Methodology Engineer who defines and drives the implementation methodology, automation strategy, and signoff infrastructure for high-performance CPU cores across advanced process nodes. This role combines deep physical design expertise with organization-level technical leadership, enabling predictable RTL-to-GDS execution, strong PPA outcomes, and scalable methodology adoption across multiple projects and teams.  This role is remote based out of the United States.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who you are   You are an experienced Physical Design Engineer with 1"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Physical Design Methodology Engineer, AI HW IP",
+      "location": "Austin, Texas, United States; Belgrade, Serbia; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5198608007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "low-power"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Physical Design Methodology Engineer, AI HW IP. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Our IP delivery timelines are set as much by flow maturity as by design work. This role develops, deploys, and owns the RTL-to-GDSII methodology the IP physical design team runs on, so a new block, node, or customer variant starts from a working flow instead of a cold start.  This role is   hybrid, based out of Toronto, ON; Austin, TX, or Belgrade, Serbia.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   A physical design or CAD methodology engineer who has built flows that production teams depend on daily.  Automation-minded, happiest when you are removing manual steps and making PPA exploration repeatable."
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "RISC-V AI / HPC & Agentic Software Engineer",
+      "location": "新北市, New Taipei City, Taiwan",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5086799007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "C++",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "bring-up"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "RISC-V AI / HPC & Agentic Software Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is building next-generation RISC-V CPUs optimized for AI, high-performance computing, and emerging autonomous AI systems. As the RISC-V AI / HPC & Agentic Software Engineering Lead, you will operate at the hardware–software boundary, enabling AI, HPC, and agentic AI software stacks on Tenstorrent’s RISC-V processors. This role is responsible for integrating and optimizing Tenstorrent’s LLK (Low-Level Kernel) infrastructure for CPU execution, while leading the bring-up of a RISC-V-native agentic AI software stack — including runtime orchestration, distributed execution frameworks, memory systems, and developer tools required for goal-driven AI systems. You will work closely with CPU architects, microarchitecture teams, compiler engineers, and AI kernel developers to ensure tight alignment between sof"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Signal Integrity Engineer",
+      "location": "Austin, Texas, United States; Santa Clara, California, United States; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5091260007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "digital"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Signal Integrity Engineer. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a Signal Integrity Engineer to join our growing team. The ideal candidate will have a wealth of exposure designing high speed interconnects, breakout design, material trade-offs and verification. A background in electrical engineering, electronics or relevant fields is required. Must love all things high speed!  This role is hybrid, based out of Santa Clara, CA or Austin, TX or Toronto, ON.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   You have a Bachelor’s degree in Electrical Engineering (or equivalent) and 5+ years working in high-speed digital design with a focus in high-speed PCB or package design "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Software Engineer-AI Model Bring Up",
+      "location": "Tokyo, Japan",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4855896007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "C++",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "?",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "firmware"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Software Engineer-AI Model Bring Up. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  About Tenstorrent  Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  This role sits at the intersection of technical expertise and customer engagement, focused on helping customers and internal teams bring up and optimize AI models on Tenstorrent "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Software Engineer, Scale Out",
+      "location": "Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4484179007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 3,
+      "flags": [
+        "C++",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "Canada",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "bring-up"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Software Engineer, Scale Out. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is seeking a skilled Software Engineer with a passion for building high-performance, low-level systems software. In this role, you’ll contribute to the development and optimization of the infrastructure that powers our cutting-edge processors, with a primary focus on C/C++ development and low-level programming. You'll work closely with large inference and training model development to further drive Scale Out software and hardware performance.  This role is   hybrid, based out of Toronto, ON.  Who You Are   Strong C or C++ systems engineer with a deep understanding of memory, threading, I/O, and low-level execution models.  Experienced building low-level software, drivers, embedded systems, or performance-critical infrastructure.  Comfortable working close to hardware and curious about how systems behave under the "
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Software Engineer, TT-Distributed",
+      "location": "Austin, Texas, United States; Santa Clara, California, United States; Toronto, Ontario, Canada",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4711506007",
+      "posted": "2026-09-09T16:11:42-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": 168,
+      "score": 3,
+      "flags": [
+        "C++",
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "bring-up"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Software Engineer, TT-Distributed. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  As our TT-Distributed Software Engineer, you will develop and optimize distributed software systems that power the most efficient and highest-performing AI and HPC clusters. In this role, you'll work on distributed programming across multiple nodes, utilizing systems programming, inter-node communication, and Tenstorrent’s scalable architectures to advance the state-of-the-art distributed inference and training infrastructure.  This role is   hybrid, based out of Santa Clara, CA; Austin, TX; or Toronto, ON.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ from the one in this posting.  Who You Are   Strong C or C++ engineer with solid foundations in systems program"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Sr. Product Manager, Platform",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5207111007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "firmware"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Sr. Product Manager, Platform. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  As a Product Manager for Platform, you will own the foundation of Tenstorrent's developer experience: firmware, system software, packaging, and updates. Today, getting started with Tenstorrent hardware means navigating multiple repositories, docs pages, and shell scripts. Your job is to turn that into one product developers install once and trust forever. You’ll build in the open, partnering with our open source community to continually raise the bar on developer experience. You’ll own the unified Tenstorrent CLI: a single entry point to our entire software stack. One command, every device, every workflow, from bare-metal bring-up to production model serving.  This role is   remote and based in North America, with hubs in Santa Clara, CA; Austin, TX; and Toronto, ON.  We welcome candidates at various experience levels for th"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Technical Program Manager",
+      "location": "Austin, Texas, United States; Fort Collins, Colorado, United States; Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5163445007",
+      "posted": "2026-09-08T15:03:18-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "firmware"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Technical Program Manager. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is building cutting-edge processors and systems for AI workloads, bringing together world-class expertise in silicon, systems, and software. We are seeking an experienced Technical Program Manager to lead cross-functional product development efforts and drive complex programs from concept through execution and delivery. This role is ideal for someone who thrives in highly collaborative environments, excels at bringing teams together around a common goal, and has a track record of delivering complex hardware products on schedule.  This role is hybrid, based out of Santa Clara, CA, Austin, TX, or Fort Collins, CO.   We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed for the appropriate level, and offers will align with that level, which may differ"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Technical Program Manager, Architecture",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/5086977007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x2"
+      ],
+      "matched": [
+        "ble",
+        "dft"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Technical Program Manager, Architecture. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists has built advanced compute architectures from the ground up and shares a passion for AI with a deep desire to build the best platforms possible. We value collaboration, curiosity, and a commitment to solving hard problems. The Technical Program Manager will drive the end-to-end execution of next-generation SoCs, from early architecture through RTL, verification, DFT, physical design, tape-out, and post-silicon validation. This role requires strong technical depth in silicon developmen"
+    },
+    {
+      "company": "Tenstorrent",
+      "title": "Technical Program Manager, Product Software",
+      "location": "Santa Clara, California, United States",
+      "url": "https://job-boards.greenhouse.io/tenstorrent/jobs/4800471007",
+      "posted": "2026-09-02T17:54:04-04:00",
+      "source": "greenhouse",
+      "salary": "",
+      "ring": 2,
+      "km": null,
+      "score": 3,
+      "flags": [
+        "US",
+        "relocation"
+      ],
+      "arrangement": "onsite",
+      "country": "US",
+      "industry": "semiconductor",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x3"
+      ],
+      "matched": [
+        "ble",
+        "bring-up",
+        "firmware"
+      ],
+      "snippet": "Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing para…",
+      "text": "Technical Program Manager, Product Software. Tenstorrent is leading the industry on cutting-edge AI technology, revolutionizing performance expectations, ease of use, and cost efficiency. With AI redefining the computing paradigm, solutions must evolve to unify innovations in software models, compilers, platforms, networking, and semiconductors. Our diverse team of technologists have developed a high performance RISC-V CPU from scratch, and share a passion for AI and a deep desire to build the best AI platform possible. We value collaboration, curiosity, and a commitment to solving hard problems. We are growing our team and looking for contributors of all seniorities.  Tenstorrent is on a quest to find a strong Technical Program Manager to lead the end-to-end software development of our next-generation Chiplet based SiP. The scope spans from architecture to tape-out, silicon debug and software productization - across AI, CPU, Memory and I/O Chiplet domains. If you bring strong expertise in silicon development and exceptional Program Management skills - you will thrive in this role. You’ll drive end-to-end software across pre-silicon and post silicon stages - building complex programs, defining program metrics, pushing boundaries and innovating in the AI Supercomputers space  This role is Hybrid, based out of Santa Clara, CA, Austin, TX, or Toronto, ON.  We welcome candidates at various experience levels for this role. During the interview process, candidates will be assessed "
     }
   ],
   "errors": []
