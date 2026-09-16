@@ -28,6 +28,10 @@ _Last updated 2026-09-16._
 - [ ] Data product from pipeline outcomes ("what actually gets interviews")
 
 ## 🗂️ BACKLOG — small / UX polish
+- [ ] **JB-19 BambooHR job descriptions** — /careers/list gives titles only; fetch each
+      job detail so ZTR/BinSentry/VueReal roles can be scored on skills, not just title.
+- [ ] **JB-20 Per-company cap / group-by-company** — one big employer (Tenstorrent) floods
+      the board; cap N per company or group so variety shows.
 - [ ] **Salary on the job board** — show salary prominently on cards / as a sortable field _(BT, 16 Sep)_
 - [ ] **Initials in the top header next to "Job Board"** — verify it renders reliably _(BT, 16 Sep)_
 - [ ] Persist Min-score + filter choices (localStorage)

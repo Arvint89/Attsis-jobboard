@@ -25,4 +25,9 @@ done
 echo "== project board =="
 gh project create --owner "$OWNER" --title "Attsis Job Board" || echo "  (project may already exist)"
 echo "Now: open the Project, add a Board view with columns Backlog/Now/Next/Done, and add the issues."
+echo "== branching (product branch = main; work on develop) =="
+git checkout -b develop 2>/dev/null || git checkout develop
+git push -u origin develop 2>/dev/null || echo "  (develop exists)"
+git checkout main
+echo "Set branch protection on main in Settings > Branches (see BRANCHING.md)."
 echo "Done."

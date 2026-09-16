@@ -70,7 +70,7 @@
     <div class="panel">
       <h2>Set up your board</h2>
       <p class="sub">Paste your CV (and optionally a cover letter). We extract keywords in your browser — nothing is uploaded — then rank the loaded roles against them. You can edit the keywords before saving.</p>
-      <label class="fldlbl">Your CV — paste text (or choose a .txt/.md file)</label>
+      <label class="fldlbl">Your CV — paste text, or upload a file (.docx / .pdf / .txt)</label>
       <textarea id="cvText" placeholder="Paste your CV text here…"></textarea>
       <input type="file" id="cvFile" accept=".txt,.md,.text,.docx,.pdf">
       <label class="fldlbl">Cover letter — optional</label>
@@ -163,14 +163,19 @@ function extract(cv, cl){
   return {skills, titles:[...titles].slice(0,12), home:cityM?cityM[1][0].toUpperCase()+cityM[1].slice(1):"", years:yrM?+yrM[1]:null};
 }
 
+function tokp(text, needle){
+  const esc=needle.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  try{ return new RegExp('(?<![a-z0-9])'+esc+'(?![a-z0-9])').test(text); }
+  catch(e){ return text.includes(needle); }   // fallback for very old browsers
+}
 /* ---------- browser scorer (mirrors jobfilter core, profile-driven) ---------- */
 const EXCL=["technician","operator","assembler","millwright","welder","machinist","cnc","sales","marketing"," hr ","recruit","administrative","receptionist","clerk","custodian","driver","intern","co-op","student","apprentice"];
 function scoreJob(j, p){
   const title=(j.title||"").toLowerCase(), body=(j.text||j.snippet||"").toLowerCase(), loc=(j.location||"").toLowerCase();
   const has=(t,arr)=>arr.filter(n=>t.includes(n));
   if(has(" "+title+" ",EXCL).length) return {verdict:"excluded"};
-  const titleHit=p.titles.filter(t=>title.includes(t));
-  const conf=[...new Set(p.skills.filter(s=>body.includes(s)))];
+  const titleHit=p.titles.filter(t=>tokp(title,t));
+  const conf=[...new Set(p.skills.filter(s=>tokp(body,s)))];
   if(!titleHit.length && conf.length<2) return {verdict:"excluded"};
   let score = titleHit.length?4:2, reasons=[];
   reasons.push(titleHit.length?("title match: "+titleHit.slice(0,2).join(", ")):"keyword-only match");
@@ -187,7 +192,7 @@ function scoreJob(j, p){
 function gapAnalysis(jdText){
   const jd=(jdText||'').toLowerCase();
   const skills=(PROFILE&&PROFILE.skills)||[], titles=(PROFILE&&PROFILE.titles)||[];
-  const have=[...new Set(skills.filter(sx=>jd.includes(sx)))];
+  const have=[...new Set(skills.filter(sx=>tokp(jd,sx)))];
   const toks=tokens(jd); const fr={}; toks.forEach(w=>fr[w]=(fr[w]||0)+1);
   for(let i=0;i<toks.length-1;i++){const bg=toks[i]+' '+toks[i+1]; fr[bg]=(fr[bg]||0)+1.5;}
   const own=new Set([...skills,...titles]);

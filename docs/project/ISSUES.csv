@@ -17,3 +17,7 @@ JB-15 LMIA sponsorship data,Quarterly LMIA list + manual pull; label the quarter
 JB-16 Non-tech vertical seed,Add one non-tech vertical via registry+seed,type:spike area:registry priority:P2,M4 Breadth
 JB-17 CSA testing pass and audit,Run CSA_Testing protocol; log AUDIT entry,type:chore area:quality priority:P1,M0 v1 Live
 JB-18 Accessibility and mobile pass,WCAG basics + mobile layout,type:chore area:site priority:P2,M1 Real data
+BUG-001 ble matcher substring bug,Short skills like ble matched inside scalable/available; fixed with whole-word matching (v0.6.1),type:bug area:engine priority:P0,M0 v1 Live
+JB-19 BambooHR job descriptions,list endpoint gives titles only; fetch each job detail so ZTR/BinSentry score on skills,type:bug area:engine priority:P1,M1 Real data
+JB-20 Per-company cap or group,One employer (Tenstorrent) floods the board; cap N per company or group,type:feature area:site priority:P1,M1 Real data
+JB-21 Set up branching + protection,Create develop branch; protect main per BRANCHING.md,type:chore area:ci priority:P1,M0 v1 Live

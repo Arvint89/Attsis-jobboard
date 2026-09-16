@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-16T16:47:55.796086+00:00",
+  "generated": "2026-09-16T18:20:01.556178+00:00",
   "mode": "demo",
   "person": "Bharanidharan Thamizhchelvan",
   "initials": "BT",
@@ -45,8 +45,8 @@
   },
   "min_score": 7,
   "counts": {
-    "matches": 6,
-    "below": 14,
+    "matches": 5,
+    "below": 15,
     "errors": 0,
     "unresolved": 0
   },
@@ -106,7 +106,7 @@
       "sponsorship": "unknown",
       "reasons": [
         "title match: electrical engineer",
-        "skills x9",
+        "skills x8",
         "senior/lead(+1)"
       ],
       "matched": [
@@ -115,7 +115,6 @@
         "arm cortex",
         "battery",
         "cortex-m",
-        "dfm",
         "electrical engineer",
         "embedded c",
         "mixed-signal",
@@ -228,39 +227,6 @@
       ],
       "snippet": "Embedded firmware, ARM, RTOS, PCB bring-up for AI silicon boards. C, low-power, SPI, I2C. Digital design, FPGA.",
       "text": "Senior Embedded Engineer, AI IP. Embedded firmware, ARM, RTOS, PCB bring-up for AI silicon boards. C, low-power, SPI, I2C. Digital design, FPGA."
-    },
-    {
-      "company": "Geotab",
-      "title": "Lead Developer, Embedded Engineering",
-      "location": "Oakville, ON (Hybrid)",
-      "url": "https://www.geotab.com/careers",
-      "posted": "2026-09-10",
-      "source": "greenhouse",
-      "salary": "CAD 116,200-155,000",
-      "ring": 2,
-      "km": 137,
-      "score": 7,
-      "flags": [
-        "relocation"
-      ],
-      "arrangement": "hybrid",
-      "country": "Canada",
-      "industry": "transportation/IoT",
-      "sponsorship": "unknown",
-      "reasons": [
-        "title match: embedded engineer",
-        "skills x4",
-        "senior/lead(+1)"
-      ],
-      "matched": [
-        "embedded engineer",
-        "firmware",
-        "low-power",
-        "rtos",
-        "schematic"
-      ],
-      "snippet": "Embedded firmware, telematics, reads schematics, hardware-informed, C, RTOS, Linux, test, low-power.",
-      "text": "Lead Developer, Embedded Engineering. Embedded firmware, telematics, reads schematics, hardware-informed, C, RTOS, Linux, test, low-power."
     }
   ],
   "below": [
@@ -674,6 +640,37 @@
       ],
       "snippet": "Full-lifecycle electrical design, mixed-signal Altium, ultrasound drive, ISO 13485, IEC 60601, V&V, requirements, embedded C.",
       "text": "Senior Electrical Developer. Full-lifecycle electrical design, mixed-signal Altium, ultrasound drive, ISO 13485, IEC 60601, V&V, requirements, embedded C."
+    },
+    {
+      "company": "Geotab",
+      "title": "Lead Developer, Embedded Engineering",
+      "location": "Oakville, ON (Hybrid)",
+      "url": "https://www.geotab.com/careers",
+      "posted": "2026-09-10",
+      "source": "greenhouse",
+      "salary": "CAD 116,200-155,000",
+      "ring": 2,
+      "km": 137,
+      "score": 4,
+      "flags": [
+        "relocation"
+      ],
+      "arrangement": "hybrid",
+      "country": "Canada",
+      "industry": "transportation/IoT",
+      "sponsorship": "unknown",
+      "reasons": [
+        "keyword-only match",
+        "skills x3",
+        "senior/lead(+1)"
+      ],
+      "matched": [
+        "firmware",
+        "low-power",
+        "rtos"
+      ],
+      "snippet": "Embedded firmware, telematics, reads schematics, hardware-informed, C, RTOS, Linux, test, low-power.",
+      "text": "Lead Developer, Embedded Engineering. Embedded firmware, telematics, reads schematics, hardware-informed, C, RTOS, Linux, test, low-power."
     },
     {
       "company": "Decisive Technologies",

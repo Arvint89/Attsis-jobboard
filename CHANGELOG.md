@@ -55,3 +55,13 @@
 - "Electrical=power" is no longer a hard exclusion — it just scores low (shown, ranked).
 - Board shows ALL roles ranked, with a Min-score control (default: show all).
 - Demo pool expanded to 20 roles across 13 industries (represents the registry).
+
+## v0.6.0 — 2026-09-16 (live data on GitHub Pages + bugs it exposed)
+- Repo published (Arvint89/Attsis-jobboard); GitHub Pages live; workflow now also
+  deploys on push (with [skip ci] on the data-refresh commit to avoid loops).
+- FIX: matcher used naive substring matching — short skills like "ble" matched inside
+  "scalable/available/reliable", inflating scores. Now whole-token matching (word
+  boundaries) in both the Python engine and the browser scorer. Setup label fixed
+  (Word/PDF were always supported).
+- Found (backlog): BambooHR returns titles but no descriptions (ZTR etc. score low);
+  one big employer (Tenstorrent/Greenhouse) floods the board — needs a per-company cap.

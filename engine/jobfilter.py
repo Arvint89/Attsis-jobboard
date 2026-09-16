@@ -53,8 +53,15 @@ ALL_TITLES = TITLE_CORE + TITLE_FPGA + TITLE_ADJACENT
 FRESH_DAYS = _M["params"]["fresh_days"]
 
 
+import re as _re
+
+def _tokp(text, needle):
+    # whole-token match: 'ble' must not match inside 'scalable'
+    return _re.search(r"(?<![a-z0-9])" + _re.escape(needle) + r"(?![a-z0-9])", text) is not None
+
+
 def _has(text, needles):
-    return [n for n in needles if n in text]
+    return [n for n in needles if _tokp(text, n)]
 
 
 def _title_hit(title):
@@ -104,7 +111,7 @@ def classify(job, extra_flags=None):
         return {"verdict": "excluded", "score": 0, "reasons": ["pure-software"], "flags": flags, "matched": []}
 
     # relevance: a title trigger, or >=2 skill confirmers --------------------
-    title_hits = [t for t in ALL_TITLES if t in title]
+    title_hits = [t for t in ALL_TITLES if _tokp(title, t)]
     conf = sorted(set(_has(body, SKILL_CONFIRMERS)))
     if not title_hits and len(conf) < 2:
         return {"verdict": "excluded", "score": 0, "reasons": ["not relevant to profile"], "flags": flags, "matched": []}
