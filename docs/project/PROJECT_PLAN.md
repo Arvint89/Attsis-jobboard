@@ -34,6 +34,10 @@ Sprint load ≈ 70% capacity (buffer for interrupts). Stretch: JB-6 salary displ
 - [ ] Docs/CHANGELOG updated
 - [ ] BT sign-off (for anything user-facing or that touches GitHub)
 
+## Definition of Done (per RELEASE)
+- [ ] Version bumped (VERSIONING.md) · CHANGELOG + **RELEASES.md** row added
+- [ ] Merged to main · tagged vX.Y.Z · pushed · live site verified (see docs/project/RELEASE_PROCESS.md)
+
 ## Key dates
 | When | Event |
 |---|---|

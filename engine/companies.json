@@ -143,8 +143,8 @@
     {
       "name": "Miovision",
       "ring": 1,
-      "platform": "resolve",
-      "slug": "",
+      "platform": "ashby",
+      "slug": "miovision",
       "careers_url": "https://miovision.com/careers",
       "flags": [],
       "industry": "transportation/IoT",
@@ -223,13 +223,12 @@
     {
       "name": "Geotab",
       "ring": 2,
-      "platform": "resolve",
-      "slug": "",
+      "platform": "greenhouse",
+      "slug": "geotab",
       "careers_url": "https://www.geotab.com/careers",
       "flags": [
         "relocation"
       ],
-      "note": "workday likely",
       "industry": "transportation/IoT",
       "sponsors": null
     },

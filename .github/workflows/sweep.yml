@@ -21,13 +21,6 @@ jobs:
       - run: pip install -r engine/requirements.txt
       - name: Fetch all ATS + build board
         run: cd engine && python build_board.py
-      - name: Commit refreshed data
-        run: |
-          git config user.name "job-sweep-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add site/data/*.json
-          git commit -m "data: refresh $(date -u +%F) [skip ci]" || echo "no changes"
-          git push || echo "nothing to push"
       - uses: actions/upload-pages-artifact@v3
         with: {path: site}
       - uses: actions/deploy-pages@v4

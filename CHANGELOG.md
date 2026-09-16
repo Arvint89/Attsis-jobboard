@@ -56,12 +56,22 @@
 - Board shows ALL roles ranked, with a Min-score control (default: show all).
 - Demo pool expanded to 20 roles across 13 industries (represents the registry).
 
-## v0.6.0 — 2026-09-16 (live data on GitHub Pages + bugs it exposed)
-- Repo published (Arvint89/Attsis-jobboard); GitHub Pages live; workflow now also
-  deploys on push (with [skip ci] on the data-refresh commit to avoid loops).
-- FIX: matcher used naive substring matching — short skills like "ble" matched inside
-  "scalable/available/reliable", inflating scores. Now whole-token matching (word
-  boundaries) in both the Python engine and the browser scorer. Setup label fixed
-  (Word/PDF were always supported).
-- Found (backlog): BambooHR returns titles but no descriptions (ZTR etc. score low);
-  one big employer (Tenstorrent/Greenhouse) floods the board — needs a per-company cap.
+## v0.6.0 — 2026-09-16 (MINOR — first live release on GitHub Pages)
+- Repo published (Arvint89/Attsis-jobboard); GitHub Pages live via the job-sweep Action.
+- Workflow deploys on push (auto-deploy). Setup label fixed (Word/PDF always supported).
+- First live fetch surfaced two backlog items: BambooHR returns titles-only (ZTR scores
+  low); one big employer (Tenstorrent) floods the board (needs a per-company cap).
+
+## v0.6.1 — 2026-09-16 (BUGS — bug-fix release)
+- FIX BUG-001: matcher used naive substring matching — short skills like "ble" matched
+  inside "scalable/available/reliable", inflating scores. Now whole-token (word-boundary)
+  matching in both the Python engine and the browser scorer.
+- Action is now deploy-only (no data commit-back) — stops local/remote push divergence.
+- Added VERSIONING.md (MAJOR.MINOR.BUGS) and BRANCHING.md (main=product vs develop/feature).
+
+## v0.6.2 — 2026-09-16 (data — JB-3 partial: resolved Geotab + Miovision)
+- Resolved ATS for Geotab (Greenhouse, Oakville/Waterloo — 81 roles) and Miovision
+  (Ashby, Kitchener — incl. VP Hardware Engineering). Registry now 8/29 resolved.
+- Method: probed Greenhouse/Lever/Ashby/SmartRecruiters endpoints; verified company
+  identity before adding (dropped a "profound" Greenhouse board — a Boston pharma namesake).
+- Remaining 21 need individual careers-page inspection (not on the common ATS platforms).
