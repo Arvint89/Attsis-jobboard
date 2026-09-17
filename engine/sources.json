@@ -1,0 +1,9 @@
+{
+  "_note": "Board-source registry (JB-3). Getro boards = one adapter, add by network_id. Confirm each returns jobs before adding (see docs/research/REGIONAL_JOB_BOARDS.md). LEDC = HTML scrape (fetch_ledc, pending selector spike).",
+  "sources": [
+    {"platform": "getro", "name": "MaRS", "network_id": 383},
+    {"platform": "getro", "name": "Communitech", "network_id": 8936},
+    {"platform": "ledc", "name": "LEDC Tech", "base": "https://londontechjobs.ca"},
+    {"platform": "ledc", "name": "LEDC Mfg", "base": "https://londonmfgjobs.com"}
+  ]
+}
