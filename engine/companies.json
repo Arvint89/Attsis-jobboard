@@ -9,7 +9,8 @@
       "careers_url": "https://ztr.bamboohr.com/careers",
       "flags": [],
       "industry": "rail/industrial",
-      "sponsors": null
+      "sponsors": null,
+      "city": "London"
     },
     {
       "name": "General Dynamics Land Systems Canada",
@@ -22,7 +23,8 @@
       ],
       "note": "TTCportals custom ATS",
       "industry": "defence",
-      "sponsors": null
+      "sponsors": null,
+      "city": "London"
     },
     {
       "name": "StarTech.com",
@@ -33,7 +35,8 @@
       "flags": [],
       "note": "UKG/UltiPro Recruiting - JSON API JobBoardView, adapter TODO",
       "industry": "iot/connectivity",
-      "sponsors": null
+      "sponsors": null,
+      "city": "London"
     },
     {
       "name": "Amphenol Borisch Technologies",
@@ -43,7 +46,8 @@
       "careers_url": "https://careers.amphenol.com",
       "flags": [],
       "industry": "aerospace/space",
-      "sponsors": null
+      "sponsors": null,
+      "city": "London"
     },
     {
       "name": "OES Inc.",
@@ -53,7 +57,8 @@
       "careers_url": "https://oesincorporated.com/careers",
       "flags": [],
       "industry": "electronics mfg (EMS)",
-      "sponsors": null
+      "sponsors": null,
+      "city": "London"
     },
     {
       "name": "BOS Innovations",
@@ -63,7 +68,8 @@
       "careers_url": "https://bosinnovations.com/careers",
       "flags": [],
       "industry": "rail/industrial",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Stratford"
     },
     {
       "name": "Safran Electrical Components Canada",
@@ -75,7 +81,8 @@
         "eligibility"
       ],
       "industry": "aerospace/space",
-      "sponsors": null
+      "sponsors": null,
+      "city": "London"
     },
     {
       "name": "Trojan Technologies",
@@ -88,7 +95,8 @@
       ],
       "note": "Veralto/Danaher - Workday likely",
       "industry": "cleantech/water",
-      "sponsors": null
+      "sponsors": null,
+      "city": "London"
     },
     {
       "name": "VueReal",
@@ -98,7 +106,8 @@
       "careers_url": "https://vuereal.bamboohr.com/careers",
       "flags": [],
       "industry": "display/micro-LED",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Waterloo"
     },
     {
       "name": "BinSentry",
@@ -108,7 +117,8 @@
       "careers_url": "https://binsentry.bamboohr.com/careers",
       "flags": [],
       "industry": "agtech",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Kitchener"
     },
     {
       "name": "Nicoya Lifesciences",
@@ -118,7 +128,8 @@
       "careers_url": "https://nicoyalife.com/careers",
       "flags": [],
       "industry": "life-sciences instrumentation",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Kitchener"
     },
     {
       "name": "Palitronica",
@@ -128,7 +139,8 @@
       "careers_url": "https://palitronica.com/careers",
       "flags": [],
       "industry": "cybersecurity hardware",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Waterloo"
     },
     {
       "name": "Voltera",
@@ -138,7 +150,8 @@
       "careers_url": "https://www.voltera.io/careers",
       "flags": [],
       "industry": "hardware/PCB",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Kitchener"
     },
     {
       "name": "Miovision",
@@ -148,7 +161,8 @@
       "careers_url": "https://miovision.com/careers",
       "flags": [],
       "industry": "transportation/IoT",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Kitchener"
     },
     {
       "name": "KA Imaging",
@@ -158,7 +172,8 @@
       "careers_url": "https://www.kaimaging.com/careers",
       "flags": [],
       "industry": "medical",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Waterloo"
     },
     {
       "name": "eleven-x",
@@ -168,7 +183,8 @@
       "careers_url": "https://eleven-x.com/careers",
       "flags": [],
       "industry": "iot/connectivity",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Waterloo"
     },
     {
       "name": "Canada Rocket Company",
@@ -181,7 +197,8 @@
         "relocation"
       ],
       "industry": "aerospace/space",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Toronto"
     },
     {
       "name": "e-Zinc",
@@ -193,7 +210,8 @@
         "relocation"
       ],
       "industry": "energy/power",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Mississauga"
     },
     {
       "name": "Kepler Communications",
@@ -206,7 +224,8 @@
       ],
       "note": "BT starting 5 Oct - watch only",
       "industry": "aerospace/space",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Toronto"
     },
     {
       "name": "Profound Medical",
@@ -218,7 +237,8 @@
         "relocation"
       ],
       "industry": "medical",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Mississauga"
     },
     {
       "name": "Geotab",
@@ -230,7 +250,8 @@
         "relocation"
       ],
       "industry": "transportation/IoT",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Oakville"
     },
     {
       "name": "Synaptive Medical",
@@ -242,7 +263,8 @@
         "relocation"
       ],
       "industry": "medical",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Toronto"
     },
     {
       "name": "Tenstorrent",
@@ -254,7 +276,8 @@
         "relocation"
       ],
       "industry": "semiconductor",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Toronto"
     },
     {
       "name": "WOLF Advanced Technology",
@@ -268,7 +291,8 @@
       ],
       "note": "ScouteRecruit ATS",
       "industry": "defence",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Aurora"
     },
     {
       "name": "Decisive Technologies",
@@ -280,7 +304,8 @@
         "relocation"
       ],
       "industry": "GNSS/positioning",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Ottawa"
     },
     {
       "name": "Ross Video",
@@ -292,7 +317,8 @@
         "relocation"
       ],
       "industry": "broadcast",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Ottawa"
     },
     {
       "name": "LMI Technologies",
@@ -305,7 +331,8 @@
         "remote"
       ],
       "industry": "machine vision",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Burnaby"
     },
     {
       "name": "StarFish Medical",
@@ -317,7 +344,8 @@
         "relocation"
       ],
       "industry": "medical",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Victoria"
     },
     {
       "name": "Kraken Robotics",
@@ -329,7 +357,20 @@
         "relocation"
       ],
       "industry": "subsea/marine",
-      "sponsors": null
+      "sponsors": null,
+      "city": "Dartmouth"
+    },
+    {
+      "name": "Vital Biosciences",
+      "ring": 2,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://vitalbiosciences.com/careers",
+      "flags": [],
+      "industry": "medical",
+      "sponsors": null,
+      "city": "Mississauga",
+      "note": "VitalOne diagnostics; resolve ATS"
     }
   ]
 }

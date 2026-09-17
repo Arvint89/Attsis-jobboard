@@ -11,6 +11,6 @@ Rules:
 - Bumping MINOR resets BUGS to 0 (0.6.3 → 0.7.0). Bumping MAJOR resets both (0.9.2 → 1.0.0).
 - Every release is **tagged on `main`**: `git tag -a v0.6.1 -m "..."` then `git push --tags`.
 - The version is recorded in `CHANGELOG.md` and the site footer.
-- **Current: 0.9.0** (bug-fix release: the "ble" whole-word fix). 0.6.0 was the first live release on Pages.
+- **Current: 0.10.0** (bug-fix release: the "ble" whole-word fix). 0.6.0 was the first live release on Pages.
 
 How it maps to work: a `type:bug` issue closing → BUGS bump; a `type:feature` issue/phase → MINOR.
