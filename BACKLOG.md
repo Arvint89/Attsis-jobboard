@@ -26,6 +26,11 @@ _Last updated 2026-09-16._
 ## 🧊 ICEBOX
 - [ ] Employer / B2B side (JD → ranked candidate matches)
 - [ ] Data product from pipeline outcomes ("what actually gets interviews")
+- [ ] **Product 2 — Employer job-posting visibility** _(BT, 17 Sep)_ — a company-facing product that
+      automates small employers' posting visibility (structured `schema.org/JobPosting` + syndication to
+      boards), whose feed our job board consumes. Two-sided "acting as HR" play; grows into its own repo
+      once the job board has users. Wedge: small companies struggle to get seen; solve it for them *and*
+      feed the board.
 
 ## 🗂️ BACKLOG — small / UX polish
 - [ ] **JB-19 BambooHR job descriptions** — /careers/list gives titles only; fetch each

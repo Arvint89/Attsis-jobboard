@@ -23,6 +23,7 @@ import sys
 from datetime import datetime, timezone
 
 import ats
+import sources
 import jobfilter
 import geo
 import facets
@@ -83,6 +84,19 @@ def gather(demo: bool):
             j["_industry"] = entry.get("industry", "other")
             j["_sponsors"] = entry.get("sponsors")
         jobs += got
+
+    # JB-3: second tier -- board SOURCES (aggregators) return many companies' jobs
+    # at once, covering companies that aren't on an auto-probeable ATS.
+    for entry in sources.load_sources():
+        got, err = sources.fetch_source(entry)
+        if err:
+            errors.append({"company": entry["name"], "error": err})
+        for j in got:
+            j["_reg_flags"] = []
+            j["_ring"] = None                        # geo resolves ring from the real location
+            j["_industry"] = j.get("industry") or "other"
+            j["_sponsors"] = None
+        jobs += got
     return jobs, errors, unresolved
 
 
@@ -135,8 +149,11 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         ring, km, is_remote = geo.ring_for(home, j.get("location", ""))
         if ring is None:
             ring = j.get("_ring")   # registry ring only when geo can't resolve (Canadian unknown city)
-        lat, lng = geo.coords_of(j.get("location", ""))   # for the map (JB-26)
-        arrangement = facets.arrangement(j.get("location", ""), j.get("description", ""))
+        # JB-3: sources can supply exact coords + arrangement directly; fall back otherwise
+        lat, lng = j.get("lat"), j.get("lng")
+        if lat is None or lng is None:
+            lat, lng = geo.coords_of(j.get("location", ""))   # for the map (JB-26)
+        arrangement = j.get("arrangement") or facets.arrangement(j.get("location", ""), j.get("description", ""))
         country = facets.country(j.get("location", ""))
         industry = facets.industry(j.get("_industry", ""), j.get("description", ""))
         sponsor = facets.sponsorship(j.get("description", ""), j.get("_sponsors"))
@@ -185,6 +202,25 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "name": e["name"], "city": e.get("city", ""), "lat": lat, "lng": lng,
             "industry": e.get("industry", "other"), "resolved": resolved,
             "roles": a, "fit_roles": s, "status": status, "careers_url": e.get("careers_url", ""),
+        })
+
+    # JB-3: also place every SOURCE-DISCOVERED company (not in the curated registry)
+    # so the map/directory lists *all* companies seen this run -- refreshed every build.
+    reg_names = {e["name"].strip().lower() for e in load_registry()}
+    placed = {c["name"].strip().lower() for c in companies_map}
+    for r in (matches + below):
+        key = r["company"].strip().lower()
+        if key in reg_names or key in placed or r.get("lat") is None:
+            continue
+        placed.add(key)
+        s, a = strong.get(r["company"], 0), anyc.get(r["company"], 0)
+        companies_map.append({
+            "name": r["company"], "city": r.get("location", ""),
+            "lat": r["lat"], "lng": r["lng"],
+            "industry": r.get("industry", "other"), "resolved": True,
+            "roles": a, "fit_roles": s,
+            "status": "fit" if s else "open",
+            "careers_url": r.get("url", ""), "discovered": True,
         })
 
     os.makedirs(DATA, exist_ok=True)
