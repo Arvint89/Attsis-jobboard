@@ -57,6 +57,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>try{if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}catch(e){}</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  #map{height:520px;border-radius:12px;border:1px solid var(--edge)}
+  .viewtabs{display:flex;gap:6px;margin-bottom:10px}
+  .viewtabs button{background:var(--card);border:1px solid var(--edge);color:var(--ink);padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer}
+  .viewtabs button.on{background:var(--hi);color:#04101f;border-color:var(--hi);font-weight:600}
+  .maplegend{display:flex;flex-wrap:wrap;gap:14px;margin:8px 2px;font-size:12px;color:var(--dim)}
+  .maplegend b{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .leaflet-popup-content{font:13px -apple-system,Segoe UI,sans-serif}
+</style>
 </head>
 <body>
 <header>
@@ -100,6 +111,7 @@
   <!-- BOARD VIEW -->
   <div id="boardView" style="display:none">
     <div id="demoBanner" class="banner" style="display:none">Showing <b>demo data</b> — sample roles to preview the board. Live roles populate when the fetcher runs (GitHub Action or <code>python build_board.py</code>).</div>
+    <div class="viewtabs"><button id="tabList" class="on">☰ List</button><button id="tabMap">🗺 Map</button></div>
     <div class="bar" style="padding:12px 14px;margin-bottom:6px">
       <div class="row">
         <div class="fld grow"><label for="q">Search (company · title · skill)</label><input type="search" id="q" placeholder="e.g. embedded, Altium, ZTR…"></div>
@@ -113,14 +125,29 @@
       </div>
       <div class="hint">Every role kept — filter by distance, sort by score/distance/salary, and set how many per company (top 8 by default, or All).</div>
     </div>
-    <div class="bar jdtool" style="padding:12px 14px;margin-bottom:10px">
-      <div class="row"><div class="fld grow"><label>Check any job description (paste it — free gap analysis vs your CV)</label>
-        <textarea id="jdIn" style="min-height:70px" placeholder="Paste a job description to see what you match and what's missing…"></textarea></div></div>
-      <div style="margin-top:8px"><button class="btn ghost" id="jdBtn">Analyze JD</button></div>
-      <div id="jdOut"></div>
+    <div id="listView">
+      <div class="bar jdtool" style="padding:12px 14px;margin-bottom:10px">
+        <div class="row"><div class="fld grow"><label>Check any job description (paste it — free gap analysis vs your CV)</label>
+          <textarea id="jdIn" style="min-height:70px" placeholder="Paste a job description to see what you match and what's missing…"></textarea></div></div>
+        <div style="margin-top:8px"><button class="btn ghost" id="jdBtn">Analyze JD</button></div>
+        <div id="jdOut"></div>
+      </div>
+      <div class="count" id="count"></div>
+      <div id="matches"></div>
     </div>
-    <div class="count" id="count"></div>
-    <div id="matches"></div>
+    <div id="mapView" style="display:none">
+      <div class="maplegend">
+        <span><b style="background:#16a34a"></b>Hiring — fits your CV</span>
+        <span><b style="background:#f39c12"></b>Open roles (weaker fit)</span>
+        <span><b style="background:#94a3b8"></b>No matching roles</span>
+        <span><b style="background:#ffffff;border:1px solid #94a3b8"></b>ATS not resolved</span>
+        <span><b style="background:#2563eb"></b>You (home)</span>
+      </div>
+      <div class="fld" style="max-width:230px;margin-bottom:8px"><label for="mapStatus">Show</label>
+        <select id="mapStatus"><option value="">All companies</option><option value="fit">Hiring — fits CV</option><option value="open">Any open roles</option><option value="unknown">Unresolved (to check)</option></select></div>
+      <div id="map"></div>
+      <div class="hint" id="mapNote"></div>
+    </div>
   </div>
 
 </div>
@@ -314,6 +341,46 @@ $('#saveBtn').onclick=()=>{
 $('#toSetup').onclick=showSetup;
 $('#jdBtn').onclick=()=>{const t=$('#jdIn').value.trim();$('#jdOut').innerHTML=t?gapHtml(gapAnalysis(t)):'<div class="hint">Paste a job description first.</div>';};
 ['q','arrangement','country','industry','minScore','ring','sortBy','perCo'].forEach(id=>$('#'+id).addEventListener('input',renderBoard));
+
+/* ---------- map view (JB-26) ---------- */
+let MAP=null;
+const STATUS_COLOR={fit:'#16a34a',open:'#f39c12',none:'#94a3b8',unknown:'#ffffff'};
+function renderMap(){
+  const filt=$('#mapStatus').value, home=JOBS.home_coords;
+  if(!MAP){
+    MAP=L.map('map',{scrollWheelZoom:true}).setView(home||[43.6,-79.5],7);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Tiles © Esri'}).addTo(MAP);
+  }
+  if(MAP._coLayer) MAP.removeLayer(MAP._coLayer);
+  const layer=L.layerGroup(), pts=[];
+  if(home){ L.circleMarker(home,{radius:11,color:'#ffffff',weight:3,fillColor:'#2563eb',fillOpacity:1}).bindPopup('<b>You</b><br>'+(JOBS.home||'home')).addTo(layer); pts.push(home); }
+  (JOBS.companies||[]).forEach(c=>{
+    if(filt && c.status!==filt) return;
+    const col=STATUS_COLOR[c.status]||'#94a3b8';
+    const stroke = c.status==='unknown' ? '#94a3b8' : '#ffffff';
+    const roles = c.status==='fit'?`<b style="color:#16a34a">${c.fit_roles} matching role(s)</b>`
+      : c.status==='open'?`${c.roles} open role(s), weaker fit`
+      : c.status==='none'?'no matching roles now' : 'ATS not resolved — worth checking';
+    L.circleMarker([c.lat,c.lng],{radius:9,color:stroke,weight:2,fillColor:col,fillOpacity:c.status==='unknown'?0.7:0.95})
+      .bindPopup(`<b>${c.name}</b><br>${c.city} · ${c.industry}<br>${roles}<br><a href="${c.careers_url}" target="_blank" rel="noopener">careers ↗</a>`)
+      .addTo(layer);
+    pts.push([c.lat,c.lng]);
+  });
+  layer.addTo(MAP); MAP._coLayer=layer;
+  const shown=(JOBS.companies||[]).filter(c=>!filt||c.status===filt).length;
+  $('#mapNote').textContent=`${shown} companies shown. Green = hiring a role that fits your CV; amber = open roles, weaker fit; grey = no matching roles; hollow = ATS not resolved (worth checking).`;
+  setTimeout(()=>{MAP.invalidateSize(); if(pts.length>1){try{MAP.fitBounds(pts,{padding:[40,40],maxZoom:9});}catch(e){}}},60);
+}
+function showView(which){
+  const map=which==='map';
+  $('#listView').style.display=map?'none':'block';
+  $('#mapView').style.display=map?'block':'none';
+  $('#tabMap').classList.toggle('on',map); $('#tabList').classList.toggle('on',!map);
+  if(map) renderMap();
+}
+$('#tabList').onclick=()=>showView('list');
+$('#tabMap').onclick=()=>showView('map');
+$('#mapStatus').addEventListener('input',renderMap);
 
 /* ---------- boot ---------- */
 function init(d){

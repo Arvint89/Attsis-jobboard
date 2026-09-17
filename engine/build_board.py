@@ -167,11 +167,32 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     matches.sort(key=lambda r: (-r["score"], r.get("ring") if r.get("ring") is not None else 9))
     below.sort(key=lambda r: -r["score"])
 
+    # JB-26: company map — every registry company placed, coloured by hiring status
+    strong, anyc = {}, {}
+    for r in (matches + below):
+        anyc[r["company"]] = anyc.get(r["company"], 0) + 1
+        if r["score"] >= 7:
+            strong[r["company"]] = strong.get(r["company"], 0) + 1
+    companies_map = []
+    for e in load_registry():
+        lat, lng = geo.coords_of(e.get("city", ""))
+        if lat is None:
+            continue
+        resolved = e.get("platform") not in (None, "", "resolve")
+        s, a = strong.get(e["name"], 0), anyc.get(e["name"], 0)
+        status = "fit" if s else ("open" if a else ("none" if resolved else "unknown"))
+        companies_map.append({
+            "name": e["name"], "city": e.get("city", ""), "lat": lat, "lng": lng,
+            "industry": e.get("industry", "other"), "resolved": resolved,
+            "roles": a, "fit_roles": s, "status": status, "careers_url": e.get("careers_url", ""),
+        })
+
     os.makedirs(DATA, exist_ok=True)
     payload = {
         "generated": datetime.now(timezone.utc).isoformat(),
         "mode": "demo" if demo else "live",
         "person": person, "initials": initials, "home": home,
+        "home_coords": list(geo.coords_of(home)) if geo.coords_of(home)[0] else None,
         "flag_legend": FLAG_LEGEND,
         "facets": facet_opts,
         "min_score": min_score,
@@ -180,6 +201,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
                    "errors": len(errors), "unresolved": len(unresolved)},
         "matches": matches,
         "below": below,
+        "companies": companies_map,
         "errors": errors,
     }
     with open(os.path.join(DATA, "jobs.json"), "w", encoding="utf-8") as f:

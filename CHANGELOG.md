@@ -101,3 +101,11 @@
 - Every job now carries lat/lng in jobs.json (foundation for the map, JB-26).
 - facets.country() names real countries (India, Serbia, Switzerland…).
 - 8 geo tests added; 33 total green.
+
+## v0.10.0 — 2026-09-17 (MINOR — JB-26 company map)
+- Map view (Leaflet + Esri light tiles): every registry company plotted around your
+  home, coloured by hiring status vs your CV — green (hiring, fits CV), amber (open,
+  weaker fit), grey (no match), hollow (ATS not resolved). Status filter + careers popups.
+- build_board emits a companies[] array (location + status) + home_coords; added a
+  city to every company; added Vital Biosciences to the registry.
+- Builds on JB-25's lat/lng resolution. List/Map toggle on the board.
