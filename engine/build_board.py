@@ -134,7 +134,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             continue
         ring, km, is_remote = geo.ring_for(home, j.get("location", ""))
         if ring is None:
-            ring = j.get("_ring")   # fall back to registry ring if city unknown
+            ring = j.get("_ring")   # registry ring only when geo can't resolve (Canadian unknown city)
+        lat, lng = geo.coords_of(j.get("location", ""))   # for the map (JB-26)
         arrangement = facets.arrangement(j.get("location", ""), j.get("description", ""))
         country = facets.country(j.get("location", ""))
         industry = facets.industry(j.get("_industry", ""), j.get("description", ""))
@@ -146,7 +147,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         row = {
             "company": j["company"], "title": j["title"], "location": j["location"],
             "url": j["url"], "posted": j.get("posted"), "source": j.get("source"),
-            "salary": j.get("salary", ""), "ring": ring, "km": km,
+            "salary": j.get("salary", ""), "ring": ring, "km": km, "lat": lat, "lng": lng,
             "score": res["score"], "flags": res["flags"],
             "arrangement": arrangement, "country": country,
             "industry": industry, "sponsorship": sponsor,

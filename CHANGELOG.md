@@ -92,3 +92,12 @@
   became a UI control: "Per company" (top 8 by default → All to see everything).
 - New "Distance" filter (Ring 0–4) and "Sort by" (Score / Distance / Salary).
 - build_board no longer deletes roles; payload carries default_per_company.
+
+## v0.9.0 — 2026-09-17 (MINOR — JB-25 geo resolution: real distances + coordinates)
+- Distances resolve by city, then country centroid — foreign roles (Bengaluru,
+  Santa Clara, Belgrade) no longer inherit the company's HQ ring. Fixes the JB-24 bug.
+- Expanded city table (US hubs + world cities); Canada keeps registry-ring fallback
+  for unknown Canadian cities only.
+- Every job now carries lat/lng in jobs.json (foundation for the map, JB-26).
+- facets.country() names real countries (India, Serbia, Switzerland…).
+- 8 geo tests added; 33 total green.

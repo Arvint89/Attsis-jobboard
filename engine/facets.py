@@ -13,9 +13,9 @@ matching model and the facets evolve independently.
 from __future__ import annotations
 import geo
 
-_US_HINTS = ("united states", "usa", ", us", " u.s", "california", ", ca ", ", tx",
-             ", ny", ", wa", ", ma", "remote from the us")
-_CA_CITIES = tuple(c for c in geo.CITY_COORDS if c and c != "remote")
+_COUNTRY_NAME = {"us": "US", "ca": "Canada", "in": "India", "rs": "Serbia",
+                 "ch": "Switzerland", "de": "Germany", "gb": "UK", "es": "Spain",
+                 "fr": "France", "nl": "Netherlands", "ie": "Ireland"}
 
 # JD keyword fallback for industry when the registry doesn't say
 _INDUSTRY_KEYWORDS = {
@@ -45,13 +45,17 @@ def arrangement(location: str, body: str) -> str:
 
 def country(location: str) -> str:
     t = (location or "").lower()
-    if any(h in t for h in _US_HINTS):
-        return "US"
-    if "canada" in t or ", on" in t or ", qc" in t or ", bc" in t or ", ab" in t \
-       or ", ns" in t or any(c in t for c in _CA_CITIES):
+    code = geo._country_in(t)                       # explicit country name in the string
+    if not code:                                    # else infer from a known city
+        ck = geo._city_in(t)
+        if ck:
+            code = geo._C[ck][2]
+    if code:
+        return _COUNTRY_NAME.get(code, code.upper())
+    if "canada" in t or any(s in t for s in (", on", ", qc", ", bc", ", ab", ", ns")):
         return "Canada"
     if "remote" in t:
-        return "Canada"   # our registry is Canada-first; refine if a country is named
+        return "Canada"   # registry is Canada-first; refine if a country is named
     return "?"
 
 
