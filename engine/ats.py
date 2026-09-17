@@ -178,19 +178,34 @@ def fetch_workable(company, slug, **_):
 
 
 def fetch_bamboohr(company, slug, **_):
-    # BambooHR embed API. The public list endpoint returns JSON.
-    url = f"https://{slug}.bamboohr.com/careers/list"
-    data = _get(url).json()
+    # BambooHR embed API. The list endpoint gives titles only; the per-job
+    # /detail endpoint carries the description (JB-19).
+    data = _get(f"https://{slug}.bamboohr.com/careers/list").json()
     out = []
     for j in (data.get("result") or []):
-        loc = j.get("location") or {}
-        location = ", ".join(x for x in [loc.get("city"), loc.get("state"), loc.get("country")] if x)
+        jid = j.get("id")
+        title = j.get("jobOpeningName")
+        loc = j.get("location")
+        if isinstance(loc, dict):
+            location = ", ".join(x for x in [loc.get("city"), loc.get("state"), loc.get("country")] if x)
+        else:
+            location = loc or ""
         if j.get("isRemote") in (True, "true", 1):
             location = (location + " (Remote)").strip()
-        out.append(_norm(
-            company, j.get("jobOpeningName"), location,
-            f"https://{slug}.bamboohr.com/careers/{j.get('id')}",
-            j.get("datePosted"), "", "bamboohr"))
+        description = ""
+        posted = j.get("datePosted")
+        url = f"https://{slug}.bamboohr.com/careers/{jid}"
+        try:  # fetch the detail page for the real description
+            det = _get(f"https://{slug}.bamboohr.com/careers/{jid}/detail").json()
+            jo = (det.get("result") or {}).get("jobOpening") or {}
+            description = jo.get("description") or ""
+            posted = jo.get("datePosted") or posted
+            url = jo.get("jobOpeningShareUrl") or url
+            if not location and isinstance(jo.get("location"), str):
+                location = jo["location"]
+        except Exception:
+            pass  # keep title-only if a detail fetch fails
+        out.append(_norm(company, title, location or "n/a", url, posted, description, "bamboohr"))
     return out
 
 
