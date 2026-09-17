@@ -104,11 +104,30 @@ def dedupe(jobs):
     return out
 
 
+PER_COMPANY_CAP = 8   # JB-20: no single employer may flood the board
+
+
+def cap_per_company(rows, n=PER_COMPANY_CAP):
+    """Keep at most n roles per company (highest score first).
+
+    Returns (kept_rows, dropped_count). Prevents one big employer (e.g. Tenstorrent,
+    Geotab) from dominating the board — keeps their best-matched n and trims the rest.
+    """
+    by_co = {}
+    for r in sorted(rows, key=lambda r: -r["score"]):
+        by_co.setdefault(r["company"], []).append(r)
+    kept, dropped = [], 0
+    for rs in by_co.values():
+        kept += rs[:n]
+        dropped += max(0, len(rs) - n)
+    return kept, dropped
+
+
 def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     home, person, initials = load_home()
     raw, errors, unresolved = gather(demo)
     raw = [ _defaults(j) for j in dedupe(raw) ]
-    matches, below = [], []
+    rows = []
     for j in raw:
         res = jobfilter.classify(j, extra_flags=j.get("_reg_flags"))
         if res["verdict"] == "excluded":
@@ -134,7 +153,11 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "reasons": res["reasons"], "matched": res["matched"], "snippet": snippet,
             "text": full,
         }
-        (matches if res["score"] >= min_score else below).append(row)
+        rows.append(row)
+    rows, capped = cap_per_company(rows)
+    matches = [r for r in rows if r["score"] >= min_score]
+    below = [r for r in rows if r["score"] < min_score]
+
     def opts(key):
         return sorted({r.get(key) for r in (matches + below) if r.get(key) and r.get(key) != "?"})
     facet_opts = {"arrangement": opts("arrangement"), "country": opts("country"),
@@ -151,7 +174,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         "facets": facet_opts,
         "min_score": min_score,
         "counts": {"matches": len(matches), "below": len(below),
-                   "errors": len(errors), "unresolved": len(unresolved)},
+                   "errors": len(errors), "unresolved": len(unresolved),
+                   "capped": capped, "per_company_cap": PER_COMPANY_CAP},
         "matches": matches,
         "below": below,
         "errors": errors,
@@ -175,8 +199,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             f.write(std)
 
     print(f"[{payload['mode']}] {len(matches)} matches (>= {min_score}), "
-          f"{len(below)} below, {len(errors)} fetch-errors, "
-          f"{len(unresolved)} ATS still to resolve. -> site/data/jobs.json")
+          f"{len(below)} below, {capped} capped (>{PER_COMPANY_CAP}/company), "
+          f"{len(errors)} fetch-errors, {len(unresolved)} ATS to resolve. -> site/data/jobs.json")
     return payload
 
 

@@ -75,3 +75,8 @@
 - Method: probed Greenhouse/Lever/Ashby/SmartRecruiters endpoints; verified company
   identity before adding (dropped a "profound" Greenhouse board — a Boston pharma namesake).
 - Remaining 21 need individual careers-page inspection (not on the common ATS platforms).
+
+## v0.7.0 — 2026-09-17 (MINOR — JB-20 per-company cap)
+- No single employer can flood the board: cap of 8 roles per company (highest-scored
+  kept). Fixes Tenstorrent (~65) + Geotab (81) dominating. build_board.cap_per_company()
+  + 3 tests. jobs.json now reports `capped` and `per_company_cap`.
