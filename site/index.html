@@ -28,6 +28,7 @@
   .row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
   .fld{display:flex;flex-direction:column;gap:4px}.fld label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
   .fld.grow{flex:1}.fld.grow input{width:100%}
+  .searchrow{margin-bottom:10px}
   .kw{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
   .kw .tag{font-size:12px;padding:3px 8px 3px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--edge);color:var(--ink);display:flex;align-items:center;gap:6px}
   .kw .tag b{color:var(--good);cursor:pointer}
@@ -113,8 +114,10 @@
     <div id="demoBanner" class="banner" style="display:none">Showing <b>demo data</b> — sample roles to preview the board. Live roles populate when the fetcher runs (GitHub Action or <code>python build_board.py</code>).</div>
     <div class="viewtabs"><button id="tabList" class="on">☰ List</button><button id="tabMap">🗺 Map</button></div>
     <div class="bar" style="padding:12px 14px;margin-bottom:6px">
-      <div class="row">
+      <div class="row searchrow">
         <div class="fld grow"><label for="q">Search (company · title · skill)</label><input type="search" id="q" placeholder="e.g. embedded, Altium, ZTR…"></div>
+      </div>
+      <div class="row">
         <div class="fld"><label for="arrangement">Work arrangement</label><select id="arrangement"><option value="">Any</option><option value="onsite">On-site</option><option value="hybrid">Hybrid</option><option value="remote">Remote</option></select></div>
         <div class="fld"><label for="country">Country</label><select id="country"><option value="">Any</option></select></div>
         <div class="fld"><label for="industry">Industry</label><select id="industry"><option value="">Any</option></select></div>
