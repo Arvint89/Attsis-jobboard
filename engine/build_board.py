@@ -154,7 +154,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "text": full,
         }
         rows.append(row)
-    rows, capped = cap_per_company(rows)
+    # JB-22: keep ALL roles in the data — the per-company cap is now a filter the
+    # user controls on the board (default top-N/company, or "All"), not a hard drop.
     matches = [r for r in rows if r["score"] >= min_score]
     below = [r for r in rows if r["score"] < min_score]
 
@@ -173,9 +174,9 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         "flag_legend": FLAG_LEGEND,
         "facets": facet_opts,
         "min_score": min_score,
+        "default_per_company": PER_COMPANY_CAP,   # board's default per-company view cap
         "counts": {"matches": len(matches), "below": len(below),
-                   "errors": len(errors), "unresolved": len(unresolved),
-                   "capped": capped, "per_company_cap": PER_COMPANY_CAP},
+                   "errors": len(errors), "unresolved": len(unresolved)},
         "matches": matches,
         "below": below,
         "errors": errors,
@@ -199,8 +200,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             f.write(std)
 
     print(f"[{payload['mode']}] {len(matches)} matches (>= {min_score}), "
-          f"{len(below)} below, {capped} capped (>{PER_COMPANY_CAP}/company), "
-          f"{len(errors)} fetch-errors, {len(unresolved)} ATS to resolve. -> site/data/jobs.json")
+          f"{len(below)} below, {len(errors)} fetch-errors, "
+          f"{len(unresolved)} ATS to resolve. -> site/data/jobs.json")
     return payload
 
 

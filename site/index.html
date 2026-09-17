@@ -107,8 +107,11 @@
         <div class="fld"><label for="country">Country</label><select id="country"><option value="">Any</option></select></div>
         <div class="fld"><label for="industry">Industry</label><select id="industry"><option value="">Any</option></select></div>
         <div class="fld"><label for="minScore">Min score</label><select id="minScore"><option value="0">Show all</option><option value="4">4+</option><option value="6">6+</option><option value="7">7+ (strong)</option><option value="8">8+</option></select></div>
+        <div class="fld"><label for="ring">Distance</label><select id="ring"><option value="">Any distance</option><option value="0">Ring 0 · nearest</option><option value="1">Ring 1</option><option value="2">Ring 2</option><option value="3">Ring 3</option><option value="4">Ring 4 · farthest</option></select></div>
+        <div class="fld"><label for="sortBy">Sort by</label><select id="sortBy"><option value="score">Score</option><option value="distance">Distance (nearest)</option><option value="salary">Salary (highest)</option></select></div>
+        <div class="fld"><label for="perCo">Per company</label><select id="perCo"><option value="8">Top 8</option><option value="3">Top 3</option><option value="5">Top 5</option><option value="0">All</option></select></div>
       </div>
-      <div class="hint">Every role, ranked by fit to your CV. Nothing hidden — set a minimum score if you want to trim the list.</div>
+      <div class="hint">Every role kept — filter by distance, sort by score/distance/salary, and set how many per company (top 8 by default, or All).</div>
     </div>
     <div class="bar jdtool" style="padding:12px 14px;margin-bottom:10px">
       <div class="row"><div class="fld grow"><label>Check any job description (paste it — free gap analysis vs your CV)</label>
@@ -235,14 +238,29 @@ function rescore(){
   if(PROFILE){POOL=POOL.map(j=>{const r=scoreJob(j,PROFILE); return {...j,score:r.score,reasons:r.reasons,matched:r.matched,verdict:r.verdict};}).filter(j=>j.verdict!=='excluded');}
   POOL.sort((a,b)=>b.score-a.score);
 }
+function salVal(s){
+  if(!s) return -1;
+  const nums=(s.match(/[\d][\d,\.]*\s*k?/gi)||[]).map(x=>{let n=parseFloat(x.replace(/,/g,''));if(/k/i.test(x))n*=1000;return n;});
+  return nums.length?Math.max(...nums):-1;
+}
 function renderBoard(){
-  const q=$('#q').value.toLowerCase(),arr=$('#arrangement').value,cty=$('#country').value,ind=$('#industry').value,mn=+($('#minScore').value||0);
-  const f=j=>j.score>=mn&&(!q||(j.company+' '+j.title+' '+(j.matched||[]).join(' ')).toLowerCase().includes(q))&&(arr===''||j.arrangement===arr)&&(cty===''||j.country===cty)&&(ind===''||j.industry===ind);
-  const m=POOL.filter(f);
+  const q=$('#q').value.toLowerCase(),arr=$('#arrangement').value,cty=$('#country').value,ind=$('#industry').value,
+        mn=+($('#minScore').value||0),ring=$('#ring').value,sortBy=$('#sortBy').value,perCo=+($('#perCo').value||0);
+  const f=j=>j.score>=mn
+    &&(!q||(j.company+' '+j.title+' '+(j.matched||[]).join(' ')).toLowerCase().includes(q))
+    &&(arr===''||j.arrangement===arr)&&(cty===''||j.country===cty)&&(ind===''||j.industry===ind)
+    &&(ring===''||String(j.ring)===ring);
+  let m=POOL.filter(f);
+  if(perCo>0){                                   // keep top N per company
+    const cnt={}; m=[...m].sort((a,b)=>b.score-a.score).filter(j=>{cnt[j.company]=(cnt[j.company]||0)+1;return cnt[j.company]<=perCo;});
+  }
+  if(sortBy==='distance') m.sort((a,b)=>((a.ring==null?9:a.ring)-(b.ring==null?9:b.ring))||((a.km==null?1e9:a.km)-(b.km==null?1e9:b.km))||(b.score-a.score));
+  else if(sortBy==='salary') m.sort((a,b)=>(salVal(b.salary)-salVal(a.salary))||(b.score-a.score));
+  else m.sort((a,b)=>(b.score-a.score)||((a.ring==null?9:a.ring)-(b.ring==null?9:b.ring)));
   window.VIS={m};
-  $('#matches').innerHTML=m.length?m.map((j,i)=>jobCard(j,'m',i)).join(''):`<div class="empty">No roles at this minimum score. Lower "Min score" or widen your keywords in Setup.</div>`;
+  $('#matches').innerHTML=m.length?m.map((j,i)=>jobCard(j,'m',i)).join(''):`<div class="empty">No roles for these filters. Loosen a filter, lower Min score, or set Per company → All.</div>`;
   const strong=m.filter(j=>j.score>=7).length;
-  $('#count').textContent=`${m.length} role${m.length!==1?'s':''} shown${mn?` (score ${mn}+)`:''} · ${strong} strong (7+)`;
+  $('#count').textContent=`${m.length} role${m.length!==1?'s':''} shown · ${strong} strong (7+)`+(perCo?` · ≤${perCo}/company`:' · all per company');
 }
 function showBoard(){
   $('#setupView').style.display='none';$('#boardView').style.display='block';$('#toSetup').style.display='inline-block';
@@ -295,7 +313,7 @@ $('#saveBtn').onclick=()=>{
 };
 $('#toSetup').onclick=showSetup;
 $('#jdBtn').onclick=()=>{const t=$('#jdIn').value.trim();$('#jdOut').innerHTML=t?gapHtml(gapAnalysis(t)):'<div class="hint">Paste a job description first.</div>';};
-['q','arrangement','country','industry','minScore'].forEach(id=>$('#'+id).addEventListener('input',renderBoard));
+['q','arrangement','country','industry','minScore','ring','sortBy','perCo'].forEach(id=>$('#'+id).addEventListener('input',renderBoard));
 
 /* ---------- boot ---------- */
 function init(d){

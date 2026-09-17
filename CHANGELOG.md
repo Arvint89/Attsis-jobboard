@@ -86,3 +86,9 @@
   Was title-only, so ZTR/BinSentry/VueReal scored low ("no skills in body").
   Verified the detail endpoint shape live; failure-safe (keeps title-only if detail errors).
 - Added 2 tests (detail fetch + failure fallback). 25 tests green.
+
+## v0.8.0 — 2026-09-17 (MINOR — JB-22 distance filter, sort-by, per-company view)
+- Board now keeps ALL roles in the data (no more hard per-company drop). The cap
+  became a UI control: "Per company" (top 8 by default → All to see everything).
+- New "Distance" filter (Ring 0–4) and "Sort by" (Score / Distance / Salary).
+- build_board no longer deletes roles; payload carries default_per_company.
