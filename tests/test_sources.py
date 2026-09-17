@@ -71,3 +71,37 @@ def test_getro_failure_is_safe(monkeypatch):
 def test_fetch_source_dispatches_and_is_safe():
     jobs, err = sources.fetch_source({"platform": "nope", "name": "Z"})
     assert jobs == [] and "no adapter" in err
+
+
+# real captured LEDC card markup (londontechjobs.ca, 2026-09-17)
+LEDC_HTML = '''
+<div class="gm-card"> <a href="job.aspx?jid=839ce3f2-013f-4822-a795-f0d92dd8f70b" class="gm-card-link"></a>
+  <div class="gm-card-text"> <h4 class="gm-card-title"> Controls Developer </h4>
+  <h3 class="gm-card-subtitle">ZTR Control Systems</h3>
+  <i class="fa fa-map-marker"></i>London, ON </div>
+  <div class="gm-card-timestamp"><span><i class="fa fa-clock-o"></i>Sep 14, 2026 </span></div>
+</div>
+<div class="gm-card"> <a href="job.aspx?jid=0dee9f21-9d3b-422f-b0f8-ea3cbd933ec2"></a>
+  <div class="gm-card-text"> <h4 class="gm-card-title">Embedded Engineer</h4>
+  <h3 class="gm-card-subtitle">StarTech.com</h3>
+  <i class="fa fa-map-marker"></i>London, ON </div></div>
+'''
+
+
+def test_ledc_parses_cards():
+    rows = sources.parse_ledc_cards(LEDC_HTML, "https://londontechjobs.ca", "LEDC Tech")
+    assert len(rows) == 2
+    r = rows[0]
+    assert r["title"] == "Controls Developer"
+    assert r["company"] == "ZTR Control Systems"
+    assert r["location"] == "London, ON"
+    assert r["url"] == "https://londontechjobs.ca/job.aspx?jid=839ce3f2-013f-4822-a795-f0d92dd8f70b"
+    assert r["posted"] == "Sep 14, 2026"
+    assert r["source"] == "ledc:LEDC Tech"
+
+
+def test_ledc_fetch_is_failure_safe(monkeypatch):
+    def boom(url):
+        raise RuntimeError("dns fail")
+    monkeypatch.setattr(sources, "_get_text", boom)
+    assert sources.fetch_ledc("LEDC Tech", "https://londontechjobs.ca") == []
