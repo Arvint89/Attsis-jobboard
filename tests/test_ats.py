@@ -51,6 +51,45 @@ def test_bamboohr_empty_result_is_safe():
     assert ats.fetch_bamboohr("Acme", "acme") == []
 
 
+def patch_urls(router):
+    """Route _get by URL substring -> payload (for adapters that make >1 call)."""
+    def fake(url, method="GET", **kw):
+        for frag, payload in router.items():
+            if frag in url:
+                return FakeResp(payload)
+        raise AssertionError("unexpected url: " + url)
+    ats._get = fake
+
+
+def test_bamboohr_fetches_description_from_detail():
+    # JB-19: list gives titles only; detail carries the description
+    patch_urls({
+        "/careers/list": {"result": [{"id": 42, "jobOpeningName": "Senior Firmware Developer",
+                                        "location": "London, ON", "datePosted": "2026-09-01"}]},
+        "/42/detail": {"result": {"jobOpening": {
+            "description": "&lt;p&gt;Embedded C, ARM Cortex-M, RTOS, BLE&lt;/p&gt;",
+            "datePosted": "2026-09-02",
+            "jobOpeningShareUrl": "https://ztr.bamboohr.com/careers/42"}}},
+    })
+    j = ats.fetch_bamboohr("ZTR", "ztr")[0]
+    assert REQUIRED <= set(j)
+    assert j["title"] == "Senior Firmware Developer"
+    assert "Embedded C" in j["description"] and "<" not in j["description"]  # description now populated + stripped
+    assert j["url"].endswith("/careers/42")
+    assert j["source"] == "bamboohr"
+
+
+def test_bamboohr_detail_failure_keeps_title_only():
+    # if the detail fetch errors, we still return the role (title-only), not crash
+    def fake(url, method="GET", **kw):
+        if "/careers/list" in url:
+            return FakeResp({"result": [{"id": 7, "jobOpeningName": "Embedded Engineer", "location": "London"}]})
+        raise RuntimeError("detail down")
+    ats._get = fake
+    jobs = ats.fetch_bamboohr("ZTR", "ztr")
+    assert len(jobs) == 1 and jobs[0]["title"] == "Embedded Engineer" and jobs[0]["description"] == ""
+
+
 def test_strip_html_helper():
     assert ats._strip_html("&lt;h2&gt;Hi&lt;/h2&gt;&lt;p&gt;A &amp; B&lt;/p&gt;").replace("\n", " ").strip().startswith("Hi")
 

@@ -80,3 +80,9 @@
 - No single employer can flood the board: cap of 8 roles per company (highest-scored
   kept). Fixes Tenstorrent (~65) + Geotab (81) dominating. build_board.cap_per_company()
   + 3 tests. jobs.json now reports `capped` and `per_company_cap`.
+
+## v0.7.1 — 2026-09-17 (BUGS — JB-19 BambooHR descriptions)
+- BambooHR adapter now fetches each job's /detail endpoint for its description.
+  Was title-only, so ZTR/BinSentry/VueReal scored low ("no skills in body").
+  Verified the detail endpoint shape live; failure-safe (keeps title-only if detail errors).
+- Added 2 tests (detail fetch + failure fallback). 25 tests green.

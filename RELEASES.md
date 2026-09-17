@@ -14,6 +14,7 @@ Versioning: **MAJOR.MINOR.BUGS** (see docs/VERSIONING.md). One row per release.
 | 0.6.1 | 2026-09-16 | BUGS | BUG-001 "ble" whole-word matching; deploy-only Action | v0.6.1 |
 | 0.6.2 | 2026-09-16 | BUGS | Data: resolved Geotab + Miovision (JB-3 partial) | v0.6.2 |
 | 0.7.0 | 2026-09-17 | MINOR | Per-company cap (JB-20) — no employer floods the board | v0.7.0 |
+| 0.7.1 | 2026-09-17 | BUGS | BambooHR job descriptions (JB-19) | v0.7.1 |
 | _next_ | | | | |
 
 Legend: pre-repo = existed as a dev iteration before the first GitHub push (collapsed into the
