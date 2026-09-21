@@ -29,6 +29,8 @@
   .fld{display:flex;flex-direction:column;gap:4px}.fld label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
   .fld.grow{flex:1}.fld.grow input{width:100%}
   .searchrow{margin-bottom:10px}
+  .hometip{background:#2563eb;color:#fff;border:none;font-weight:700;font-size:11px;padding:2px 7px;border-radius:6px;box-shadow:0 1px 3px #0006}
+  .hometip:before{display:none}
   .kw{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
   .kw .tag{font-size:12px;padding:3px 8px 3px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--edge);color:var(--ink);display:flex;align-items:center;gap:6px}
   .kw .tag b{color:var(--good);cursor:pointer}
@@ -348,30 +350,51 @@ $('#jdBtn').onclick=()=>{const t=$('#jdIn').value.trim();$('#jdOut').innerHTML=t
 /* ---------- map view (JB-26) ---------- */
 let MAP=null;
 const STATUS_COLOR={fit:'#16a34a',open:'#f39c12',none:'#94a3b8',unknown:'#ffffff'};
+// recompute each company's hiring status from the CV-rescored pool, so the map
+// reflects YOUR fit (green) rather than the server's base-model scoring.
+function poolCompanyCounts(){
+  const m={};
+  (typeof POOL!=='undefined'?POOL:[]).forEach(j=>{
+    const k=(j.company||'').trim(); if(!k) return;
+    const e=m[k]||(m[k]={fit:0,any:0}); e.any++; if(j.score>=7) e.fit++;
+  });
+  return m;
+}
 function renderMap(){
-  const filt=$('#mapStatus').value, home=JOBS.home_coords;
+  const filt=$('#mapStatus').value, home=JOBS.home_coords||[42.9849,-81.2453];
   if(!MAP){
-    MAP=L.map('map',{scrollWheelZoom:true}).setView(home||[43.6,-79.5],7);
+    MAP=L.map('map',{scrollWheelZoom:true}).setView(home,8);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Tiles © Esri'}).addTo(MAP);
   }
   if(MAP._coLayer) MAP.removeLayer(MAP._coLayer);
+  const counts = PROFILE ? poolCompanyCounts() : null;   // null until a CV is loaded
   const layer=L.layerGroup(), pts=[];
-  if(home){ L.circleMarker(home,{radius:11,color:'#ffffff',weight:3,fillColor:'#2563eb',fillOpacity:1}).bindPopup('<b>You</b><br>'+(JOBS.home||'home')).addTo(layer); pts.push(home); }
+  // Home marker — always drawn, prominent, permanently labelled
+  const hm=L.circleMarker(home,{radius:12,color:'#ffffff',weight:3,fillColor:'#2563eb',fillOpacity:1})
+    .bindPopup('<b>🏠 Home</b><br>'+(JOBS.home||'home'));
+  hm.bindTooltip('🏠 Home',{permanent:true,direction:'top',className:'hometip',offset:[0,-10]});
+  hm.addTo(layer); pts.push(home);
+  let greens=0;
   (JOBS.companies||[]).forEach(c=>{
-    if(filt && c.status!==filt) return;
-    const col=STATUS_COLOR[c.status]||'#94a3b8';
-    const stroke = c.status==='unknown' ? '#94a3b8' : '#ffffff';
-    const roles = c.status==='fit'?`<b style="color:#16a34a">${c.fit_roles} matching role(s)</b>`
-      : c.status==='open'?`${c.roles} open role(s), weaker fit`
-      : c.status==='none'?'no matching roles now' : 'ATS not resolved — worth checking';
-    L.circleMarker([c.lat,c.lng],{radius:9,color:stroke,weight:2,fillColor:col,fillOpacity:c.status==='unknown'?0.7:0.95})
-      .bindPopup(`<b>${c.name}</b><br>${c.city} · ${c.industry}<br>${roles}<br><a href="${c.careers_url}" target="_blank" rel="noopener">careers ↗</a>`)
+    let status=c.status, roles=c.roles, fit=c.fit_roles;
+    const pc = counts && counts[(c.name||'').trim()];
+    if(pc){ roles=pc.any; fit=pc.fit; status = fit ? 'fit' : (roles ? 'open' : (c.resolved?'none':'unknown')); }
+    if(filt && status!==filt) return;
+    if(status==='fit') greens++;
+    const hollow = status==='unknown';
+    const col=STATUS_COLOR[status]||'#94a3b8';
+    const stroke = hollow ? '#94a3b8' : '#ffffff';
+    const roleTxt = status==='fit'?`<b style="color:#16a34a">${fit} role(s) matching your CV</b>`
+      : status==='open'?`${roles} open role(s), weaker fit`
+      : status==='none'?'no matching roles now' : 'ATS not resolved — worth checking';
+    L.circleMarker([c.lat,c.lng],{radius:hollow?6:9,color:stroke,weight:2,fillColor:col,fillOpacity:hollow?0.5:0.95})
+      .bindPopup(`<b>${c.name}</b><br>${c.city} · ${c.industry}<br>${roleTxt}<br><a href="${c.careers_url}" target="_blank" rel="noopener">careers ↗</a>`)
       .addTo(layer);
-    pts.push([c.lat,c.lng]);
+    if(!hollow) pts.push([c.lat,c.lng]);   // hollow (unresolved) don't drag the zoom out
   });
   layer.addTo(MAP); MAP._coLayer=layer;
-  const shown=(JOBS.companies||[]).filter(c=>!filt||c.status===filt).length;
-  $('#mapNote').textContent=`${shown} companies shown. Green = hiring a role that fits your CV; amber = open roles, weaker fit; grey = no matching roles; hollow = ATS not resolved (worth checking).`;
+  $('#mapNote').textContent=(PROFILE?`${greens} compan${greens===1?'y':'ies'} hiring a role that fits your CV. `:'Load your CV on the setup page to light up fits. ')
+    +'Green = fits your CV · amber = open, weaker fit · grey = none now · hollow = ATS not resolved.';
   setTimeout(()=>{MAP.invalidateSize(); if(pts.length>1){try{MAP.fitBounds(pts,{padding:[40,40],maxZoom:9});}catch(e){}}},60);
 }
 function showView(which){
