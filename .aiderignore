@@ -1,0 +1,13 @@
+# Files aider must NEVER edit — even if /add'd to the session.
+# CI-managed data or fixtures that only get rebuilt by the pipeline.
+
+site/data/jobs.json
+engine/fixtures.json
+site/board_standalone.html
+
+# Never leak secrets into an aider session
+.env
+.env.local
+
+# Aider working files
+.aider*
