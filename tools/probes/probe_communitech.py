@@ -1,5 +1,5 @@
-"""One-off probe (JB-39): find the Getro collection id behind Communitech's public
-'Work In Tech' board. Run:  python probe_communitech.py   -> paste output. Do NOT commit."""
+"""Probe (JB-39): find the Getro collection id behind Communitech's public
+'Work In Tech' board. Run:  python tools/probes/probe_communitech.py   -> paste output. Diagnostic tool (kept in repo)."""
 import re, json, requests
 
 URL = "https://www1.communitech.ca/jobs"

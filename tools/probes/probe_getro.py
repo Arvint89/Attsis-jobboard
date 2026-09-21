@@ -1,5 +1,5 @@
-"""One-off probe (JB-38): where can we get the full job description for Getro (MaRS/Communitech) jobs?
-Run on your PC:  python probe_getro.py   -> paste the output to Claude. Do NOT commit this file."""
+"""Probe (JB-38): where can we get the full job description for Getro (MaRS/Communitech) jobs?
+Run on your PC:  python tools/probes/probe_getro.py   -> paste the output. Diagnostic tool (kept in repo)."""
 import json, re, requests
 H = {"Accept": "application/json", "Content-Type": "application/json",
      "User-Agent": "Mozilla/5.0 (compatible; bt-jobboard/1.0; +personal job search)"}

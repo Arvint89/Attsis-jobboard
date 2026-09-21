@@ -1,9 +1,9 @@
-"""One-off probe (JB-39): how many companies can daily regional discovery find?
+"""Probe (JB-39): how many companies can daily regional discovery find?
 Pages through ALL jobs on each Getro board, counts distinct companies, how many are
 in Ontario, and how many post through an ATS the board can already read.
-Run:  python probe_regional.py   (takes ~1-3 min)  -> paste the summary. Do NOT commit."""
+Run:  python tools/probes/probe_regional.py   -> paste the summary. Diagnostic tool, kept in the repo."""
 import sys, os, collections, requests
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "engine"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "engine"))
 import ats_detect
 
 H = {"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
