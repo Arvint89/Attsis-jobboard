@@ -107,6 +107,25 @@ def _defaults(j):
     return j
 
 
+def source_funnel(classified):
+    """JB-30a: per-source funnel. classified = list of (job, classify_result), after dedupe.
+    Returns {source: {"fetched": n, "kept": n, "excluded": {reason_key: n}}}.
+    reason_key = first reason, text before any ":" or "(", stripped; none -> "unspecified"."""
+    out = {}
+    for job, res in classified:
+        src = job.get("source") or "unknown"
+        s = out.setdefault(src, {"fetched": 0, "kept": 0, "excluded": {}})
+        s["fetched"] += 1
+        if res.get("verdict") != "excluded":
+            s["kept"] += 1
+            continue
+        reasons = res.get("reasons") or []
+        key = reasons[0].split(":")[0].split("(")[0].strip() if reasons else ""
+        key = key or "unspecified"
+        s["excluded"][key] = s["excluded"].get(key, 0) + 1
+    return out
+
+
 def dedupe(jobs):
     seen, out = set(), []
     for j in jobs:
@@ -142,8 +161,10 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     raw, errors, unresolved = gather(demo)
     raw = [ _defaults(j) for j in dedupe(raw) ]
     rows = []
+    classified = []
     for j in raw:
         res = jobfilter.classify(j, extra_flags=j.get("_reg_flags"))
+        classified.append((j, res))
         if res["verdict"] == "excluded":
             continue
         ring, km, is_remote = geo.ring_for(home, j.get("location", ""))
@@ -235,6 +256,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         "default_per_company": PER_COMPANY_CAP,   # board's default per-company view cap
         "counts": {"matches": len(matches), "below": len(below),
                    "errors": len(errors), "unresolved": len(unresolved)},
+        "source_funnel": source_funnel(classified),
         "matches": matches,
         "below": below,
         "companies": companies_map,
