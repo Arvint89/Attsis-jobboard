@@ -1,0 +1,31 @@
+# CI — the safety net. Runs on EVERY pull request and every push to main.
+# Why this exists: sweep.yml deploys main to the live site on merge, so without
+# this nothing stops a broken change going public. See docs/decisions/ADR-001.
+name: ci
+
+on:
+  pull_request:          # every PR, regardless of target branch
+  push:
+    branches: [main]     # and main itself, as a backstop
+
+jobs:
+  test:
+    name: tests + smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r engine/requirements.txt
+
+      - name: Unit tests (41)
+        run: python -m pytest tests/ -q
+
+      - name: Smoke checks (11) — end-to-end, offline demo build
+        run: cd engine && python smoke_test.py
