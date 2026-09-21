@@ -216,13 +216,12 @@
     {
       "name": "Kepler Communications",
       "ring": 2,
-      "platform": "resolve",
-      "slug": "",
-      "careers_url": "https://kepler.space/careers",
+      "platform": "lever",
+      "slug": "kepler",
+      "careers_url": "https://jobs.lever.co/kepler",
       "flags": [
         "signed-employer"
       ],
-      "note": "BT starting 5 Oct - watch only",
       "industry": "aerospace/space",
       "sponsors": null,
       "city": "Toronto"
