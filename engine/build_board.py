@@ -185,7 +185,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         row = {
             "company": j["company"], "title": j["title"], "location": j["location"],
             "url": j["url"], "posted": j.get("posted"), "source": j.get("source"),
-            "salary": j.get("salary", ""), "ring": ring, "km": km, "lat": lat, "lng": lng,
+            "salary": j.get("salary") or facets.salary_from_text(j.get("description") or ""), "ring": ring, "km": km, "lat": lat, "lng": lng,
             "score": res["score"], "flags": res["flags"],
             "arrangement": arrangement, "country": country,
             "industry": industry, "sponsorship": sponsor,
