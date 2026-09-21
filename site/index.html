@@ -165,6 +165,7 @@
         <span><b style="background:#94a3b8"></b>No matching roles</span>
         <span><b style="background:#ffffff;border:1px solid #94a3b8"></b>ATS not resolved</span>
         <span><b style="background:#2563eb"></b>You (home)</span>
+        <span><b style="background:transparent;border:3px solid #a855f7;width:9px;height:9px"></b>Multi-city roles (nearest shown)</span>
       </div>
       <div class="fld" style="max-width:230px;margin-bottom:8px"><label for="mapStatus">Show</label>
         <select id="mapStatus"><option value="">All companies</option><option value="fit">Hiring — fits CV</option><option value="open">Any open roles</option><option value="unknown">Unresolved (to check)</option></select></div>
@@ -387,7 +388,7 @@ function poolCompanyCounts(){
   const m={}, f=listFilter();
   (typeof POOL!=='undefined'?POOL:[]).filter(f).forEach(j=>{
     const k=(j.company||'').trim(); if(!k) return;
-    const e=m[k]||(m[k]={fit:0,any:0}); e.any++; if(j.score>=7) e.fit++;
+    const e=m[k]||(m[k]={fit:0,any:0,multi:0}); e.any++; if(j.score>=7) e.fit++; if((j.n_locations||1)>1) e.multi++;
   });
   return m;
 }
@@ -407,7 +408,7 @@ function renderMap(){
   hm.addTo(layer); pts.push(home);
   let greens=0, shownCos=0, withRoles=0;
   (JOBS.companies||[]).forEach(c=>{
-    const pc = counts[(c.name||'').trim()] || {fit:0,any:0};
+    const pc = counts[(c.name||'').trim()] || {fit:0,any:0,multi:0};
     const roles=pc.any, fit=pc.fit;
     const status = fit ? 'fit' : (roles ? 'open' : (c.resolved?'none':'unknown'));
     if(filt && status!==filt) return;
@@ -419,9 +420,11 @@ function renderMap(){
     const roleTxt = status==='fit'?`<b style="color:#16a34a">${fit} strong (7+) of ${roles} role(s)</b>`
       : status==='open'?`${roles} role(s) match your filters, none 7+`
       : status==='none'?'no roles match your filters now' : 'ATS not resolved — worth checking';
+    const multiTxt = pc.multi?`<br><span style="color:#a855f7">◎ ${pc.multi} of ${roles} role(s) list several cities — dot shows the nearest</span>`:'';
     const listLink = roles?`<br><a href="#" onclick="showCompany(decodeURIComponent('${encodeURIComponent(c.name)}'));return false;">▸ show these ${roles} role(s) in the list</a>`:'';
+    if(pc.multi) L.circleMarker([c.lat,c.lng],{radius:14,color:'#a855f7',weight:3,fill:false,interactive:false}).addTo(layer);  // JB-36 multi-city ring
     L.circleMarker([c.lat,c.lng],{radius:hollow?6:9,color:stroke,weight:2,fillColor:col,fillOpacity:hollow?0.5:0.95})
-      .bindPopup(`<b>${c.name}</b><br>${c.city} · ${c.industry}<br>${roleTxt}${listLink}<br><a href="${c.careers_url}" target="_blank" rel="noopener">careers ↗</a>`)
+      .bindPopup(`<b>${c.name}</b><br>${c.city} · ${c.industry}<br>${roleTxt}${multiTxt}${listLink}<br><a href="${c.careers_url}" target="_blank" rel="noopener">careers ↗</a>`)
       .addTo(layer);
     if(!hollow) pts.push([c.lat,c.lng]);   // hollow (unresolved) don't drag the zoom out
   });
