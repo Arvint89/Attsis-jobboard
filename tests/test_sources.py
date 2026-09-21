@@ -105,3 +105,34 @@ def test_ledc_fetch_is_failure_safe(monkeypatch):
         raise RuntimeError("dns fail")
     monkeypatch.setattr(sources, "_get_text", boom)
     assert sources.fetch_ledc("LEDC Tech", "https://londontechjobs.ca") == []
+
+
+def test_getro_one_failing_query_keeps_the_others(monkeypatch):
+    def fake(url, body):
+        if body["query"] == "bad":
+            raise RuntimeError("429")
+        return _fake([dict(ONE, id=body["query"])])
+    monkeypatch.setattr(sources, "_post", fake)
+    jobs = sources.fetch_getro("Communitech", 8936, ["firmware", "bad", "altium"])
+    assert len(jobs) == 2
+
+
+def test_getro_paginates_until_a_short_page(monkeypatch):
+    calls = []
+    def fake(url, body):
+        calls.append(body["page"])
+        n = 2 if body["page"] == 0 else 1
+        return _fake([dict(ONE, id=f"{body['page']}-{i}") for i in range(n)])
+    monkeypatch.setattr(sources, "_post", fake)
+    jobs = sources.fetch_getro("Communitech", 8936, ["firmware"], per_page=2)
+    assert len(jobs) == 3 and calls == [0, 1]
+
+
+def test_getro_stops_at_max_pages(monkeypatch):
+    calls = []
+    def fake(url, body):
+        calls.append(body["page"])
+        return _fake([dict(ONE, id=f"{body['page']}-{i}") for i in range(2)])
+    monkeypatch.setattr(sources, "_post", fake)
+    sources.fetch_getro("Communitech", 8936, ["firmware"], per_page=2, max_pages=3)
+    assert calls == [0, 1, 2]

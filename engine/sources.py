@@ -133,25 +133,35 @@ def _norm_getro(job: dict, board: str) -> dict:
 # ---------------------------------------------------------------------------
 # adapters
 # ---------------------------------------------------------------------------
-def fetch_getro(name: str, network_id, queries=None, per_page: int = 100) -> list:
+def fetch_getro(name: str, network_id, queries=None, per_page: int = 100, max_pages: int = 5) -> list:
     """Pull a Getro board by network_id. Runs each keyword query, merges, dedupes by job id.
 
-    Failure-safe: any network/parse error -> []. Confirmed shapes: MaRS 383, Communitech 8936.
+    JB-30b: each query is paged (0, 1, 2 ...) until a page returns fewer than per_page jobs,
+    or max_pages is reached. A failing request skips only the rest of THAT query -- jobs
+    already collected are kept. Every request failing -> []. Never raises.
+    Confirmed shapes: MaRS 383, Communitech 8936.
     """
     url = f"https://api.getro.com/api/v2/collections/{network_id}/search/jobs"
     queries = queries or DEFAULT_QUERIES
     seen, out = set(), []
-    try:
-        for q in queries:
-            data = _post(url, {"hitsPerPage": per_page, "page": 0, "query": q})
-            for job in (data.get("results", {}) or {}).get("jobs", []) or []:
+    for q in queries:
+        for page in range(max_pages):
+            try:
+                data = _post(url, {"hitsPerPage": per_page, "page": page, "query": q})
+                jobs = (data.get("results", {}) or {}).get("jobs", []) or []
+            except Exception:
+                break          # skip the rest of this query; keep what we have
+            for job in jobs:
                 jid = job.get("id") or (job.get("url"), job.get("title"))
                 if jid in seen:
                     continue
                 seen.add(jid)
-                out.append(_norm_getro(job, name))
-    except Exception:
-        return []          # never kill the build over one board
+                try:
+                    out.append(_norm_getro(job, name))
+                except Exception:
+                    continue   # one malformed job never costs the rest
+            if len(jobs) < per_page:
+                break
     return out
 
 
