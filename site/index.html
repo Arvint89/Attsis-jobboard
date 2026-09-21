@@ -128,6 +128,7 @@
         <div class="fld"><label for="ring">Distance</label><select id="ring"><option value="">Any distance</option><option value="0">Ring 0 · nearest</option><option value="1">Ring 1</option><option value="2">Ring 2</option><option value="3">Ring 3</option><option value="4">Ring 4 · farthest</option></select></div>
         <div class="fld"><label for="sortBy">Sort by</label><select id="sortBy"><option value="score">Score</option><option value="distance">Distance (nearest)</option><option value="salary">Salary (highest)</option></select></div>
         <div class="fld"><label for="perCo">Per company</label><select id="perCo"><option value="8">Top 8</option><option value="3">Top 3</option><option value="5">Top 5</option><option value="0">All</option></select></div>
+        <div class="fld"><label>&nbsp;</label><button class="navbtn" type="button" style="font-size:12px;padding:6px 10px" onclick="resetFilters()" title="Clear saved filters">Reset filters</button></div>
       </div>
       <div class="hint">Every role kept — filter by distance, sort by score/distance/salary, and set how many per company (top 8 by default, or All).</div>
     </div>
@@ -303,6 +304,7 @@ function showBoard(){
   const fc=JOBS.facets||{};
   $('#country').innerHTML='<option value="">Any</option>'+(fc.country||[]).map(v=>`<option>${v}</option>`).join('');
   $('#industry').innerHTML='<option value="">Any</option>'+(fc.industry||[]).map(v=>`<option>${v}</option>`).join('');
+  restoreFilters();
   if(JOBS.mode==='demo')$('#demoBanner').style.display='block';
   rescore();renderBoard();
 }
@@ -346,7 +348,14 @@ $('#saveBtn').onclick=()=>{
 };
 $('#toSetup').onclick=showSetup;
 $('#jdBtn').onclick=()=>{const t=$('#jdIn').value.trim();$('#jdOut').innerHTML=t?gapHtml(gapAnalysis(t)):'<div class="hint">Paste a job description first.</div>';};
-['q','arrangement','country','industry','minScore','ring','sortBy','perCo'].forEach(id=>$('#'+id).addEventListener('input',renderBoard));
+/* JB-8: remember filter + min-score choices per browser */
+const FKEYS=['q','arrangement','country','industry','minScore','ring','sortBy','perCo','mapStatus'];
+function saveFilters(){try{const o={};FKEYS.forEach(id=>{const el=$('#'+id);if(el)o[id]=el.value;});localStorage.setItem('jobboard_filters',JSON.stringify(o));}catch(e){}}
+function restoreFilters(){let o=null;try{o=JSON.parse(localStorage.getItem('jobboard_filters')||'null');}catch(e){}
+  if(!o)return;FKEYS.forEach(id=>{const el=$('#'+id);if(!el||o[id]==null)return;el.value=o[id];if(el.value!==o[id])el.value='';});}
+function resetFilters(){try{localStorage.removeItem('jobboard_filters');}catch(e){}
+  FKEYS.forEach(id=>{const el=$('#'+id);if(el)el.value=el.tagName==='SELECT'?el.options[0].value:'';});renderBoard();if(MAP)renderMap();}
+FKEYS.filter(id=>id!=='mapStatus').forEach(id=>$('#'+id).addEventListener('input',()=>{saveFilters();renderBoard();}));
 
 /* ---------- map view (JB-26) ---------- */
 let MAP=null;
@@ -407,7 +416,7 @@ function showView(which){
 }
 $('#tabList').onclick=()=>showView('list');
 $('#tabMap').onclick=()=>showView('map');
-$('#mapStatus').addEventListener('input',renderMap);
+$('#mapStatus').addEventListener('input',()=>{saveFilters();renderMap();});
 
 /* ---------- boot ---------- */
 function init(d){
