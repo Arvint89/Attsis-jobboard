@@ -4,9 +4,16 @@ name: job-sweep
 on:
   push:
     branches: [main]
+    paths:                      # JB-41: docs/tools-only pushes don't trigger a 5-min live fetch
+      - "engine/**"
+      - "site/**"
+      - ".github/workflows/sweep.yml"
   schedule:
     - cron: "39 12 * * 1-5"   # 08:39 America/Toronto (12:39 UTC), weekdays
   workflow_dispatch: {}         # manual "Run" button
+concurrency:                    # JB-41: never run two sweeps at once; the newest wins
+  group: job-sweep
+  cancel-in-progress: true
 permissions:
   contents: write
   pages: write
