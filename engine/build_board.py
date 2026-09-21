@@ -66,11 +66,11 @@ def load_registry():
         return json.load(f)["companies"]
 
 
-MAX_NEW_COMPANIES = 150   # JB-5: bound the extra ATS fetches per run
+MAX_NEW_COMPANIES = 500   # JB-5/39: bound the extra ATS fetches per run
 LAST_DISCOVERY = {"discovered": [], "enriched": 0, "errors": []}
 
 
-def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES):
+def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, relevant=None, in_region=None):
     """JB-5 / JB-38b: follow aggregator apply links to each company's own ATS.
 
     source_jobs: jobs from board sources (Getro/LEDC), each with "url", "company", "source".
@@ -78,6 +78,10 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES):
     For every supported ATS found in a job url: fetch that company's whole board once
     (full descriptions, all roles) and drop its aggregator stubs. Registry companies are not
     refetched (their stubs are dropped as duplicates). Unsupported ATS / failed fetch -> keep stubs.
+    relevant:    optional job -> bool; in_region: optional job -> bool.
+                 A company is promoted if any of its stubs is relevant OR in the region (JB-39: track
+                 every regional company on a readable ATS -- its hardware roles may only be on its
+                 own board). Relevant companies are promoted first, so the cap never drops them.
     Returns (jobs, info) with info = {"discovered": [names], "enriched": n_stubs_replaced, "errors": [...]}.
     """
     fetch = fetch or ats.fetch_company
@@ -91,7 +95,16 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES):
             keep.append(j)
     out, info = [], {"discovered": [], "enriched": 0, "errors": []}
     fetched = 0
-    for key, g in groups.items():
+    def rank(item):
+        stubs = item[1]["stubs"]
+        return 0 if (relevant is None or any(relevant(j) for j in stubs)) else 1
+    for key, g in sorted(groups.items(), key=rank):
+        gated = relevant is not None or in_region is not None
+        ok = ((relevant is not None and any(relevant(j) for j in g["stubs"])) or
+              (in_region is not None and any(in_region(j) for j in g["stubs"])))
+        if gated and not ok:
+            keep += g["stubs"]
+            continue
         if key in known:                       # registry already has this company's full board
             info["enriched"] += len(g["stubs"])
             continue
@@ -153,7 +166,9 @@ def gather(demo: bool):
             errors.append({"company": entry["name"], "error": err})
         source_jobs += got
     # JB-5: follow apply links to each company's own ATS (full descriptions + every role)
-    got, info = enrich_via_ats(source_jobs, known)
+    got, info = enrich_via_ats(source_jobs, known,
+                               relevant=lambda j: jobfilter.classify(j)["verdict"] != "excluded",
+                               in_region=lambda j: facets.country(j.get("location", "")) == "Canada")
     errors += info["errors"]
     LAST_DISCOVERY.update(info)
     for j in got:

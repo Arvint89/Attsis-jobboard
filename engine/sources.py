@@ -136,11 +136,12 @@ def _norm_getro(job: dict, board: str) -> dict:
 # ---------------------------------------------------------------------------
 # adapters
 # ---------------------------------------------------------------------------
-def fetch_getro(name: str, network_id, queries=None, per_page: int = 100, max_pages: int = 5) -> list:
+def fetch_getro(name: str, network_id, queries=None, per_page: int = 20, max_pages: int = 15) -> list:
     """Pull a Getro board by network_id. Runs each keyword query, merges, dedupes by job id.
 
-    JB-30b: each query is paged (0, 1, 2 ...) until a page returns fewer than per_page jobs,
-    or max_pages is reached. A failing request skips only the rest of THAT query -- jobs
+    JB-30b/JB-39: each query is paged (0, 1, 2 ...) until a page is empty, the query's reported
+    total is reached, or max_pages. Getro caps pages at 20 jobs whatever hitsPerPage asks for,
+    so page length alone is NOT a reliable "last page" signal (it made us stop after page 0). A failing request skips only the rest of THAT query -- jobs
     already collected are kept. Every request failing -> []. Never raises.
     Confirmed shapes: MaRS 383, Communitech 8936.
     """
@@ -148,10 +149,13 @@ def fetch_getro(name: str, network_id, queries=None, per_page: int = 100, max_pa
     queries = queries or DEFAULT_QUERIES
     seen, out = set(), []
     for q in queries:
+        got_q = 0
         for page in range(max_pages):
             try:
                 data = _post(url, {"hitsPerPage": per_page, "page": page, "query": q})
-                jobs = (data.get("results", {}) or {}).get("jobs", []) or []
+                res = data.get("results", {}) or {}
+                jobs = res.get("jobs", []) or []
+                total = res.get("count")
             except Exception:
                 break          # skip the rest of this query; keep what we have
             for job in jobs:
@@ -163,7 +167,13 @@ def fetch_getro(name: str, network_id, queries=None, per_page: int = 100, max_pa
                     out.append(_norm_getro(job, name))
                 except Exception:
                     continue   # one malformed job never costs the rest
-            if len(jobs) < per_page:
+            got_q += len(jobs)
+            if not jobs:
+                break
+            if isinstance(total, int):
+                if got_q >= total:
+                    break
+            elif len(jobs) < per_page:
                 break
     return out
 

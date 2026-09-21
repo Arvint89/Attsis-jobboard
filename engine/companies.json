@@ -370,6 +370,124 @@
       "sponsors": null,
       "city": "Mississauga",
       "note": "VitalOne diagnostics; resolve ATS"
+    },
+    {
+      "name": "ecobee",
+      "ring": 2,
+      "platform": "greenhouse",
+      "slug": "ecobee",
+      "careers_url": "https://boards.greenhouse.io/ecobee",
+      "flags": [],
+      "industry": "iot/connectivity",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Zebra Technologies",
+      "ring": 2,
+      "platform": "workday",
+      "slug": "zebra",
+      "tenant": "zebra",
+      "site": "Zebra_careers",
+      "dc": "wd501",
+      "careers_url": "https://zebra.wd501.myworkdayjobs.com/Zebra_careers",
+      "flags": [],
+      "industry": "iot/connectivity",
+      "sponsors": null,
+      "city": "Mississauga"
+    },
+    {
+      "name": "Generac",
+      "ring": 2,
+      "platform": "workday",
+      "slug": "generac",
+      "tenant": "generac",
+      "site": "External",
+      "dc": "wd5",
+      "careers_url": "https://generac.wd5.myworkdayjobs.com/External",
+      "flags": [],
+      "industry": "energy/power",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Ultra Maritime",
+      "ring": 4,
+      "platform": "workday",
+      "slug": "ultra",
+      "tenant": "ultra",
+      "site": "ultra-careers",
+      "dc": "wd3",
+      "careers_url": "https://ultra.wd3.myworkdayjobs.com/ultra-careers",
+      "flags": [
+        "eligibility",
+        "relocation"
+      ],
+      "industry": "defence",
+      "sponsors": null,
+      "city": "Dartmouth"
+    },
+    {
+      "name": "Nokia",
+      "ring": 3,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://jobs.nokia.com/en/sites/CX_1/jobs",
+      "note": "Oracle Cloud Recruiting - no adapter yet",
+      "flags": [
+        "relocation"
+      ],
+      "industry": "telecom",
+      "sponsors": null,
+      "city": "Ottawa"
+    },
+    {
+      "name": "Hitachi Energy",
+      "ring": 2,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://careers.hitachi.com/search/jobs/in/on-ontario",
+      "note": "careers.hitachi.com custom portal",
+      "flags": [],
+      "industry": "energy/power",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "ASSA ABLOY",
+      "ring": 2,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://www.assaabloy.com/career/en/open-positions",
+      "note": "ATS not identified yet",
+      "flags": [],
+      "industry": "iot/connectivity",
+      "sponsors": null,
+      "city": "Mississauga"
+    },
+    {
+      "name": "Pipetel Technologies",
+      "ring": 2,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://www.pipetelone.com/careers/",
+      "note": "also posts on Communitech (628)",
+      "flags": [],
+      "industry": "robotics",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Corvita Biomedical",
+      "ring": 2,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://ca.linkedin.com/company/corvita-biomedical",
+      "note": "LinkedIn-only posting seen by sweep 2026-09-21",
+      "flags": [],
+      "industry": "medical",
+      "sponsors": null,
+      "city": "Toronto"
     }
   ]
 }
