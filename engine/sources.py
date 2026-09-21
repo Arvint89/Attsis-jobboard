@@ -28,6 +28,8 @@ import os
 import sys
 from datetime import datetime, timezone
 
+import re
+
 import requests
 import ats  # reuse _strip_html; same normalized shape
 
@@ -153,9 +155,69 @@ def fetch_getro(name: str, network_id, queries=None, per_page: int = 100) -> lis
     return out
 
 
-def fetch_ledc(name: str, base: str, **_) -> list:
-    """London EDC boards (server-rendered HTML). Selector spike pending -- see design §4.3."""
-    return []              # TODO JB-3b: parse directory -> joblist.aspx rows
+def _get_text(url: str) -> str:
+    r = requests.get(url, headers={"User-Agent": HEADERS["User-Agent"]}, timeout=TIMEOUT)
+    r.raise_for_status()
+    return r.text
+
+
+# LEDC job cards are regular server-rendered blocks (confirmed 2026-09-17):
+#   <div class="gm-card"> <a href="job.aspx?jid=UUID"> …
+#     <h4 class="gm-card-title">Title</h4> <h3 class="gm-card-subtitle">Company</h3>
+#     <i class="fa fa-map-marker"></i>London, ON <i class="fa fa-clock-o"></i>Sep 14, 2026
+_RE_JID = re.compile(r'job\.aspx\?jid=([0-9a-fA-F\-]+)')
+_RE_TITLE = re.compile(r'gm-card-title"[^>]*>\s*(.*?)\s*</h4>', re.S)
+_RE_COMPANY = re.compile(r'gm-card-subtitle"[^>]*>\s*(.*?)\s*</h3>', re.S)
+_RE_LOC = re.compile(r'fa-map-marker"></i>\s*([^<]+)')
+_RE_DATE = re.compile(r'fa-clock-o"></i>\s*([A-Za-z]{3}\s+\d{1,2},\s*\d{4})')
+
+
+def parse_ledc_cards(html_text: str, base: str, board: str) -> list:
+    """Parse gm-card blocks out of a joblist.aspx page. Pure function (testable, no I/O)."""
+    out = []
+    for chunk in html_text.split('class="gm-card"')[1:]:     # one piece per card
+        mjid = _RE_JID.search(chunk)
+        mtitle = _RE_TITLE.search(chunk)
+        if not (mjid and mtitle):
+            continue
+        mcomp, mloc, mdate = _RE_COMPANY.search(chunk), _RE_LOC.search(chunk), _RE_DATE.search(chunk)
+        title = ats._strip_html(mtitle.group(1))
+        company = ats._strip_html(mcomp.group(1)) if mcomp else ""
+        loc = mloc.group(1).strip() if mloc else ""
+        posted = mdate.group(1) if mdate else None
+        out.append({
+            "company": company or "n/a",
+            "title": title,
+            "location": ats._strip_html(loc) or "n/a",
+            "url": f"{base}/job.aspx?jid={mjid.group(1)}",
+            "posted": posted,
+            "description": "",                # detail body not fetched (would be N extra requests)
+            "salary": "",
+            "source": f"ledc:{board}",
+            "arrangement": None, "lat": None, "lng": None, "industry": None,
+        })
+    return out
+
+
+def fetch_ledc(name: str, base: str, max_pages: int = 20, **_) -> list:
+    """London EDC boards (server-rendered HTML). Paginated joblist.aspx (50/page), scored by our engine.
+
+    Failure-safe: keeps whatever pages succeeded; any error -> return what we have.
+    """
+    base = base.rstrip("/")
+    out, seen = [], set()
+    try:
+        for page in range(1, max_pages + 1):
+            cards = parse_ledc_cards(_get_text(f"{base}/joblist.aspx?page={page}"), base, name)
+            fresh = [c for c in cards if c["url"] not in seen]
+            for c in fresh:
+                seen.add(c["url"])
+            out += fresh
+            if len(cards) < 50 or not fresh:     # last page, or no new rows
+                break
+    except Exception:
+        return out
+    return out
 
 
 FETCH_SOURCES = {

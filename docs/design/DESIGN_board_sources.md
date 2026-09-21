@@ -147,21 +147,27 @@ by `id`. Empty registry/profile → a default corridor set. `queries` defaults t
 
 **Communitech:** `network_id = 8936`.
 
-### 4.3 `fetch_ledc(name, base) -> list[dict]`
+### 4.3 `fetch_ledc(name, base) -> list[dict]`  ✅ built
 
-**Two-step, server-rendered HTML (confirmed structure):**
-1. `GET {base}/` → company directory. Rows: `div.listing.listing-tech-jobs-content` →
-   anchor `joblist.aspx?company=<Name>` with visible text `"Adescor  (2)"` (count in parens).
-2. For each company with count > 0: `GET {base}/joblist.aspx?company=<Name>` → parse job rows
-   (title, location, apply url).
+**Paginated HTML scrape (confirmed 2026-09-17 — simpler than the directory route first assumed):**
+`GET {base}/joblist.aspx?page=N` returns all recent jobs, **50 per card-block per page**; loop `page=1,2,…`
+until a page has < 50 cards or yields no new rows (safety cap `max_pages=20`). The `?keyword=` param is
+ignored server-side, so we fetch all and let **our own scorer** filter — no per-company loop needed.
 
-**Mapping:** `company` ← directory name; `title`/`url`/`location` ← job row; `description` ← `""`
-(or short snippet if present); `source` ← `"ledc:{host}"`; enrichment fields `None` (fall back to
-`facets`/`geo`). Boards: `https://londontechjobs.ca`, `https://londonmfgjobs.com`.
-
-> ⚠️ Step-2 selectors need a confirmation spike against a saved `joblist.aspx` fixture before coding —
-> the directory (step 1) is confirmed; the per-company job-row markup is not yet captured. Ship Getro
-> first (zero unknowns), LEDC second.
+**Card block (confirmed markup):**
+```html
+<div class="gm-card"> <a href="job.aspx?jid=UUID"> …
+  <h4 class="gm-card-title">Controls Developer</h4>
+  <h3 class="gm-card-subtitle">ZTR Control Systems</h3>
+  <i class="fa fa-map-marker"></i>London, ON
+  <i class="fa fa-clock-o"></i>Sep 14, 2026
+```
+**Mapping:** `title` ← `h4.gm-card-title`; `company` ← `h3.gm-card-subtitle`; `location` ← text after
+`fa-map-marker`; `url` ← `{base}/job.aspx?jid=…`; `posted` ← date after `fa-clock-o`; `description` ← `""`
+(detail body not fetched — would be N extra requests); enrichment fields `None` (fall back to `facets`/`geo`).
+`source` ← `"ledc:{name}"`. Boards: `https://londontechjobs.ca`, `https://londonmfgjobs.com`.
+Parsed by `parse_ledc_cards()` (pure, regex, unit-tested against captured markup). Failure-safe: keeps
+whatever pages succeeded.
 
 ### 4.4 Registry — `engine/sources.json`
 
