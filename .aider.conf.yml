@@ -1,0 +1,39 @@
+## aider config for attsis-jobboard
+## Loaded automatically when you run `aider` from this repo root.
+## Docs: https://aider.chat/docs/config/aider_conf.html
+
+## Main model — Groq's GPT-OSS 20B (fast, fits free-tier TPM with orientation files)
+## Note: Llama 3.3 70B was deprecated by Groq. Larger option gpt-oss-120b hits 8k TPM
+## ceiling on free tier when read-only orientation files load — bump only when you
+## upgrade to Groq Dev tier.
+
+model: groq/openai/gpt-oss-20b
+
+## Weak model — same family, used for commit messages, summaries, small ops
+weak-model: groq/openai/gpt-oss-20b
+
+## Edit format — diff mode = tightest tokens + easiest to review
+edit-format: diff
+
+## Auto-commit after each edit — matches ADR-001 branching (one BL per commit).
+## BT: if you prefer to run git yourself, flip this to false.
+## Off: BT runs git himself and reviews before every action (ADR-001 working agreement). -this currently is true
+auto-commits: false
+dirty-commits: false
+
+## Orientation files — loaded read-only every session.
+## Trimmed to fit Groq free tier 8k TPM. For task-specific context,
+## use /read at the aider prompt (HANDOFF.md, ARCHITECTURE.md, PRODUCT_DEVELOPMENT_RULES.md).
+read:
+  - CLAUDE.md
+  - BACKLOG.md
+
+## Show diffs before applying — safer while you're learning aider
+show-diffs: true
+
+## Cap repo-map tokens so a runaway response doesn't burn Groq quota.
+## Groq free tier: 1,000 req/day shared with ai-empire, shorts, signal, etsy.
+map-tokens: 1024
+
+## NOTE: files that must NEVER be edited (site/data/jobs.json, engine/fixtures.json)
+## live in .aiderignore — that's aider's mechanism, not a config key.
