@@ -224,20 +224,31 @@ function tokp(text, needle){
 }
 /* ---------- browser scorer (mirrors jobfilter core, profile-driven) ---------- */
 const EXCL=["technician","operator","assembler","millwright","welder","machinist","cnc","sales","marketing"," hr ","recruit","administrative","receptionist","clerk","custodian","driver","intern","co-op","student","apprentice"];
+/* JB-38: same formula as engine/jobfilter.py classify() -- keep the two in step */
+const GAP=["physical design","asic design","analog ic","ic design","tapeout","tape-out","place and route","standard cell"];
+const POWERCTX=["substation","distribution","high-voltage grid","building services","hvac","protection & control","protection and control","power system","kv ","megawatt","switchgear","transformer design"];
+const VARIANT_SKIP=new Set(["product engineer","systems engineer","design engineer"]);
+function titleVariants(ts){const out=[...ts];ts.forEach(t=>{if(t.endsWith(" engineer")&&!VARIANT_SKIP.has(t)){const r=t.slice(0,-9);out.push(r+" designer",r+" developer");}});return [...new Set(out)];}
 function scoreJob(j, p){
   const title=(j.title||"").toLowerCase(), body=(j.text||j.snippet||"").toLowerCase(), loc=(j.location||"").toLowerCase();
+  const descLen=Math.max(0, body.length-title.length-2);          // j.text = title + ". " + description
   const has=(t,arr)=>arr.filter(n=>t.includes(n));
   if(has(" "+title+" ",EXCL).length) return {verdict:"excluded"};
-  const titleHit=p.titles.filter(t=>tokp(title,t));
+  const titleHit=titleVariants(p.titles).filter(t=>tokp(title,t));
   const conf=[...new Set(p.skills.filter(s=>tokp(body,s)))];
   if(!titleHit.length && conf.length<2) return {verdict:"excluded"};
-  let score = titleHit.length?4:2, reasons=[];
+  let score = titleHit.length?5:2, reasons=[];                    // your CV's own titles count as core
   reasons.push(titleHit.length?("title match: "+titleHit.slice(0,2).join(", ")):"keyword-only match");
   const bump = conf.length>=8?3:conf.length>=4?2:conf.length>=1?1:0;
-  score+=bump; if(conf.length)reasons.push("skills x"+conf.length); else{score-=1;reasons.push("no skills in body");}
+  score+=bump;
+  if(conf.length) reasons.push("skills x"+conf.length);
+  else if(descLen>=200){score-=1;reasons.push("no skills in body");}
+  else reasons.push("no description from source");
   if(/senior|lead|principal|staff/.test(title)){score+=1;reasons.push("senior/lead(+1)");}
+  const gap=GAP.filter(g=>tokp(title,g)); if(gap.length){score-=3;reasons.push("profile gap: "+gap[0]+"(-3)");}
+  if(POWERCTX.some(w=>body.includes(w)) && conf.length<2){score-=2;reasons.push("power/building-services(-2)");}
   const home=(p.home||"").toLowerCase();
-  if((home&&loc.includes(home))||loc.includes("remote")){score+=1;reasons.push("home/remote(+1)");}
+  if(loc.includes("remote")||(home&&loc.includes(home))||(j.ring!=null&&j.ring<=2)){score+=1;reasons.push("commutable/remote(+1)");}
   score=Math.max(1,Math.min(10,score));
   return {verdict: score>=7?"match":"below", score, reasons, matched:[...titleHit,...conf].slice(0,8)};
 }
