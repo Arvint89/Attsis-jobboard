@@ -228,7 +228,7 @@ const EXCL=["technician","operator","assembler","millwright","welder","machinist
 const GAP=["physical design","asic design","analog ic","ic design","tapeout","tape-out","place and route","standard cell"];
 const POWERCTX=["substation","distribution","high-voltage grid","building services","hvac","protection & control","protection and control","power system","kv ","megawatt","switchgear","transformer design"];
 const VARIANT_SKIP=new Set(["product engineer","systems engineer","design engineer"]);
-function titleVariants(ts){const out=[...ts];ts.forEach(t=>{if(t.endsWith(" engineer")&&!VARIANT_SKIP.has(t)){const r=t.slice(0,-9);out.push(r+" designer",r+" developer");}});return [...new Set(out)];}
+function titleVariants(ts){const out=[...ts];ts.forEach(t=>{if(t.endsWith(" engineer")&&!VARIANT_SKIP.has(t)){const r=t.slice(0,-9);out.push(r+" designer",r+" developer",r+" engineering");}});return [...new Set(out)];}
 function scoreJob(j, p){
   const title=(j.title||"").toLowerCase(), body=(j.text||j.snippet||"").toLowerCase(), loc=(j.location||"").toLowerCase();
   const descLen=Math.max(0, body.length-title.length-2);          // j.text = title + ". " + description

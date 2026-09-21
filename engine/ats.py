@@ -209,6 +209,22 @@ def fetch_bamboohr(company, slug, **_):
     return out
 
 
+def _rippling_location(j: dict) -> str:
+    """JB-40: Rippling sends workLocation as {"label": "London, Canada", "id": ...}
+    (sometimes a workLocations list). Older shapes used city/state/country."""
+    if isinstance(j.get("location"), str) and j["location"]:
+        return j["location"]
+    locs = j.get("workLocations") or ([j["workLocation"]] if j.get("workLocation") else [])
+    out = []
+    for loc in locs:
+        if isinstance(loc, str):
+            out.append(loc)
+        elif isinstance(loc, dict):
+            out.append(loc.get("label") or loc.get("id") or ", ".join(
+                x for x in [loc.get("city"), loc.get("state"), loc.get("country")] if x))
+    return "; ".join(x for x in out if x)
+
+
 def fetch_rippling(company, slug, **_):
     # Rippling ATS public board API.
     url = f"https://api.rippling.com/platform/api/ats/v1/board/{slug}/jobs"
@@ -216,9 +232,7 @@ def fetch_rippling(company, slug, **_):
     jobs = data if isinstance(data, list) else data.get("items", data.get("jobs", []))
     out = []
     for j in jobs:
-        loc = j.get("workLocation") or {}
-        location = j.get("location") or ", ".join(
-            x for x in [loc.get("city"), loc.get("state"), loc.get("country")] if x)
+        location = _rippling_location(j)
         out.append(_norm(
             company, j.get("name") or j.get("title"), location,
             j.get("url") or j.get("jobUrl") or f"https://ats.rippling.com/{slug}/jobs/{j.get('uuid') or j.get('id')}",
@@ -227,28 +241,49 @@ def fetch_rippling(company, slug, **_):
     return out
 
 
-def fetch_workday(company, slug, tenant=None, site=None, dc="wd1", **_):
-    # Workday CXS search endpoint (POST). tenant + site + data-center (wdN) required.
+# JB-40: big Workday tenants (Zebra, Generac) post thousands of jobs worldwide; reading them
+# unfiltered stopped at ~220 and missed Ontario roles. Search by keyword instead.
+WORKDAY_QUERIES = ["electrical", "electronics", "hardware", "embedded", "firmware", "pcb",
+                   "fpga", "design engineer", "test engineer", "systems engineer"]
+
+
+def fetch_workday(company, slug, tenant=None, site=None, dc="wd1", queries=None,
+                  per_query_max=500, **_):
+    """Workday CXS search endpoint (POST). tenant + site + data-center (wdN) required.
+    Runs each keyword query (searchText), pages 20 at a time up to per_query_max, dedupes by path.
+    A failing query is skipped; others are kept."""
     tenant = tenant or slug
     site = site or slug
     url = f"https://{tenant}.{dc}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/jobs"
-    out, offset = [], 0
-    while True:
-        data = _get(url, method="POST",
-                    json={"appliedFacets": {}, "limit": 20, "offset": offset,
-                          "searchText": ""}).json()
-        postings = data.get("jobPostings", [])
-        if not postings:
-            break
-        for j in postings:
-            path = j.get("externalPath", "")
-            out.append(_norm(
-                company, j.get("title"), j.get("locationsText"),
-                f"https://{tenant}.{dc}.myworkdayjobs.com/{site}{path}",
-                j.get("postedOn"), "", "workday"))
-        offset += 20
-        if offset >= data.get("total", 0) or offset > 200:
-            break
+    out, seen, errors = [], set(), 0
+    queries = WORKDAY_QUERIES if queries is None else queries
+    for q in queries:
+        offset = 0
+        while offset < per_query_max:
+            try:
+                data = _get(url, method="POST",
+                            json={"appliedFacets": {}, "limit": 20, "offset": offset,
+                                  "searchText": q}).json()
+            except Exception:
+                errors += 1
+                break
+            postings = data.get("jobPostings", []) or []
+            if not postings:
+                break
+            for j in postings:
+                path = j.get("externalPath", "")
+                if path in seen:
+                    continue
+                seen.add(path)
+                out.append(_norm(
+                    company, j.get("title"), j.get("locationsText"),
+                    f"https://{tenant}.{dc}.myworkdayjobs.com/{site}{path}",
+                    j.get("postedOn"), "", "workday"))
+            offset += 20
+            if offset >= (data.get("total") or 0):
+                break
+    if errors and errors == len(queries) and not out:
+        raise RuntimeError(f"workday: all {errors} queries failed")
     return out
 
 
