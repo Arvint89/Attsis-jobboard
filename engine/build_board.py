@@ -23,6 +23,7 @@ import sys
 from datetime import datetime, timezone
 
 import ats
+import ats_detect
 import sources
 import jobfilter
 import geo
@@ -65,13 +66,71 @@ def load_registry():
         return json.load(f)["companies"]
 
 
+MAX_NEW_COMPANIES = 150   # JB-5: bound the extra ATS fetches per run
+LAST_DISCOVERY = {"discovered": [], "enriched": 0, "errors": []}
+
+
+def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES):
+    """JB-5 / JB-38b: follow aggregator apply links to each company's own ATS.
+
+    source_jobs: jobs from board sources (Getro/LEDC), each with "url", "company", "source".
+    known:       set of (platform, slug) already fetched from the registry.
+    For every supported ATS found in a job url: fetch that company's whole board once
+    (full descriptions, all roles) and drop its aggregator stubs. Registry companies are not
+    refetched (their stubs are dropped as duplicates). Unsupported ATS / failed fetch -> keep stubs.
+    Returns (jobs, info) with info = {"discovered": [names], "enriched": n_stubs_replaced, "errors": [...]}.
+    """
+    fetch = fetch or ats.fetch_company
+    groups, keep = {}, []
+    for j in source_jobs:
+        det = ats_detect.detect_ats(j.get("url") or "")
+        if det and det["supported"]:
+            key = (det["platform"], det["slug"])
+            groups.setdefault(key, {"det": det, "stubs": []})["stubs"].append(j)
+        else:
+            keep.append(j)
+    out, info = [], {"discovered": [], "enriched": 0, "errors": []}
+    fetched = 0
+    for key, g in groups.items():
+        if key in known:                       # registry already has this company's full board
+            info["enriched"] += len(g["stubs"])
+            continue
+        if fetched >= max_new:
+            keep += g["stubs"]
+            continue
+        fetched += 1
+        first = g["stubs"][0]
+        det = g["det"]
+        entry = {"name": first.get("company") or det["slug"], "platform": det["platform"], "slug": det["slug"]}
+        for k in ("tenant", "site", "dc"):
+            if det.get(k):
+                entry[k] = det[k]
+        got, err = fetch(entry)
+        if err or not got:
+            if err:
+                info["errors"].append({"company": entry["name"], "error": err})
+            keep += g["stubs"]
+            continue
+        via = (first.get("source") or "").split(":", 1)[-1] or "board"
+        for j in got:
+            j["source"] = f'{det["platform"]} (via {via})'
+            j.setdefault("industry", first.get("industry"))
+        out += got
+        info["discovered"].append(entry["name"])
+        info["enriched"] += len(g["stubs"])
+    return out + keep, info
+
+
 def gather(demo: bool):
     """Return (all_jobs, errors, unresolved)."""
     if demo:
         with open(os.path.join(HERE, "fixtures.json"), encoding="utf-8") as f:
             return json.load(f), [], []
     jobs, errors, unresolved = [], [], []
+    known = set()
     for entry in load_registry():
+        if entry.get("platform") not in (None, "", "resolve"):
+            known.add((entry["platform"], entry.get("slug", "")))
         got, err = ats.fetch_company(entry)
         if err == "unresolved":
             unresolved.append(entry)
@@ -87,16 +146,22 @@ def gather(demo: bool):
 
     # JB-3: second tier -- board SOURCES (aggregators) return many companies' jobs
     # at once, covering companies that aren't on an auto-probeable ATS.
+    source_jobs = []
     for entry in sources.load_sources():
         got, err = sources.fetch_source(entry)
         if err:
             errors.append({"company": entry["name"], "error": err})
-        for j in got:
-            j["_reg_flags"] = []
-            j["_ring"] = None                        # geo resolves ring from the real location
-            j["_industry"] = j.get("industry") or "other"
-            j["_sponsors"] = None
-        jobs += got
+        source_jobs += got
+    # JB-5: follow apply links to each company's own ATS (full descriptions + every role)
+    got, info = enrich_via_ats(source_jobs, known)
+    errors += info["errors"]
+    LAST_DISCOVERY.update(info)
+    for j in got:
+        j["_reg_flags"] = []
+        j["_ring"] = None                        # geo resolves ring from the real location
+        j["_industry"] = j.get("industry") or "other"
+        j["_sponsors"] = None
+    jobs += got
     return jobs, errors, unresolved
 
 
@@ -259,6 +324,9 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         "counts": {"matches": len(matches), "below": len(below),
                    "errors": len(errors), "unresolved": len(unresolved)},
         "source_funnel": source_funnel(classified),
+        "discovery": {"companies": sorted(LAST_DISCOVERY["discovered"]),
+                      "count": len(LAST_DISCOVERY["discovered"]),
+                      "stubs_replaced": LAST_DISCOVERY["enriched"]},
         "matches": matches,
         "below": below,
         "companies": companies_map,
