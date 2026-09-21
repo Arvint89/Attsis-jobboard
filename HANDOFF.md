@@ -122,61 +122,55 @@ recent PR. Docs that do not match reality train you to ignore your own documenta
 
 ## 5. ⏭️ NEXT ACTION — start here
 
-**Goal of the current phase:** get a real safety net in place before any more product work.
-Right now `sweep.yml` deploys `main` to the live site on merge, and **nothing runs the tests
-before that happens.**
+_Updated 2026-09-21._ Plan of record: `docs/status/ISSUE_TRIAGE_2026-09-21.md` (all open issues reviewed)
+and `docs/decisions/ADR-002-company-discovery-and-resolver.md` (PROPOSED — needs BT's accept/change/reject).
 
-### Progress on the workflow phase
+### Workflow phase
+- [x] ADR-001 accepted — trunk-based; `production` branch at first paying user
+- [x] CI on every PR — JB-28 (#37, PR #38)
+- [x] PR #36 merged — LEDC London scraper live (first London roles on the board)
+- [x] JB-29 map fix merged (#40) — labelled Home + CV-driven greens; verified live
+- [ ] Drop the JB-26 stash: `git stash drop 'stash@{0}'` (safe now — the fix is live)
+- [ ] Branch protection on `main` (require PR + `ci` check)
+- [ ] Delete 7 fully-merged branches + `develop` + `feature/jb-3b-ledc-scraper` (local AND remote)
+- [ ] `.gitattributes` (CRLF) + stop tracking generated `site/data/jobs.json` / `board_standalone.html`
+- [ ] Rewrite `BRANCHING.md` + write `WORKFLOW.md` (include branch-naming rule below)
+- [ ] JB-27 auto-tag (#32)
 
-- [x] **ADR-001** written and accepted → `docs/decisions/ADR-001-branching-model.md`
-- [x] **`ci.yml` written** → `.github/workflows/ci.yml` (untracked; not committed yet)
-- [ ] **← YOU ARE HERE:** commit + merge CI (JB-28)
-- [ ] Merge PR #36 (LEDC London scraper)
-- [ ] Land the JB-26 map fix (currently **stashed / backed up** — see section 6)
-- [ ] Branch protection on `main` (needs CI merged first)
-- [ ] Delete 7 fully-merged branches + `develop` (local AND remote); `feature/jb-3b-ledc-scraper` only AFTER PR #36 merges
-- [ ] `.gitattributes` to stop CRLF churn
-- [ ] Rewrite `BRANCHING.md` + write `WORKFLOW.md`
-- [ ] GitHub Project board
-- [ ] **THEN** product work: JB-5 coverage
+### Product phase — code is written by Aider from briefs in `docs/briefs/`
+- [ ] **← NEXT:** JB-30a source funnel stats (Refs #41) — `docs/briefs/JB-30a-source-funnel-stats.md`
+- [ ] JB-30b Getro resilience + pagination (Closes #41)
+- [ ] JB-5a detect_ats (Refs #5) → JB-5b deterministic resolver
+- [ ] JB-31 seeds + LLM router (after ADR-002 accepted) · JB-32 Adzuna spike · JB-33 Job Bank spike
 
-### The exact commands for the current step
-
+### The Aider loop (one brief = one issue = one branch = one PR)
 ```powershell
-cd C:\Users\Namrata\Attsis-jobboard
-
-git stash push -m "JB-26 map fix - park before CI work"   # park dirty tree
-git status --short                                         # expect: only ?? untracked
-git stash list                                             # proof it is saved
-
-git checkout main
-git pull origin main
-git checkout -b chore/jb-28-ci
-
-git add .github/workflows/ci.yml docs/decisions/ADR-001-branching-model.md HANDOFF.md
-git commit -m "JB-28: add CI (tests + smoke on every PR); ADR-001 branching decision"
-git push -u origin chore/jb-28-ci
+git checkout main; git pull origin main
+git checkout -b bugfix/jb-30-source-funnel
+aider engine/build_board.py tests/test_build.py --read docs/briefs/JB-30a-source-funnel-stats.md
+#  prompt: Implement docs/briefs/JB-30a-source-funnel-stats.md exactly. Add the section-8 tests first.
+python -m pytest tests/ -q; cd engine; python smoke_test.py; cd ..
+git checkout -- site/data/jobs.json site/board_standalone.html   # smoke rewrites them
+git diff                                   # read before committing (aider auto-commits are off)
+git add <files>; git commit -m "..."; git push -u origin <branch>
+gh pr create --base main --title "..." --body "Refs #41"
+gh pr checks --watch; gh pr merge --squash --delete-branch
 ```
+Tests decide "done", not Aider. If stuck, paste the failing test output to Claude for review.
 
-Then open the PR on GitHub with `Closes #NN` in the body.
+### Rules learned the hard way
+- **Branch names:** `jb-NN` only when open issue NN exists; otherwise a descriptive name (`docs/…`).
+- **PowerShell:** quote anything with `{}` `@` `$` → `git stash drop 'stash@{0}'`.
+- **Run git from the repo root**, and read `git branch --show-current` after every `checkout -b`.
+- **Squash merges** leave local branches that `-d` refuses → confirm merged on GitHub, then `-D`.
+- **Test locally against fresh data:** `cd engine; python build_board.py --demo` — the committed
+  `site/data/jobs.json` is stale (Sep 16, pre-map). Serve with `cd site; python -m http.server 8000`.
 
 ---
 
-## 6. ⚠️ Work in flight — do not lose this
-
-**The JB-26 map fix** (labelled Home marker + CV-driven green companies) is **finished code
-that was never committed.** It was written directly into the working tree without a branch,
-which is how it got stranded on `feature/jb-3b-ledc-scraper`.
-
-It is backed up in **two** places:
-1. `git stash` inside the repo (`git stash list` to see it)
-2. A file copy outside the repo, made 2026-09-18
-
-**To land it later:** branch off updated `main` *after* PR #36 merges, restore only
-`site/index.html`, commit, PR. Do **not** commit `site/data/jobs.json` or
-`site/board_standalone.html` — those are generated and the Action rebuilds them.
-
-**Lesson worth keeping: branch first, then write code.** Never the reverse.
+## 6. Work in flight
+- `stash@{0}` = old copy of the JB-29 map fix, now merged and live → safe to drop.
+- Nothing else uncommitted except `memory/` (empty, purpose unknown — not committed on purpose).
 
 ---
 
