@@ -61,10 +61,17 @@ def test_offprofile_title_excluded():
 
 
 # --- edge cases ---------------------------------------------------------------
-def test_empty_description_no_confirmers_penalised():
+def test_empty_description_not_penalised():
+    # JB-38: a source that gives no description (e.g. Getro) must not cost the job a point
     j = mk("Hardware Engineer", "")   # title hits, body empty
     r = jf.classify(j)
-    assert "no skills in body" in r["reasons"]
+    assert "no skills in body" not in r["reasons"]
+    assert "no description from source" in r["reasons"]
+
+
+def test_long_description_without_skills_is_penalised():
+    j = mk("Hardware Engineer", "We are a fast-growing company with great benefits and a friendly team. " * 4)
+    assert "no skills in body" in jf.classify(j)["reasons"]
 
 
 def test_stale_posting_excluded():

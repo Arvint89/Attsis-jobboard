@@ -181,6 +181,16 @@
         "megawatt",
         "switchgear",
         "transformer design"
+      ],
+      "gap": [
+        "physical design",
+        "asic design",
+        "analog ic",
+        "ic design",
+        "tapeout",
+        "tape-out",
+        "place and route",
+        "standard cell"
       ]
     },
     "params": {

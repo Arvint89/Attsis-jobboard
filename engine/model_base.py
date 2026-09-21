@@ -44,6 +44,8 @@ BASE = {
         "verification": ["systemverilog", "uvm", "design verification", "functional verification"],
     },
     "exclusions": {
+        "gap": ["physical design", "asic design", "analog ic", "ic design", "tapeout", "tape-out",
+                "place and route", "standard cell"],
         "power": ["substation", "distribution", "high-voltage grid", "building services",
                   "hvac", "protection & control", "protection and control", "power system"],
         "software": ["full-stack", "full stack", "frontend", "front-end", "back-end",
