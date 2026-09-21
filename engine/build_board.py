@@ -167,15 +167,16 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         classified.append((j, res))
         if res["verdict"] == "excluded":
             continue
+        near = geo.nearest_location(home, j.get("location", ""))   # JB-34
         ring, km, is_remote = geo.ring_for(home, j.get("location", ""))
         if ring is None:
             ring = j.get("_ring")   # registry ring only when geo can't resolve (Canadian unknown city)
         # JB-3: sources can supply exact coords + arrangement directly; fall back otherwise
         lat, lng = j.get("lat"), j.get("lng")
         if lat is None or lng is None:
-            lat, lng = geo.coords_of(j.get("location", ""))   # for the map (JB-26)
+            lat, lng = geo.coords_of(near)   # for the map (JB-26); nearest part (JB-34)
         arrangement = j.get("arrangement") or facets.arrangement(j.get("location", ""), j.get("description", ""))
-        country = facets.country(j.get("location", ""))
+        country = facets.country(near)
         industry = facets.industry(j.get("_industry", ""), j.get("description", ""))
         sponsor = facets.sponsorship(j.get("description", ""), j.get("_sponsors"))
         snippet = (j.get("description") or "").strip().replace("\n", " ")
@@ -184,6 +185,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         full = full[:1500]
         row = {
             "company": j["company"], "title": j["title"], "location": j["location"],
+            "location_near": near, "n_locations": max(1, len(geo.split_locations(j.get("location", "")))),
             "url": j["url"], "posted": j.get("posted"), "source": j.get("source"),
             "salary": j.get("salary") or facets.salary_from_text(j.get("description") or ""), "ring": ring, "km": km, "lat": lat, "lng": lng,
             "score": res["score"], "flags": res["flags"],
