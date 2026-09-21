@@ -57,3 +57,29 @@ def test_cap_limits_new_companies():
     stubs = [stub(f"Co{i}", f"https://jobs.lever.co/co{i}/1") for i in range(5)]
     build_board.enrich_via_ats(stubs, known=set(), fetch=f, max_new=3)
     assert len(fetched) == 3
+
+
+def test_irrelevant_company_is_not_promoted():
+    fetched = []
+    jobs, info = build_board.enrich_via_ats(
+        [stub("KPMG Canada", "https://jobs.lever.co/kpmg/1")], known=set(),
+        fetch=lambda e: fetched.append(e) or ([], None), relevant=lambda j: False)
+    assert fetched == [] and [j["company"] for j in jobs] == ["KPMG Canada"]
+
+
+def test_regional_company_is_promoted_even_if_its_stub_is_irrelevant():
+    fetched = []
+    build_board.enrich_via_ats(
+        [stub("VueReal", "https://vuereal.bamboohr.com/careers/1")], known=set(),
+        fetch=lambda e: fetched.append(e["slug"]) or ([], None),
+        relevant=lambda j: False, in_region=lambda j: True)
+    assert fetched == ["vuereal"]
+
+
+def test_relevant_companies_promoted_before_cap():
+    fetched = []
+    stubs = [stub(f"Reg{i}", f"https://jobs.lever.co/reg{i}/1") for i in range(3)] + \
+            [stub("Hw", "https://jobs.lever.co/hw/1")]
+    build_board.enrich_via_ats(stubs, known=set(), fetch=lambda e: fetched.append(e["slug"]) or ([], None),
+                               max_new=1, relevant=lambda j: j["company"] == "Hw", in_region=lambda j: True)
+    assert fetched == ["hw"]

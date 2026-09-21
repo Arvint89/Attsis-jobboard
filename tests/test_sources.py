@@ -117,22 +117,34 @@ def test_getro_one_failing_query_keeps_the_others(monkeypatch):
     assert len(jobs) == 2
 
 
-def test_getro_paginates_until_a_short_page(monkeypatch):
+def _paged(total, cap):
+    """Fake Getro: `total` jobs, server returns at most `cap` per page whatever is asked."""
     calls = []
     def fake(url, body):
         calls.append(body["page"])
-        n = 2 if body["page"] == 0 else 1
-        return _fake([dict(ONE, id=f"{body['page']}-{i}") for i in range(n)])
+        start = body["page"] * cap
+        ids = range(start, min(start + cap, total))
+        return {"results": {"count": total, "jobs": [dict(ONE, id=f"j{i}") for i in ids]}}
+    return fake, calls
+
+
+def test_getro_paginates_until_total_reached(monkeypatch):
+    fake, calls = _paged(total=5, cap=2)
     monkeypatch.setattr(sources, "_post", fake)
-    jobs = sources.fetch_getro("Communitech", 8936, ["firmware"], per_page=2)
-    assert len(jobs) == 3 and calls == [0, 1]
+    jobs = sources.fetch_getro("Communitech", 628, ["firmware"], per_page=2)
+    assert len(jobs) == 5 and calls == [0, 1, 2]
+
+
+def test_getro_server_page_cap_below_request_still_paginates(monkeypatch):
+    # JB-39: we ask for 100 per page, Getro returns 20 -> must NOT treat page 0 as the last page
+    fake, calls = _paged(total=45, cap=20)
+    monkeypatch.setattr(sources, "_post", fake)
+    jobs = sources.fetch_getro("Communitech", 628, ["firmware"], per_page=100)
+    assert len(jobs) == 45 and calls == [0, 1, 2]
 
 
 def test_getro_stops_at_max_pages(monkeypatch):
-    calls = []
-    def fake(url, body):
-        calls.append(body["page"])
-        return _fake([dict(ONE, id=f"{body['page']}-{i}") for i in range(2)])
+    fake, calls = _paged(total=1000, cap=2)
     monkeypatch.setattr(sources, "_post", fake)
     sources.fetch_getro("Communitech", 8936, ["firmware"], per_page=2, max_pages=3)
     assert calls == [0, 1, 2]
