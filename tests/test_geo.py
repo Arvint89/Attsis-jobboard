@@ -46,3 +46,34 @@ def test_coords_of_returns_latlng_for_map():
     lat, lng = geo.coords_of("Kitchener, ON")
     assert lat and lng and 43 < lat < 44
     assert geo.coords_of("Bengaluru, India")[0] < 20   # southern latitude
+
+
+# ---- JB-34: multi-location postings (real Tenstorrent strings) ----
+TT3 = "Austin, Texas, United States; Santa Clara, California, United States; Toronto, Ontario, Canada"
+
+
+def test_split_locations():
+    assert geo.split_locations(TT3) == ["Austin, Texas, United States",
+                                        "Santa Clara, California, United States",
+                                        "Toronto, Ontario, Canada"]
+    assert geo.split_locations("Toronto, ON") == ["Toronto, ON"]
+    assert geo.split_locations("") == []
+
+
+def test_nearest_location_picks_toronto_for_london():
+    assert geo.nearest_location("London", TT3) == "Toronto, Ontario, Canada"
+    assert geo.nearest_location("London", "Belgrade, Serbia; Toronto, Ontario, Canada") == "Toronto, Ontario, Canada"
+
+
+def test_multi_location_ring_uses_nearest():
+    ring, km, remote = geo.ring_for("London", TT3)
+    single = geo.ring_for("London", "Toronto, Ontario, Canada")
+    assert (ring, km, remote) == single and km < 250
+
+
+def test_unplaceable_parts_fall_back_to_first():
+    assert geo.nearest_location("London", "Atlantis; El Dorado") == "Atlantis"
+
+
+def test_single_location_unchanged():
+    assert geo.ring_for("London", "Toronto, Ontario, Canada") == geo._ring_single("London", "Toronto, Ontario, Canada")

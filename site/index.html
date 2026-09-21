@@ -260,7 +260,7 @@ function jobCard(j,bucket,i){
   const link=j.url?`<a href="${j.url}" target="_blank" rel="noopener">${j.title}</a>`:j.title;
   return `<div class="job"><div class="score ${sc(j.score)}">${j.score}</div><div>
     <div class="title">${link}</div>
-    <div class="subl">${j.company} · ${j.location}${ring?' · '+ring:''}${km}${posted?' · '+posted:''}</div>
+    <div class="subl">${j.company} · ${j.location_near||j.location}${j.n_locations>1?` <span title="${(j.location||'').replace(/"/g,'&quot;')}" style="text-decoration:underline dotted;cursor:help">+${j.n_locations-1} more</span>`:''}${ring?' · '+ring:''}${km}${posted?' · '+posted:''}</div>
     ${j.snippet?`<div class="snip">${j.snippet}</div>`:''}
     <div class="chips">${sal}<span class="chip src">${j.source||'ats'}</span>${facet}${skills}</div>
     <div class="why">why: ${(j.reasons||[]).join(' · ')}</div>

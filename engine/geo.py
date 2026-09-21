@@ -122,7 +122,30 @@ def city_key(text):   # kept for backward-compat (build_board / tests)
     return _city_in(t)
 
 
-def ring_for(home: str, location: str):
+def split_locations(location: str) -> list:
+    """JB-34: "Austin, TX; Santa Clara, CA; Toronto, ON" -> ["Austin, TX", "Santa Clara, CA", "Toronto, ON"].
+    Splits on ";" and "|". A single location returns a one-item list; empty -> []."""
+    parts = [p.strip() for chunk in (location or "").split(";") for p in chunk.split("|")]
+    return [p for p in parts if p]
+
+
+def nearest_location(home: str, location: str) -> str:
+    """JB-34: of a multi-location posting, the part closest to the user's home.
+    Parts that can't be placed (or say remote) are skipped; if none can be placed, the first part."""
+    parts = split_locations(location)
+    if len(parts) <= 1:
+        return parts[0] if parts else (location or "")
+    best, best_km = None, None
+    for p in parts:
+        if "remote" in p.lower():
+            continue
+        ring, km, _ = _ring_single(home, p)
+        if km is not None and (best_km is None or km < best_km):
+            best, best_km = p, km
+    return best or parts[0]
+
+
+def _ring_single(home: str, location: str):
     """Return (ring:int|None, km:float|None, is_remote:bool) for a job vs the user's home."""
     if "remote" in (location or "").lower():
         return 1, None, True
@@ -139,3 +162,11 @@ def ring_for(home: str, location: str):
         if km <= limit:
             return ring, round(km), False
     return 4, round(km), False
+
+
+def ring_for(home: str, location: str):
+    """Return (ring:int|None, km:float|None, is_remote:bool) for a job vs the user's home.
+    JB-34: multi-location postings are measured to the location nearest home."""
+    if "remote" in (location or "").lower() and len(split_locations(location)) <= 1:
+        return _ring_single(home, location)
+    return _ring_single(home, nearest_location(home, location))
