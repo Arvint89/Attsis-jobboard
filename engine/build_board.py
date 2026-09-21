@@ -68,6 +68,19 @@ def load_registry():
 
 MAX_NEW_COMPANIES = 500   # JB-5/39: bound the extra ATS fetches per run
 LAST_DISCOVERY = {"discovered": [], "enriched": 0, "errors": []}
+WORKERS = int(os.getenv("JB_WORKERS", "8"))   # JB-41: parallel company fetches
+
+
+def parallel_map(fn, items, workers=None):
+    """JB-41: run fn over items in a thread pool; results come back IN INPUT ORDER, so the
+    output is identical to a sequential loop. Network-bound work, so threads are enough."""
+    items = list(items)
+    workers = WORKERS if workers is None else workers
+    if workers <= 1 or len(items) <= 1:
+        return [fn(x) for x in items]
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        return list(ex.map(fn, items))
 
 
 def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, relevant=None, in_region=None):
@@ -95,6 +108,7 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, re
             keep.append(j)
     out, info = [], {"discovered": [], "enriched": 0, "errors": []}
     fetched = 0
+    todo = []                                  # (entry, stubs, det) to fetch -- decided in order
     def rank(item):
         stubs = item[1]["stubs"]
         return 0 if (relevant is None or any(relevant(j) for j in stubs)) else 1
@@ -118,7 +132,11 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, re
         for k in ("tenant", "site", "dc"):
             if det.get(k):
                 entry[k] = det[k]
-        got, err = fetch(entry)
+        todo.append((entry, g["stubs"], det))
+    results = parallel_map(lambda t: fetch(t[0]), todo)
+    for (entry, stubs, det), (got, err) in zip(todo, results):
+        first = stubs[0]
+        g = {"stubs": stubs}
         if err or not got:
             if err:
                 info["errors"].append({"company": entry["name"], "error": err})
@@ -141,10 +159,11 @@ def gather(demo: bool):
             return json.load(f), [], []
     jobs, errors, unresolved = [], [], []
     known = set()
-    for entry in load_registry():
+    registry = load_registry()
+    for entry in registry:
         if entry.get("platform") not in (None, "", "resolve"):
             known.add((entry["platform"], entry.get("slug", "")))
-        got, err = ats.fetch_company(entry)
+    for entry, (got, err) in zip(registry, parallel_map(ats.fetch_company, registry)):
         if err == "unresolved":
             unresolved.append(entry)
         elif err:
@@ -160,8 +179,8 @@ def gather(demo: bool):
     # JB-3: second tier -- board SOURCES (aggregators) return many companies' jobs
     # at once, covering companies that aren't on an auto-probeable ATS.
     source_jobs = []
-    for entry in sources.load_sources():
-        got, err = sources.fetch_source(entry)
+    src = sources.load_sources()
+    for entry, (got, err) in zip(src, parallel_map(sources.fetch_source, src)):
         if err:
             errors.append({"company": entry["name"], "error": err})
         source_jobs += got
@@ -237,6 +256,8 @@ def cap_per_company(rows, n=PER_COMPANY_CAP):
 
 
 def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
+    import time as _time
+    _t0 = _time.monotonic()
     home, person, initials = load_home()
     raw, errors, unresolved = gather(demo)
     raw = [ _defaults(j) for j in dedupe(raw) ]
@@ -339,6 +360,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         "counts": {"matches": len(matches), "below": len(below),
                    "errors": len(errors), "unresolved": len(unresolved)},
         "source_funnel": source_funnel(classified),
+        "run_seconds": round(_time.monotonic() - _t0, 1),   # JB-41: compare run times
         "discovery": {"companies": sorted(LAST_DISCOVERY["discovered"]),
                       "count": len(LAST_DISCOVERY["discovered"]),
                       "stubs_replaced": LAST_DISCOVERY["enriched"]},
