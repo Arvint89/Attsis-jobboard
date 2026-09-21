@@ -1,0 +1,11 @@
+# JB-37: normalize line endings in the repo (LF); Windows checkouts get CRLF automatically.
+# Ends the "LF will be replaced by CRLF" warnings and phantom modified files.
+* text=auto
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.docx binary
+*.xlsx binary

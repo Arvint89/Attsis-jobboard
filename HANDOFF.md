@@ -122,68 +122,43 @@ recent PR. Docs that do not match reality train you to ignore your own documenta
 
 ## 5. ⏭️ NEXT ACTION — start here
 
-_Updated 2026-09-21._ Plan of record: `docs/status/ISSUE_TRIAGE_2026-09-21.md` (all open issues reviewed)
-and `docs/decisions/ADR-002-company-discovery-and-resolver.md` (PROPOSED — needs BT's accept/change/reject).
+_Updated 2026-09-21 (evening)._ Plan of record: `docs/status/ISSUE_TRIAGE_2026-09-21.md`.
+ADR-002 (company resolver + LLM router) is still **PROPOSED** — needs BT's accept/change/reject.
+How to work: **`BRANCHING.md`** (the loop, the rules).
 
-### Workflow phase
-- [x] ADR-001 accepted — trunk-based; `production` branch at first paying user
-- [x] CI on every PR — JB-28 (#37, PR #38)
-- [x] PR #36 merged — LEDC London scraper live (first London roles on the board)
-- [x] JB-29 map fix merged (#40) — labelled Home + CV-driven greens; verified live
-- [ ] Drop the JB-26 stash: `git stash drop 'stash@{0}'` (safe now — the fix is live)
-- [ ] Branch protection on `main` (require PR + `ci` check)
-- [ ] Delete 7 fully-merged branches + `develop` + `feature/jb-3b-ledc-scraper` (local AND remote)
-- [ ] `.gitattributes` (CRLF) + stop tracking generated `site/data/jobs.json` / `board_standalone.html`
-- [ ] Rewrite `BRANCHING.md` + write `WORKFLOW.md` (include branch-naming rule below)
-- [ ] JB-27 auto-tag (#32)
+### Done 2026-09-21 — friends release (v0.11.0) scope
+- [x] CI on every PR (#37) · branch protection on `main` · auto-merge enabled
+- [x] LEDC London scraper (#36) · map Home label + CV greens (#40)
+- [x] Source funnel stats + Getro resilience/pagination (#41) — read `source_funnel` in live jobs.json
+- [x] Salary from descriptions + salary chip (#6) · remember filters (#8) · initials verified (#7)
+- [x] Mobile layout + map/list share one filter (#18)
+- [x] Multi-location roles measured to nearest city (#53) · purple ring for multi-city companies (#56)
+- [x] Repo cleanup (#58): stale branches, `.gitattributes`, generated files untracked, aider config, BRANCHING.md
 
-### Product phase — code is written by Aider from briefs in `docs/briefs/`
-- [ ] **← NEXT:** JB-30a source funnel stats (Refs #41) — `docs/briefs/JB-30a-source-funnel-stats.md`
-- [ ] JB-30b Getro resilience + pagination (Closes #41)
-- [ ] JB-5a detect_ats (Refs #5) → JB-5b deterministic resolver
-- [ ] JB-31 seeds + LLM router (after ADR-002 accepted) · JB-32 Adzuna spike · JB-33 Job Bank spike
+### Next
+- [ ] **Tag v0.11.0** (#32) and send the live link to friends for feedback
+- [ ] Read the live `source_funnel` (Communitech / MaRS) — decide on jobfilter tuning if "stale"/"not relevant" dominate
+- [ ] Decide ADR-002 → then JB-5a `detect_ats` (brief ready) → JB-5b resolver
+- [ ] JB-35 map: multi-office companies at the office nearest the user (not yet an issue)
+- [ ] Parked until friends' feedback: JB-31/32/33, pipeline #9–11, #13, #14–17
 
-### The Aider loop (one brief = one issue = one branch = one PR)
-```powershell
-git checkout main; git pull origin main
-git checkout -b bugfix/jb-30-source-funnel
-aider engine/build_board.py tests/test_build.py --read docs/briefs/JB-30a-source-funnel-stats.md
-#  prompt: Implement docs/briefs/JB-30a-source-funnel-stats.md exactly. Add the section-8 tests first.
-python -m pytest tests/ -q; cd engine; python smoke_test.py; cd ..
-git checkout -- site/data/jobs.json site/board_standalone.html   # smoke rewrites them
-git diff                                   # read before committing (aider auto-commits are off)
-git add <files>; git commit -m "..."; git push -u origin <branch>
-gh pr create --base main --title "..." --body "Refs #41"
-gh pr checks --watch; gh pr merge --squash --delete-branch
-```
-Tests decide "done", not Aider. If stuck, paste the failing test output to Claude for review.
-
-### Rules learned the hard way
-- **Branch names:** `jb-NN` only when open issue NN exists; otherwise a descriptive name (`docs/…`).
-- **PowerShell:** quote anything with `{}` `@` `$` → `git stash drop 'stash@{0}'`.
-- **Run git from the repo root**, and read `git branch --show-current` after every `checkout -b`.
-- **Squash merges** leave local branches that `-d` refuses → confirm merged on GitHub, then `-D`.
-- **Test locally against fresh data:** `cd engine; python build_board.py --demo` — the committed
-  `site/data/jobs.json` is stale (Sep 16, pre-map). Serve with `cd site; python -m http.server 8000`.
+### On Aider
+Groq free tier (8k tokens/minute) is too small for real edits with gpt-oss-20b — it looped and hit the
+limit on a 20-line task. Options: point aider at a bigger free tier (e.g. Gemini — check current limits),
+or use Claude Code with the briefs in `docs/briefs/`. Config is now lean (`map-tokens: 0`, no read files).
 
 ---
 
 ## 6. Work in flight
-- `stash@{0}` = old copy of the JB-29 map fix, now merged and live → safe to drop.
-- Nothing else uncommitted except `memory/` (empty, purpose unknown — not committed on purpose).
+- Nothing stranded. `memory/` is ignored (empty, purpose unknown).
 
 ---
 
 ## 7. Known repo hygiene issues
 
-- **No `.gitattributes` and `core.autocrlf` unset.** Windows CRLF makes ~12 files show as
-  modified when only line endings changed. Always sanity-check with:
-  `git diff --stat --ignore-cr-at-eol` — that shows the *real* changes.
-- **7 fully-merged branches + `develop`** (`0 commits not in main`), present locally AND on origin,
-  never deleted. Only `feature/jb-3b-ledc-scraper` has unmerged work.
-- **Issue #32 is labelled `enhancement`**, which is not in the real label set → `type:feature`.
-- **Generated files are tracked:** `site/data/jobs.json`, `site/board_standalone.html`.
-  Never commit changes to them.
+Resolved 2026-09-21 (#58): `.gitattributes` added, generated files untracked, stale branches deleted,
+issue #32 relabelled. If `git status` shows many modified files after a pull, check with
+`git diff --stat --ignore-cr-at-eol` — that shows only the real changes.
 
 ---
 
@@ -222,7 +197,7 @@ tagging a release, GitHub Projects, and reading a CI failure.
 ```
 HANDOFF.md          ← you are here; the resume point
 BACKLOG.md          kanban (Now / Next / Later / Icebox / Done)
-BRANCHING.md        ⚠️ STALE — describes the retired develop flow; rewrite pending
+BRANCHING.md        the workflow: trunk-based loop + rules (rewritten 2026-09-21)
 VERSIONING.md       MAJOR.MINOR.BUGS policy; current 0.10.0
 CHANGELOG.md        release history
 engine/             ats.py · sources.py · jobfilter.py · geo.py · facets.py · build_board.py

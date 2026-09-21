@@ -15,25 +15,19 @@ weak-model: groq/openai/gpt-oss-20b
 ## Edit format — diff mode = tightest tokens + easiest to review
 edit-format: diff
 
-## Auto-commit after each edit — matches ADR-001 branching (one BL per commit).
-## BT: if you prefer to run git yourself, flip this to false.
-## Off: BT runs git himself and reviews before every action (ADR-001 working agreement). -this currently is true
+## Off: BT runs git himself and reviews every diff before committing (ADR-001 working agreement).
 auto-commits: false
 dirty-commits: false
 
-## Orientation files — loaded read-only every session.
-## Trimmed to fit Groq free tier 8k TPM. For task-specific context,
-## use /read at the aider prompt (HANDOFF.md, ARCHITECTURE.md, PRODUCT_DEVELOPMENT_RULES.md).
-read:
-  - CLAUDE.md
-  - BACKLOG.md
+## No auto-loaded read files: Groq free tier is 8k tokens/minute and a single request already
+## carries ~2k of aider instructions + the files being edited. Add context per task with /read.
 
 ## Show diffs before applying — safer while you're learning aider
 show-diffs: true
 
-## Cap repo-map tokens so a runaway response doesn't burn Groq quota.
+## Repo map off: /add the exact files a task needs instead (fits the 8k TPM limit).
 ## Groq free tier: 1,000 req/day shared with ai-empire, shorts, signal, etsy.
-map-tokens: 1024
+map-tokens: 0
 
 ## NOTE: files that must NEVER be edited (site/data/jobs.json, engine/fixtures.json)
 ## live in .aiderignore — that's aider's mechanism, not a config key.
