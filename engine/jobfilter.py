@@ -60,7 +60,7 @@ def _variants(titles):
     for t in titles:
         if t.endswith(" engineer") and t not in _VARIANT_SKIP:
             root = t[: -len(" engineer")]
-            out += [root + " designer", root + " developer"]
+            out += [root + " designer", root + " developer", root + " engineering"]
     return list(dict.fromkeys(out))
 
 

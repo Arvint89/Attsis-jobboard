@@ -374,13 +374,14 @@
     {
       "name": "ecobee",
       "ring": 2,
-      "platform": "greenhouse",
-      "slug": "ecobee",
-      "careers_url": "https://boards.greenhouse.io/ecobee",
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://www.ecobee.com/en-us/careers/",
       "flags": [],
       "industry": "iot/connectivity",
       "sponsors": null,
-      "city": "Toronto"
+      "city": "Toronto",
+      "note": "Greenhouse board ecobee 404s (2026-09-21); ecobee is part of Generac - roles likely on Generac Workday"
     },
     {
       "name": "Zebra Technologies",
