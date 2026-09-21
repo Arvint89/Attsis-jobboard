@@ -83,6 +83,9 @@ def _salary(job: dict) -> str:
     hi = job.get("compensation_amount_max_cents")
     cur = job.get("compensation_currency") or ""
     per = job.get("compensation_period") or ""
+    top = (hi or lo or 0) / 100
+    if per in ("hour", "hourly") and top > 500:   # JB-6: "$102k/hour" is really annual
+        per = "year"
     def dollars(cents):
         return f"${cents // 100:,.0f}"
     if lo and hi:
