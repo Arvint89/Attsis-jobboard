@@ -22,3 +22,22 @@ def test_cap_noop_when_under_limit():
 def test_cap_empty():
     kept, dropped = b.cap_per_company([], n=8)
     assert kept == [] and dropped == 0
+
+
+def test_source_funnel_counts_kept_and_excluded_by_reason():
+    import build_board
+    jobs = [{"source": "getro:Communitech"}] * 3 + [{"source": "greenhouse"}]
+    res = [{"verdict": "below", "reasons": []},
+           {"verdict": "excluded", "reasons": ["stale (45d)"]},
+           {"verdict": "excluded", "reasons": ["off-profile title: sales"]},
+           {"verdict": "match", "reasons": []}]
+    out = build_board.source_funnel(list(zip(jobs, res)))
+    assert out == {"getro:Communitech": {"fetched": 3, "kept": 1,
+                                         "excluded": {"stale": 1, "off-profile title": 1}},
+                   "greenhouse": {"fetched": 1, "kept": 1, "excluded": {}}}
+
+
+def test_source_funnel_missing_source_and_reason():
+    import build_board
+    out = build_board.source_funnel([({}, {"verdict": "excluded", "reasons": []})])
+    assert out == {"unknown": {"fetched": 1, "kept": 0, "excluded": {"unspecified": 1}}}
