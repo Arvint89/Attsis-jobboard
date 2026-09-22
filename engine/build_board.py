@@ -28,6 +28,7 @@ import sources
 import jobfilter
 import geo
 import facets
+import history
 
 FLAG_LEGEND = {
     'remote': 'Role is remote-friendly',
@@ -369,6 +370,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         "companies": companies_map,
         "errors": errors,
     }
+    # JB-42: compare with the previous live run; alerts ride along in jobs.json + Action log
+    payload["alerts"] = history.record(payload, DATA, live=not demo)
     with open(os.path.join(DATA, "jobs.json"), "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:

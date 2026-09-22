@@ -19,3 +19,5 @@ site/board_standalone.html
 
 # local-only scratch folder (purpose unknown, intentionally not tracked)
 memory/
+site/data/history.json
+site/data/resolve.json
