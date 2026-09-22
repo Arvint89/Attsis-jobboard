@@ -122,35 +122,60 @@ recent PR. Docs that do not match reality train you to ignore your own documenta
 
 ## 5. ⏭️ NEXT ACTION — start here
 
-_Updated 2026-09-21 (evening)._ Plan of record: `docs/status/ISSUE_TRIAGE_2026-09-21.md`.
-ADR-002 (company resolver + LLM router) is still **PROPOSED** — needs BT's accept/change/reject.
-How to work: **`BRANCHING.md`** (the loop, the rules).
+_Updated 2026-09-21, late evening._ How to work: `BRANCHING.md`. Start a **fresh chat** each session
+(this repo is the memory; long chats burn the weekly usage limit fast). Use Sonnet for routine git/PR work.
 
-### Done 2026-09-21 — friends release (v0.11.0) scope
-- [x] CI on every PR (#37) · branch protection on `main` · auto-merge enabled
-- [x] LEDC London scraper (#36) · map Home label + CV greens (#40)
-- [x] Source funnel stats + Getro resilience/pagination (#41) — read `source_funnel` in live jobs.json
-- [x] Salary from descriptions + salary chip (#6) · remember filters (#8) · initials verified (#7)
-- [x] Mobile layout + map/list share one filter (#18)
-- [x] Multi-location roles measured to nearest city (#53) · purple ring for multi-city companies (#56)
-- [x] Repo cleanup (#58): stale branches, `.gitattributes`, generated files untracked, aider config, BRANCHING.md
+### Where things stand (live, verified 2026-09-21)
+| Metric | Morning | Evening |
+|---|---|---|
+| Roles kept on board | 65 | **165** |
+| Strong (7+) | 1 | **14** |
+| Companies tracked directly | ~12 | **~170** (registry + 130 discovered via apply links) |
+| Jobs examined per run | ~200 | **~5,500** |
+| Run time (fetch+build) | ~60 s | **81 s** (`run_seconds` in jobs.json) |
+| **Sweep recall** (board shows the daily sweep's 7+ roles) | – | **6/20 = 30%** ← baseline |
 
-### Next
-- [ ] **Tag v0.11.0** (#32) and send the live link to friends for feedback
-- [ ] Read the live `source_funnel` (Communitech / MaRS) — decide on jobfilter tuning if "stale"/"not relevant" dominate
-- [ ] Decide ADR-002 → then JB-5a `detect_ats` (brief ready) → JB-5b resolver
-- [ ] JB-35 map: multi-office companies at the office nearest the user (not yet an issue)
-- [ ] Parked until friends' feedback: JB-31/32/33, pipeline #9–11, #13, #14–17
+### Merged today
+CI + branch protection + auto-merge · map fixes · salary · filters · mobile · multi-location ·
+cleanup · **JB-38** scoring recalibrated (golden tests from sweep log) · **JB-5** follow apply links
+to company ATS · **JB-39** Communitech public board 628 + Getro pagination fix (20/page) + regional
+discovery · **JB-40** Rippling location, Workday keyword search, "engineering" titles · **JB-41**
+parallel fetch · **JB-42** run history + regression alarm + `tools/compare_runs.py` + `tools/sweep_recall.py`.
 
-### On Aider
-Groq free tier (8k tokens/minute) is too small for real edits with gpt-oss-20b — it looped and hit the
-limit on a 20-line task. Options: point aider at a bigger free tier (e.g. Gemini — check current limits),
-or use Claude Code with the briefs in `docs/briefs/`. Config is now lean (`map-tokens: 0`, no read files).
+### ⏳ In progress — JB-43 (branch `feature/jb-43-careers-resolver`, WIP pushed; issue: `gh issue list --search JB-43`)
+Done on the branch: `engine/resolver.py` (Resolver: detect_ats(url) → else fetch page once →
+detect_ats_in_html; per-site cache published as `data/resolver_cache.json`, misses rechecked weekly,
+hits monthly, max 200 new lookups/run) and greenhouse embed detection in `ats_detect.py`
+(`boards.greenhouse.io/embed/job_board?for=X`).
+**Still to do:**
+1. Tests: `tests/test_resolver.py` (cache fresh/stale, cap, fetch failure, embed URL → greenhouse slug).
+2. Wire into `build_board.enrich_via_ats`: stubs whose URL isn't an ATS → group by company →
+   `Resolver.resolve(first_url)` (parallel_map) → if supported, promote like detected ones.
+3. Wire registry `platform: "resolve"` entries: resolve their `careers_url`, fetch if found.
+4. Load cache via `resolver.load_cache()` at start of a live run; `save_cache()` to `site/data/`;
+   add `site/data/resolver_cache.json` to `.gitignore`; add resolver stats to jobs.json.
+5. Merge, then `python tools/sweep_recall.py` and `python tools/compare_runs.py` — recall should rise.
+
+### Next after JB-43
+- **JB-44** seed registry from `Job_application` lists + sweep log (7 of the 14 recall misses are
+  companies the board has never heard of: Sciemetric, Semtech, PerkinElmer, Wellspect, AMD, Per Vices, Adtran).
+- Adapters: Oracle Cloud (Nokia), UltiPro (6 Ontario cos), Teamtailor (3, incl. Vital Bio) — probe first.
+- Regional EDO directories as seeds (LEDC Business Directory first).
+- Title-only postings (Workday/Getro) top out ~6: consider fetching Workday job detail for descriptions.
+- Bump GitHub Actions versions (Node 20 deprecation warnings; ubuntu-latest → 26 on Oct 19).
+- ADR-002 still PROPOSED (LLM router) — decide before any LLM work.
+- Pause the Claude "daily job sweep" scheduled task if no longer needed (uses weekly usage; the
+  board's GitHub Action costs zero Claude usage).
+
+### Tools you can run any time
+`python tools/sweep_recall.py` · `python tools/compare_runs.py` · `python tools/probes/probe_communitech.py`
+· `python tools/probes/probe_regional.py` (5–10 min) · `gh workflow run job-sweep` (manual refresh).
 
 ---
 
 ## 6. Work in flight
-- Nothing stranded. `memory/` is ignored (empty, purpose unknown).
+- `feature/jb-43-careers-resolver` — WIP commit, not a PR yet (see §5).
+- Nothing else uncommitted.
 
 ---
 
