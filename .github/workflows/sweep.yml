@@ -1,9 +1,11 @@
 name: job-sweep
 # Runs the fetcher on a schedule, commits fresh data, and deploys the board to
 # GitHub Pages. Zero Claude tokens: this is plain Python on GitHub's runners.
+# Deploys from `production` only — main is the integration branch, promotions to
+# production happen via PR (see docs/decisions/ADR-006-production-branch.md).
 on:
   push:
-    branches: [main]
+    branches: [production]
     paths:                      # JB-41: docs/tools-only pushes don't trigger a 5-min live fetch
       - "engine/**"
       - "site/**"
@@ -23,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: production         # cron/manual always build production, not the default branch
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - run: pip install -r engine/requirements.txt
