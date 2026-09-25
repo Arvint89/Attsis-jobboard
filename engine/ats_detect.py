@@ -5,7 +5,7 @@ The slug is exactly what ats.fetch_<platform>() expects.
 """
 from __future__ import annotations
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 SUPPORTED = {"greenhouse", "lever", "ashby", "smartrecruiters", "recruitee",
              "workable", "bamboohr", "rippling", "workday"}   # must equal set(ats.FETCHERS)
@@ -38,6 +38,8 @@ def detect_ats(url: str) -> dict | None:
     first = seg[0] if seg else ""
 
     if host in ("boards.greenhouse.io", "job-boards.greenhouse.io"):
+        if first == "embed":        # JB-43: boards.greenhouse.io/embed/job_board?for=ecobee
+            return _res("greenhouse", (parse_qs(u.query).get("for") or [""])[0])
         return _res("greenhouse", first)
     if host == "boards-api.greenhouse.io":           # /v1/boards/{slug}/...
         return _res("greenhouse", seg[2] if len(seg) > 2 and seg[:2] == ["v1", "boards"] else "")
