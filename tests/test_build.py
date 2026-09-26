@@ -41,3 +41,45 @@ def test_source_funnel_missing_source_and_reason():
     import build_board
     out = build_board.source_funnel([({}, {"verdict": "excluded", "reasons": []})])
     assert out == {"unknown": {"fetched": 1, "kept": 0, "excluded": {"unspecified": 1}}}
+
+
+class _StubResolver:
+    def __init__(self, table): self.table = table; self.calls = []
+    def resolve(self, url): self.calls.append(url); return self.table.get(url)
+
+
+def test_resolve_registry_entries_promotes_supported():
+    r = _StubResolver({"https://careers.trudellmed.com":
+                       {"platform": "greenhouse", "slug": "trudell", "supported": True}})
+    entries = [{"name": "Trudell Medical", "ring": 0, "platform": "resolve", "slug": "",
+                "careers_url": "https://careers.trudellmed.com", "flags": [], "industry": "medical"}]
+    promoted, still = b.resolve_registry_entries(entries, r)
+    assert len(promoted) == 1 and still == []
+    p = promoted[0]
+    assert p["platform"] == "greenhouse" and p["slug"] == "trudell"
+    # registry metadata preserved for ring/flags/industry attach in gather()
+    assert p["ring"] == 0 and p["industry"] == "medical"
+
+
+def test_resolve_registry_entries_keeps_unsupported_and_unknown():
+    r = _StubResolver({
+        "https://careers.a.io": {"platform": "teamtailor", "slug": "a", "supported": False},
+        "https://careers.b.io": None,
+    })
+    entries = [
+        {"name": "A", "platform": "resolve", "careers_url": "https://careers.a.io"},
+        {"name": "B", "platform": "resolve", "careers_url": "https://careers.b.io"},
+        {"name": "C", "platform": "resolve"},                                        # no careers_url
+    ]
+    promoted, still = b.resolve_registry_entries(entries, r)
+    assert promoted == []
+    assert [e["name"] for e in still] == ["A", "B", "C"]
+    assert r.calls == ["https://careers.a.io", "https://careers.b.io"]                # C not called
+
+
+def test_resolve_registry_entries_carries_workday_extras():
+    r = _StubResolver({"https://x": {"platform": "workday", "slug": "acme", "supported": True,
+                                      "tenant": "acme", "site": "External", "dc": "wd3"}})
+    promoted, _ = b.resolve_registry_entries(
+        [{"name": "Acme", "platform": "resolve", "careers_url": "https://x"}], r)
+    assert promoted[0]["tenant"] == "acme" and promoted[0]["site"] == "External" and promoted[0]["dc"] == "wd3"

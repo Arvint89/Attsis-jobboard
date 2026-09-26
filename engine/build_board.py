@@ -174,6 +174,26 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, re
     return out + keep, info
 
 
+def resolve_registry_entries(entries, resolver):
+    """JB-43: for platform:'resolve' registry entries, sniff their careers_url and, on a
+    supported detection, return a copy carrying the detected platform/slug (ready for
+    ats.fetch_company). Returns (promoted, still_unresolved).
+    """
+    promoted, still_unresolved = [], []
+    for entry in entries:
+        url = entry.get("careers_url") or ""
+        det = resolver.resolve(url) if url else None
+        if det and det.get("supported"):
+            new_entry = dict(entry, platform=det["platform"], slug=det["slug"])
+            for k in ("tenant", "site", "dc"):
+                if det.get(k):
+                    new_entry[k] = det[k]
+            promoted.append(new_entry)
+        else:
+            still_unresolved.append(entry)
+    return promoted, still_unresolved
+
+
 def gather(demo: bool):
     """Return (all_jobs, errors, unresolved)."""
     if demo:
@@ -181,6 +201,9 @@ def gather(demo: bool):
             return json.load(f), [], []
     jobs, errors, unresolved = [], [], []
     known = set()
+    # JB-43: one resolver, shared across registry-resolve + aggregator enrich phases,
+    # so cache + max_lookups cap are unified.
+    _r = _resolver.Resolver(cache=_resolver.load_cache())
     registry = load_registry()
     for entry in registry:
         if entry.get("platform") not in (None, "", "resolve"):
@@ -198,6 +221,19 @@ def gather(demo: bool):
             j["_sponsors"] = entry.get("sponsors")
         jobs += got
 
+    # JB-43: try to resolve registry entries whose platform is 'resolve' (sniff careers_url).
+    promoted, unresolved = resolve_registry_entries(unresolved, _r)
+    for entry, (got, err) in zip(promoted, parallel_map(ats.fetch_company, promoted)):
+        if err:
+            errors.append({"company": entry["name"], "error": err})
+        for j in got:
+            j["_reg_flags"] = entry.get("flags", [])
+            j["_ring"] = entry.get("ring")
+            j["_industry"] = entry.get("industry", "other")
+            j["_sponsors"] = entry.get("sponsors")
+        jobs += got
+        known.add((entry["platform"], entry.get("slug", "")))
+
     # JB-3: second tier -- board SOURCES (aggregators) return many companies' jobs
     # at once, covering companies that aren't on an auto-probeable ATS.
     source_jobs = []
@@ -208,7 +244,6 @@ def gather(demo: bool):
         source_jobs += got
     # JB-5: follow apply links to each company's own ATS (full descriptions + every role)
     # JB-43: resolver fetches the careers page once when the aggregator link has no detectable ATS
-    _r = _resolver.Resolver(cache=_resolver.load_cache())
     got, info = enrich_via_ats(source_jobs, known,
                                relevant=lambda j: jobfilter.classify(j)["verdict"] != "excluded",
                                in_region=lambda j: facets.country(j.get("location", "")) == "Canada",
