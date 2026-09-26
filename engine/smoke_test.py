@@ -1,6 +1,12 @@
 """smoke_test.py -- runtime gate (per PD rules). Answers: does the product
 actually work right now on this machine? Not unit correctness -- end-to-end.
-Exit 0 = all green. Run after every build/change before calling a phase done."""
+Exit 0 = all green. Run after every build/change before calling a phase done.
+
+The --demo build writes to site/data/jobs.json + site/board_standalone.html.
+That's the SAME file the local dev server serves and the CI publishes, so a
+smoke run used to clobber whatever real data was there with 1-role demo output.
+We save+restore those artefacts around the demo build so a smoke run is a
+no-op on the served files."""
 import json, os, subprocess, sys
 try: sys.stdout.reconfigure(encoding="utf-8")
 except Exception: pass
@@ -13,6 +19,21 @@ def check(name, cond):
     global ok
     checks.append((name, cond)); ok = ok and cond
     print(("PASS " if cond else "FAIL ") + name)
+
+
+def _snapshot(path):
+    """Return (path, existing_bytes_or_None). Called before the demo build."""
+    return (path, open(path, "rb").read() if os.path.exists(path) else None)
+
+
+def _restore(snap):
+    path, data = snap
+    if data is None:
+        if os.path.exists(path):
+            os.remove(path)
+    else:
+        with open(path, "wb") as f:
+            f.write(data)
 
 # 1 registry loads and is non-trivial
 reg = json.load(open(os.path.join(HERE, "companies.json"), encoding="utf-8"))["companies"]
@@ -33,14 +54,21 @@ prof = cv_parse.build_profile("Electronics design engineer, 11+ years, Altium, P
 check("cv_parse -> non-empty confirmers", len(prof["model"]["skill_confirmers"]) >= 8)
 check("cv_parse detects years", prof["years_general"] == 11)
 
-# 3 demo build produces valid site data
-r = subprocess.run([sys.executable, os.path.join(HERE,"build_board.py"), "--demo"], capture_output=True, text=True)
-check("demo build exits 0", r.returncode==0)
-jobs_path = os.path.join(ROOT,"site","data","jobs.json")
-check("jobs.json exists", os.path.exists(jobs_path))
-d = json.load(open(jobs_path, encoding="utf-8"))
-check("jobs.json has matches", d["counts"]["matches"]>=1)
-check("standalone board emitted", os.path.exists(os.path.join(ROOT,"site","board_standalone.html")))
+# 3 demo build produces valid site data.
+# Snapshot the artefacts the --demo build overwrites so a smoke run is a no-op
+# on the served files (was breaking local dev servers; see JB-smoke-outdir).
+jobs_path = os.path.join(ROOT, "site", "data", "jobs.json")
+std_path = os.path.join(ROOT, "site", "board_standalone.html")
+snaps = [_snapshot(jobs_path), _snapshot(std_path)]
+try:
+    r = subprocess.run([sys.executable, os.path.join(HERE,"build_board.py"), "--demo"], capture_output=True, text=True)
+    check("demo build exits 0", r.returncode==0)
+    check("jobs.json exists", os.path.exists(jobs_path))
+    d = json.load(open(jobs_path, encoding="utf-8"))
+    check("jobs.json has matches", d["counts"]["matches"]>=1)
+    check("standalone board emitted", os.path.exists(std_path))
+finally:
+    for s in snaps: _restore(s)
 
 # 4 the site page references the data file
 idx = open(os.path.join(ROOT,"site","index.html"), encoding="utf-8").read()
