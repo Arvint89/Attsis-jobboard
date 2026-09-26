@@ -633,6 +633,30 @@
       "industry": "embedded engineering consultancy",
       "sponsors": null,
       "city": "Vancouver"
+    },
+    {
+      "name": "Sense Engineering",
+      "ring": 3,
+      "platform": "breezy",
+      "slug": "sense-engineering",
+      "careers_url": "https://sense-engineering.breezy.hr/",
+      "note": "JB-49 seed - live verified 2026-09-26 (15 CA jobs), civil/structural/building",
+      "flags": [],
+      "industry": "civil/structural engineering",
+      "sponsors": null,
+      "city": "Montreal"
+    },
+    {
+      "name": "Bexorg",
+      "ring": 4,
+      "platform": "breezy",
+      "slug": "bexorg",
+      "careers_url": "https://bexorg.breezy.hr/",
+      "note": "JB-49 seed - live verified 2026-09-26 (Principal Embedded Software Engineer), US-only but profile-relevant",
+      "flags": [],
+      "industry": "physiology/embedded platform",
+      "sponsors": null,
+      "city": "New Haven"
     }
   ]
 }
