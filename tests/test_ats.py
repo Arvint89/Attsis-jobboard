@@ -51,6 +51,42 @@ def test_bamboohr_empty_result_is_safe():
     assert ats.fetch_bamboohr("Acme", "acme") == []
 
 
+def test_workable_normalizes():
+    # JB-48: apply.workable.com/api/v3/accounts/{slug}/jobs shape
+    patch({"results": [{
+        "title": "Embedded Software Engineer",
+        "shortcode": "AB12CD",
+        "location": {"city": "Toronto", "region": "Ontario", "country": "Canada"},
+        "published_on": "2026-09-20",
+        "description": "&lt;p&gt;C, C++, RTOS, ARM Cortex-M&lt;/p&gt;",
+    }]})
+    j = ats.fetch_workable("Acme", "acme")[0]
+    assert REQUIRED <= set(j)
+    assert j["title"] == "Embedded Software Engineer"
+    assert j["location"] == "Toronto, Ontario, Canada"
+    assert j["url"] == "https://apply.workable.com/acme/j/AB12CD/"
+    assert "RTOS" in j["description"] and "<" not in j["description"]
+    assert j["source"] == "workable"
+
+
+def test_workable_missing_location_and_falls_back_to_created_at():
+    patch({"results": [{
+        "title": "Firmware Dev",
+        "shortcode": "XYZ",
+        "location": None,                          # missing entirely
+        "created_at": "2026-09-01T00:00:00Z",      # published_on missing -> fallback
+        "description": "",
+    }]})
+    j = ats.fetch_workable("Acme", "acme")[0]
+    assert j["location"] == "n/a"                  # _norm's empty-location fallback
+    assert j["posted"] == "2026-09-01T00:00:00Z"
+
+
+def test_workable_empty_results_is_safe():
+    patch({"results": []})
+    assert ats.fetch_workable("Acme", "acme") == []
+
+
 def patch_urls(router):
     """Route _get by URL substring -> payload (for adapters that make >1 call)."""
     def fake(url, method="GET", **kw):
