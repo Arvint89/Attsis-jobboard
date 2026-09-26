@@ -29,6 +29,7 @@ import jobfilter
 import geo
 import facets
 import history
+import resolver as _resolver
 
 FLAG_LEGEND = {
     'remote': 'Role is remote-friendly',
@@ -84,7 +85,8 @@ def parallel_map(fn, items, workers=None):
         return list(ex.map(fn, items))
 
 
-def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, relevant=None, in_region=None):
+def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, relevant=None, in_region=None,
+                   resolver=None):
     """JB-5 / JB-38b: follow aggregator apply links to each company's own ATS.
 
     source_jobs: jobs from board sources (Getro/LEDC), each with "url", "company", "source".
@@ -96,7 +98,10 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, re
                  A company is promoted if any of its stubs is relevant OR in the region (JB-39: track
                  every regional company on a readable ATS -- its hardware roles may only be on its
                  own board). Relevant companies are promoted first, so the cap never drops them.
-    Returns (jobs, info) with info = {"discovered": [names], "enriched": n_stubs_replaced, "errors": [...]}.
+    resolver:    optional resolver.Resolver. For stubs whose URL has no detectable ATS, try to
+                 discover one by fetching the careers page (JB-43). Promoted like directly-detected.
+    Returns (jobs, info) with info = {"discovered": [names], "enriched": n_stubs_replaced, "errors": [...],
+                                      "resolver_stats": dict or None}.
     """
     fetch = fetch or ats.fetch_company
     groups, keep = {}, []
@@ -107,7 +112,23 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, re
             groups.setdefault(key, {"det": det, "stubs": []})["stubs"].append(j)
         else:
             keep.append(j)
-    out, info = [], {"discovered": [], "enriched": 0, "errors": []}
+    if resolver is not None and keep:
+        by_company, remaining = {}, []
+        for j in keep:
+            if ats_detect.detect_ats(j.get("url") or "") is None:
+                by_company.setdefault(j.get("company") or "", []).append(j)
+            else:
+                remaining.append(j)
+        keep = remaining
+        for company, stubs in by_company.items():
+            det = resolver.resolve(stubs[0].get("url") or "") if company else None
+            if det and det.get("supported"):
+                key = (det["platform"], det["slug"])
+                groups.setdefault(key, {"det": det, "stubs": []})["stubs"] += stubs
+            else:
+                keep += stubs
+    out, info = [], {"discovered": [], "enriched": 0, "errors": [],
+                     "resolver_stats": dict(resolver.stats) if resolver is not None else None}
     fetched = 0
     todo = []                                  # (entry, stubs, det) to fetch -- decided in order
     def rank(item):
@@ -186,9 +207,12 @@ def gather(demo: bool):
             errors.append({"company": entry["name"], "error": err})
         source_jobs += got
     # JB-5: follow apply links to each company's own ATS (full descriptions + every role)
+    # JB-43: resolver fetches the careers page once when the aggregator link has no detectable ATS
+    _r = _resolver.Resolver(cache=_resolver.load_cache())
     got, info = enrich_via_ats(source_jobs, known,
                                relevant=lambda j: jobfilter.classify(j)["verdict"] != "excluded",
-                               in_region=lambda j: facets.country(j.get("location", "")) == "Canada")
+                               in_region=lambda j: facets.country(j.get("location", "")) == "Canada",
+                               resolver=_r)
     errors += info["errors"]
     LAST_DISCOVERY.update(info)
     for j in got:
