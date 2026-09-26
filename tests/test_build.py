@@ -77,6 +77,29 @@ def test_resolve_registry_entries_keeps_unsupported_and_unknown():
     assert r.calls == ["https://careers.a.io", "https://careers.b.io"]                # C not called
 
 
+def test_build_payload_has_resolver_stats_key_and_saves_cache(monkeypatch, tmp_path):
+    """JB-43 step 4: payload exposes resolver_stats + a cache file is written next to jobs.json."""
+    import ats, sources, build_board
+    monkeypatch.setattr(ats, "fetch_company", lambda e: ([], None))
+    monkeypatch.setattr(sources, "load_sources", lambda: [])
+    monkeypatch.setattr(sources, "fetch_source", lambda e: ([], None))
+    monkeypatch.setattr(build_board, "DATA", str(tmp_path))
+    payload = build_board.build(demo=False, min_score=0)
+    assert "resolver_stats" in payload
+    assert set(payload["resolver_stats"] or {}) == {"cached", "fetched", "found", "failed", "skipped_cap"}
+    assert (tmp_path / "resolver_cache.json").exists()
+
+
+def test_build_demo_leaves_resolver_stats_none(monkeypatch, tmp_path):
+    """Demo mode doesn't run the resolver, so stats stays None (not stale from a prior run)."""
+    import build_board
+    build_board.LAST_RESOLVER["stats"] = {"cached": 99}   # inject stale state
+    monkeypatch.setattr(build_board, "DATA", str(tmp_path))
+    payload = build_board.build(demo=True, min_score=0)
+    assert payload["resolver_stats"] is None
+    assert not (tmp_path / "resolver_cache.json").exists()
+
+
 def test_resolve_registry_entries_carries_workday_extras():
     r = _StubResolver({"https://x": {"platform": "workday", "slug": "acme", "supported": True,
                                       "tenant": "acme", "site": "External", "dc": "wd3"}})

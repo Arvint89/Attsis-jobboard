@@ -70,6 +70,7 @@ def load_registry():
 
 MAX_NEW_COMPANIES = 500   # JB-5/39: bound the extra ATS fetches per run
 LAST_DISCOVERY = {"discovered": [], "enriched": 0, "errors": []}
+LAST_RESOLVER = {"stats": None, "cache": None}   # JB-43: exposed to build() for meta + save
 WORKERS = int(os.getenv("JB_WORKERS", "8"))   # JB-41: parallel company fetches
 
 
@@ -196,6 +197,8 @@ def resolve_registry_entries(entries, resolver):
 
 def gather(demo: bool):
     """Return (all_jobs, errors, unresolved)."""
+    LAST_RESOLVER["stats"] = None
+    LAST_RESOLVER["cache"] = None
     if demo:
         with open(os.path.join(HERE, "fixtures.json"), encoding="utf-8") as f:
             return json.load(f), [], []
@@ -256,6 +259,8 @@ def gather(demo: bool):
         j["_industry"] = j.get("industry") or "other"
         j["_sponsors"] = None
     jobs += got
+    LAST_RESOLVER["stats"] = dict(_r.stats)
+    LAST_RESOLVER["cache"] = dict(_r.cache)
     return jobs, errors, unresolved
 
 
@@ -424,6 +429,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         "discovery": {"companies": sorted(LAST_DISCOVERY["discovered"]),
                       "count": len(LAST_DISCOVERY["discovered"]),
                       "stubs_replaced": LAST_DISCOVERY["enriched"]},
+        "resolver_stats": LAST_RESOLVER["stats"],   # JB-43: cached/fetched/found/failed/skipped_cap
         "matches": matches,
         "below": below,
         "companies": companies_map,
@@ -435,6 +441,10 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         json.dump(payload, f, indent=2, ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:
         json.dump(unresolved, f, indent=2, ensure_ascii=False)
+    # JB-43: publish the resolver cache next to jobs.json so the next run can prime it
+    # (like history.json — gitignored, refreshed each build).
+    if LAST_RESOLVER["cache"] is not None:
+        _resolver.save_cache(LAST_RESOLVER["cache"], DATA)
 
     # also emit a data-embedded standalone page (double-click offline, no server)
     tpl_path = os.path.join(ROOT, "site", "index.html")
