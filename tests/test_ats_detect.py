@@ -12,6 +12,7 @@ CASES = [
     ("https://jobs.smartrecruiters.com/Acme1/744", {"platform": "smartrecruiters", "slug": "Acme1", "supported": True}),
     ("https://acme.recruitee.com/o/eng", {"platform": "recruitee", "slug": "acme", "supported": True}),
     ("https://apply.workable.com/acme/j/AB12/", {"platform": "workable", "slug": "acme", "supported": True}),
+    ("https://sense-engineering.breezy.hr/p/abcdef123456-role", {"platform": "breezy", "slug": "sense-engineering", "supported": True}),
     ("https://ats.rippling.com/canada-rocket-company/jobs", {"platform": "rippling", "slug": "canada-rocket-company", "supported": True}),
     ("https://nokia.wd3.myworkdayjobs.com/en-US/careers", {"platform": "workday", "slug": "nokia", "tenant": "nokia", "site": "careers", "dc": "wd3", "supported": True}),
     ("https://acme.wd1.myworkdayjobs.com/External", {"platform": "workday", "slug": "acme", "tenant": "acme", "site": "External", "dc": "wd1", "supported": True}),
