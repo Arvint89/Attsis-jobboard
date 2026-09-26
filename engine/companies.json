@@ -501,6 +501,114 @@
       "industry": "medical",
       "sponsors": null,
       "city": "Toronto"
+    },
+    {
+      "name": "Sciemetric",
+      "ring": 3,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://www.sciemetric.com/company/careers",
+      "note": "JB-45 v1 sweep miss - custom careers page",
+      "flags": [],
+      "industry": "test/measurement",
+      "sponsors": null,
+      "city": "Kanata"
+    },
+    {
+      "name": "Semtech",
+      "ring": 2,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://semtech.wd1.myworkdayjobs.com/SemtechCareers",
+      "note": "JB-45 v1 sweep miss - Workday (resolver should detect)",
+      "flags": [],
+      "industry": "semiconductors",
+      "sponsors": null,
+      "city": "Burlington"
+    },
+    {
+      "name": "Hitachi Rail",
+      "ring": 2,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://careers.hitachi.com/search/hitachi-rail/jobs",
+      "note": "JB-45 v1 sweep miss - Oracle HCM (blocked on adapter)",
+      "flags": [],
+      "industry": "rail/transport",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Safe Fleet",
+      "ring": 3,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://www.safefleet.net/jobs-eb/",
+      "note": "JB-45 v1 sweep miss - Comeet (adapter TBD)",
+      "flags": [],
+      "industry": "vehicle safety",
+      "sponsors": null,
+      "city": "Belleville"
+    },
+    {
+      "name": "Wellspect HealthCare",
+      "ring": 2,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://www.wellspect.us/about-us/careers",
+      "note": "JB-45 v1 sweep miss - Dentsply/Wellspect parent, ATS unknown",
+      "flags": [],
+      "industry": "medical",
+      "sponsors": null,
+      "city": "Mississauga"
+    },
+    {
+      "name": "Littelfuse",
+      "ring": 4,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://littelfuse.wd1.myworkdayjobs.com/Littelfuse-Careers",
+      "note": "JB-45 v1 sweep miss - Workday (resolver should detect)",
+      "flags": [],
+      "industry": "electronics/power",
+      "sponsors": null,
+      "city": "Chicago"
+    },
+    {
+      "name": "Corinex",
+      "ring": 4,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://www.corinex.com/careers",
+      "note": "JB-45 v1 sweep miss - custom careers page",
+      "flags": [],
+      "industry": "communications/power-line",
+      "sponsors": null,
+      "city": "Vancouver"
+    },
+    {
+      "name": "Amtech Aeronautical",
+      "ring": 4,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://amtech-group.com/pages/view/15",
+      "note": "JB-45 v1 sweep miss - custom careers page",
+      "flags": [],
+      "industry": "aerospace",
+      "sponsors": null,
+      "city": "Medicine Hat"
+    },
+    {
+      "name": "PerkinElmer",
+      "ring": 2,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://careers.revvitysolutions.com/",
+      "note": "JB-45 v1 sweep miss - now Revvity Solutions, ATS TBD",
+      "flags": [],
+      "industry": "life-sciences/instrumentation",
+      "sponsors": null,
+      "city": "Woodbridge"
     }
   ]
 }
