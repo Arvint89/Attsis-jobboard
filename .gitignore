@@ -21,3 +21,4 @@ site/board_standalone.html
 memory/
 site/data/history.json
 site/data/resolve.json
+site/data/resolver_cache.json
