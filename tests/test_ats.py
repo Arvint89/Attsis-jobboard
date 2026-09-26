@@ -87,6 +87,46 @@ def test_workable_empty_results_is_safe():
     assert ats.fetch_workable("Acme", "acme") == []
 
 
+def test_breezy_normalizes():
+    # JB-49: {slug}.breezy.hr/json returns a top-level list of postings
+    patch([{
+        "id": "d5121e75815a",
+        "name": "Embedded Software Engineer",
+        "location": {"city": "Montreal",
+                     "state": {"id": "QC", "name": "Quebec"},
+                     "country": {"id": "CA", "name": "Canada"}},
+        "url": "https://sense-engineering.breezy.hr/p/d5121e75815a-embedded",
+        "published_date": "2026-09-01T00:00:00Z",
+        "description": "",
+    }])
+    j = ats.fetch_breezy("Sense", "sense-engineering")[0]
+    assert REQUIRED <= set(j)
+    assert j["title"] == "Embedded Software Engineer"
+    assert j["location"] == "Montreal, QC, CA"
+    assert j["url"] == "https://sense-engineering.breezy.hr/p/d5121e75815a-embedded"
+    assert j["posted"] == "2026-09-01T00:00:00Z"
+    assert j["source"] == "breezy"
+
+
+def test_breezy_missing_location_falls_back_to_creation_date():
+    patch([{
+        "id": "x",
+        "name": "Firmware Dev",
+        "location": None,
+        "url": "https://acme.breezy.hr/p/x",
+        "creation_date": "2026-08-15T00:00:00Z",
+        "description": "",
+    }])
+    j = ats.fetch_breezy("Acme", "acme")[0]
+    assert j["location"] == "n/a"
+    assert j["posted"] == "2026-08-15T00:00:00Z"
+
+
+def test_breezy_empty_list_is_safe():
+    patch([])
+    assert ats.fetch_breezy("Acme", "acme") == []
+
+
 def patch_urls(router):
     """Route _get by URL substring -> payload (for adapters that make >1 call)."""
     def fake(url, method="GET", **kw):

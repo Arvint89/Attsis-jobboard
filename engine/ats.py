@@ -225,6 +225,29 @@ def _rippling_location(j: dict) -> str:
     return "; ".join(x for x in out if x)
 
 
+def fetch_breezy(company, slug, **_):
+    # Breezy HR public JSON export at https://{slug}.breezy.hr/json. Returns a
+    # top-level list of postings. The list endpoint carries titles + locations +
+    # published_date but NOT description body (that lives in the posting's HTML
+    # page); JB-52 thin-JD enrichment will pull descriptions later.
+    data = _get(f"https://{slug}.breezy.hr/json").json()
+    jobs = data if isinstance(data, list) else (data.get("positions") or [])
+    out = []
+    for j in jobs:
+        loc = j.get("location") or {}
+        state = loc.get("state")
+        state = state.get("id") if isinstance(state, dict) else (state or "")
+        country = loc.get("country")
+        country = country.get("id") if isinstance(country, dict) else (country or "")
+        location = ", ".join(x for x in [loc.get("city") or "", state, country] if x)
+        out.append(_norm(
+            company, j.get("name") or j.get("title"), location,
+            j.get("url"),
+            j.get("published_date") or j.get("creation_date") or j.get("updated_date"),
+            j.get("description") or "", "breezy"))
+    return out
+
+
 def fetch_rippling(company, slug, **_):
     # Rippling ATS public board API.
     url = f"https://api.rippling.com/platform/api/ats/v1/board/{slug}/jobs"
@@ -295,6 +318,7 @@ FETCHERS = {
     "recruitee": fetch_recruitee,
     "workable": fetch_workable,
     "bamboohr": fetch_bamboohr,
+    "breezy": fetch_breezy,
     "rippling": fetch_rippling,
     "workday": fetch_workday,
 }
