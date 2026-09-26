@@ -83,3 +83,50 @@ def test_relevant_companies_promoted_before_cap():
     build_board.enrich_via_ats(stubs, known=set(), fetch=lambda e: fetched.append(e["slug"]) or ([], None),
                                max_new=1, relevant=lambda j: j["company"] == "Hw", in_region=lambda j: True)
     assert fetched == ["hw"]
+
+
+class _StubResolver:
+    """Minimal resolver stand-in: returns pre-canned detections per url. Records calls + exposes stats."""
+    def __init__(self, table):
+        self.table = table
+        self.calls = []
+        self.stats = {"cached": 0, "fetched": 0, "found": 0, "failed": 0, "skipped_cap": 0}
+    def resolve(self, url):
+        self.calls.append(url)
+        return self.table.get(url)
+
+
+def test_resolver_promotes_undetected_company():
+    fetched = []
+    r = _StubResolver({"https://careers.acme.io/x":
+                       {"platform": "greenhouse", "slug": "acme", "supported": True}})
+    jobs, info = build_board.enrich_via_ats(
+        [stub("Acme", "https://careers.acme.io/x")],
+        known=set(),
+        fetch=lambda e: fetched.append(e["slug"]) or ([{"company": e["name"], "title": "role",
+                                                       "location": "Toronto", "url": "u",
+                                                       "description": "jd", "source": "greenhouse"}], None),
+        resolver=r)
+    assert fetched == ["acme"]
+    assert r.calls == ["https://careers.acme.io/x"]
+    assert info["discovered"] == ["Acme"] and info["resolver_stats"] is not None
+    assert [j["title"] for j in jobs] == ["role"]
+
+
+def test_resolver_none_keeps_stub_and_does_not_fetch():
+    called = []
+    r = _StubResolver({})   # resolver finds nothing
+    jobs, info = build_board.enrich_via_ats(
+        [stub("Mystery", "https://careers.mystery.io/x")],
+        known=set(), fetch=lambda e: called.append(e) or ([], None), resolver=r)
+    assert called == []
+    assert [j["company"] for j in jobs] == ["Mystery"]
+    assert r.calls == ["https://careers.mystery.io/x"]
+
+
+def test_resolver_ignored_when_url_already_has_detected_ats():
+    r = _StubResolver({})   # would return None -- but must not be called
+    build_board.enrich_via_ats(
+        [stub("Zapier", "https://jobs.teamtailor.com/zapier/x")],   # detected but unsupported
+        known=set(), fetch=lambda e: ([], None), resolver=r)
+    assert r.calls == []    # unsupported-detected must NOT go through the resolver

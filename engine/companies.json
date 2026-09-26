@@ -99,6 +99,18 @@
       "city": "London"
     },
     {
+      "name": "Trudell Medical International",
+      "ring": 0,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://www.trudellmed.com/about-us/careers",
+      "flags": [],
+      "note": "Dayforce (jobs.dayforcehcm.com/en-US/tml/TMICANDIDATEPORTAL) - blocked on JB-47",
+      "industry": "medical",
+      "sponsors": null,
+      "city": "London"
+    },
+    {
       "name": "VueReal",
       "ring": 1,
       "platform": "bamboohr",

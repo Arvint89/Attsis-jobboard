@@ -29,6 +29,7 @@ import jobfilter
 import geo
 import facets
 import history
+import resolver as _resolver
 
 FLAG_LEGEND = {
     'remote': 'Role is remote-friendly',
@@ -69,6 +70,7 @@ def load_registry():
 
 MAX_NEW_COMPANIES = 500   # JB-5/39: bound the extra ATS fetches per run
 LAST_DISCOVERY = {"discovered": [], "enriched": 0, "errors": []}
+LAST_RESOLVER = {"stats": None, "cache": None}   # JB-43: exposed to build() for meta + save
 WORKERS = int(os.getenv("JB_WORKERS", "8"))   # JB-41: parallel company fetches
 
 
@@ -84,7 +86,8 @@ def parallel_map(fn, items, workers=None):
         return list(ex.map(fn, items))
 
 
-def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, relevant=None, in_region=None):
+def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, relevant=None, in_region=None,
+                   resolver=None):
     """JB-5 / JB-38b: follow aggregator apply links to each company's own ATS.
 
     source_jobs: jobs from board sources (Getro/LEDC), each with "url", "company", "source".
@@ -96,7 +99,10 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, re
                  A company is promoted if any of its stubs is relevant OR in the region (JB-39: track
                  every regional company on a readable ATS -- its hardware roles may only be on its
                  own board). Relevant companies are promoted first, so the cap never drops them.
-    Returns (jobs, info) with info = {"discovered": [names], "enriched": n_stubs_replaced, "errors": [...]}.
+    resolver:    optional resolver.Resolver. For stubs whose URL has no detectable ATS, try to
+                 discover one by fetching the careers page (JB-43). Promoted like directly-detected.
+    Returns (jobs, info) with info = {"discovered": [names], "enriched": n_stubs_replaced, "errors": [...],
+                                      "resolver_stats": dict or None}.
     """
     fetch = fetch or ats.fetch_company
     groups, keep = {}, []
@@ -107,7 +113,23 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, re
             groups.setdefault(key, {"det": det, "stubs": []})["stubs"].append(j)
         else:
             keep.append(j)
-    out, info = [], {"discovered": [], "enriched": 0, "errors": []}
+    if resolver is not None and keep:
+        by_company, remaining = {}, []
+        for j in keep:
+            if ats_detect.detect_ats(j.get("url") or "") is None:
+                by_company.setdefault(j.get("company") or "", []).append(j)
+            else:
+                remaining.append(j)
+        keep = remaining
+        for company, stubs in by_company.items():
+            det = resolver.resolve(stubs[0].get("url") or "") if company else None
+            if det and det.get("supported"):
+                key = (det["platform"], det["slug"])
+                groups.setdefault(key, {"det": det, "stubs": []})["stubs"] += stubs
+            else:
+                keep += stubs
+    out, info = [], {"discovered": [], "enriched": 0, "errors": [],
+                     "resolver_stats": dict(resolver.stats) if resolver is not None else None}
     fetched = 0
     todo = []                                  # (entry, stubs, det) to fetch -- decided in order
     def rank(item):
@@ -153,13 +175,38 @@ def enrich_via_ats(source_jobs, known, fetch=None, max_new=MAX_NEW_COMPANIES, re
     return out + keep, info
 
 
+def resolve_registry_entries(entries, resolver):
+    """JB-43: for platform:'resolve' registry entries, sniff their careers_url and, on a
+    supported detection, return a copy carrying the detected platform/slug (ready for
+    ats.fetch_company). Returns (promoted, still_unresolved).
+    """
+    promoted, still_unresolved = [], []
+    for entry in entries:
+        url = entry.get("careers_url") or ""
+        det = resolver.resolve(url) if url else None
+        if det and det.get("supported"):
+            new_entry = dict(entry, platform=det["platform"], slug=det["slug"])
+            for k in ("tenant", "site", "dc"):
+                if det.get(k):
+                    new_entry[k] = det[k]
+            promoted.append(new_entry)
+        else:
+            still_unresolved.append(entry)
+    return promoted, still_unresolved
+
+
 def gather(demo: bool):
     """Return (all_jobs, errors, unresolved)."""
+    LAST_RESOLVER["stats"] = None
+    LAST_RESOLVER["cache"] = None
     if demo:
         with open(os.path.join(HERE, "fixtures.json"), encoding="utf-8") as f:
             return json.load(f), [], []
     jobs, errors, unresolved = [], [], []
     known = set()
+    # JB-43: one resolver, shared across registry-resolve + aggregator enrich phases,
+    # so cache + max_lookups cap are unified.
+    _r = _resolver.Resolver(cache=_resolver.load_cache())
     registry = load_registry()
     for entry in registry:
         if entry.get("platform") not in (None, "", "resolve"):
@@ -177,6 +224,19 @@ def gather(demo: bool):
             j["_sponsors"] = entry.get("sponsors")
         jobs += got
 
+    # JB-43: try to resolve registry entries whose platform is 'resolve' (sniff careers_url).
+    promoted, unresolved = resolve_registry_entries(unresolved, _r)
+    for entry, (got, err) in zip(promoted, parallel_map(ats.fetch_company, promoted)):
+        if err:
+            errors.append({"company": entry["name"], "error": err})
+        for j in got:
+            j["_reg_flags"] = entry.get("flags", [])
+            j["_ring"] = entry.get("ring")
+            j["_industry"] = entry.get("industry", "other")
+            j["_sponsors"] = entry.get("sponsors")
+        jobs += got
+        known.add((entry["platform"], entry.get("slug", "")))
+
     # JB-3: second tier -- board SOURCES (aggregators) return many companies' jobs
     # at once, covering companies that aren't on an auto-probeable ATS.
     source_jobs = []
@@ -186,9 +246,11 @@ def gather(demo: bool):
             errors.append({"company": entry["name"], "error": err})
         source_jobs += got
     # JB-5: follow apply links to each company's own ATS (full descriptions + every role)
+    # JB-43: resolver fetches the careers page once when the aggregator link has no detectable ATS
     got, info = enrich_via_ats(source_jobs, known,
                                relevant=lambda j: jobfilter.classify(j)["verdict"] != "excluded",
-                               in_region=lambda j: facets.country(j.get("location", "")) == "Canada")
+                               in_region=lambda j: facets.country(j.get("location", "")) == "Canada",
+                               resolver=_r)
     errors += info["errors"]
     LAST_DISCOVERY.update(info)
     for j in got:
@@ -197,6 +259,8 @@ def gather(demo: bool):
         j["_industry"] = j.get("industry") or "other"
         j["_sponsors"] = None
     jobs += got
+    LAST_RESOLVER["stats"] = dict(_r.stats)
+    LAST_RESOLVER["cache"] = dict(_r.cache)
     return jobs, errors, unresolved
 
 
@@ -365,6 +429,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         "discovery": {"companies": sorted(LAST_DISCOVERY["discovered"]),
                       "count": len(LAST_DISCOVERY["discovered"]),
                       "stubs_replaced": LAST_DISCOVERY["enriched"]},
+        "resolver_stats": LAST_RESOLVER["stats"],   # JB-43: cached/fetched/found/failed/skipped_cap
         "matches": matches,
         "below": below,
         "companies": companies_map,
@@ -376,6 +441,10 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         json.dump(payload, f, indent=2, ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:
         json.dump(unresolved, f, indent=2, ensure_ascii=False)
+    # JB-43: publish the resolver cache next to jobs.json so the next run can prime it
+    # (like history.json — gitignored, refreshed each build).
+    if LAST_RESOLVER["cache"] is not None:
+        _resolver.save_cache(LAST_RESOLVER["cache"], DATA)
 
     # also emit a data-embedded standalone page (double-click offline, no server)
     tpl_path = os.path.join(ROOT, "site", "index.html")
