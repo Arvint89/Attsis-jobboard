@@ -166,6 +166,17 @@
       "city": "Kitchener"
     },
     {
+      "name": "Deep Trekker",
+      "ring": 1,
+      "platform": "resolve",
+      "slug": "",
+      "careers_url": "https://www.deeptrekker.com/careers",
+      "flags": [],
+      "industry": "underwater robotics/ROV",
+      "sponsors": null,
+      "city": "Kitchener"
+    },
+    {
       "name": "Miovision",
       "ring": 1,
       "platform": "ashby",
