@@ -609,6 +609,30 @@
       "industry": "life-sciences/instrumentation",
       "sponsors": null,
       "city": "Woodbridge"
+    },
+    {
+      "name": "Fidus Systems",
+      "ring": 3,
+      "platform": "workable",
+      "slug": "fidus",
+      "careers_url": "https://apply.workable.com/fidus/",
+      "note": "JB-48 seed - sighted in sweep (FPGA/RF/verification), Ottawa HQ",
+      "flags": [],
+      "industry": "FPGA/ASIC/RF design services",
+      "sponsors": null,
+      "city": "Ottawa"
+    },
+    {
+      "name": "MistyWest",
+      "ring": 4,
+      "platform": "workable",
+      "slug": "mistywest",
+      "careers_url": "https://apply.workable.com/mistywest/",
+      "note": "JB-48 seed - live verified 2026-09-26 (5 jobs), embedded consultancy",
+      "flags": [],
+      "industry": "embedded engineering consultancy",
+      "sponsors": null,
+      "city": "Vancouver"
     }
   ]
 }
