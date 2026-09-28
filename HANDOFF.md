@@ -38,39 +38,63 @@ job-hunt tool. Prioritise coverage and generalisation over tuning the scorer to 
 
 ---
 
-## 2. Where it actually stands (verified 2026-09-28)
+## 2. Where it actually stands (verified 2026-09-28, post-overnight-run)
 
 The board is **live and healthy**. The pipeline works end to end.
 
 | Check | Result |
 |---|---|
-| Registry size | **54 companies** (was 32 at 2026-09-18) |
-| Unit tests | **174 passed** ✅ (was 41) |
+| Registry size | **173 companies** (54 core + 119 LEDC seeded via #109) |
+| Unit tests | **194 passed** ✅ (was 174; +20 from skills DB + LinkedIn scout + multi-word) |
 | Smoke checks | **11/11 passed** ✅ |
-| Sweep recall baseline | **6/20 = 30%** (2026-09-21) — target 70% |
+| Sweep recall | **7/23 = 30%** (2026-09-28; was 6/20 = 30% at 2026-09-21) — target 70% |
 
 ### Shipped since 2026-09-21 baseline
 
 - **JB-43** Careers Resolver — full 4-step wire-in (PRs #88, #90, #91, #92); resolver cache published in jobs.json meta.
 - **JB-45 v1** Registry seeding — 9 miss-list companies as `platform: "resolve"` (#94); Trudell Medical (Dayforce, London) via #89.
+- **JB-45 v2** LEDC directory seed — 119 London companies added as `platform: "resolve"` (#109).
+- **JB-46** LinkedIn scout CLI — URL → company → registry PR proposal (#108).
 - **JB-48** Workable adapter + 2 verified Canadian seeds (#96).
 - **JB-49** Breezy HR adapter + 2 seed companies (#99).
+- **JB-50** Canonical skills + titles DB v1 — `data/skills.json`, `engine/skills_db.py`, browser wire-in (#106).
+- **JB-51** Multi-word skill extraction — bigrams/trigrams from skills.json (#107).
 - **JB-55** Company canonicalization (`engine/company_key.py`) + discovered-company persistence (`engine/discovered.py`) + auto-promote alerts at `sweep_count >= 3` (#104).
 - **JB-56** DeepTrekker ring 0 — bare "London" ambiguity resolver in `geo.py` + per-viewer ring fallback via `_reg_city` (#103).
 - **Smoke fix** save+restore `site/data/jobs.json` + `board_standalone` around `--demo` (#102).
 - **ADR-006 workflow** route deploy through `production` branch (#75).
+- **Ops** Claude Code permission rules + HANDOFF refresh (#105).
 
-### Still-open gaps (open GitHub issues)
+### Sweep-miss analysis (2026-09-28, 16 misses of 23 known-good roles)
 
-- **JB-45 registry seeding sprint** (#78) — 54 → 200 target, only v1 landed.
-- **JB-46 LinkedIn scout tool** (#79) — BT's original ask (job 4470987790).
-- **JB-47 Dayforce adapter** (#80) — biggest Canadian gap (Rogers, Bell, CIBC).
-- **JB-48b Workable detail fetch** (#98) — blocked by Cloudflare 1015.
-- **JB-50 curated titles + skills DB** (#83) — biggest scoring-recall lever.
-- **JB-51 multi-word skill extraction** (#84) — bigrams/trigrams ("power integrity").
-- **JB-52 thin-JD enrichment** (#85) — Workday/Getro detail-page fetch.
-- **JB-53 multi-persona CV profiles** (#86).
-- **JB-54 Eluta.ca spike** (#87).
+Company **not in registry** (biggest lever): Nokia (2), indie.inc (3), Corvita Biomedical (2),
+Sciemetric, PerkinElmer, Wellspect, Safe Fleet, Life360, Amtech, Hitachi Rail, ecobee, ASSA ABLOY.
+Nokia uses Oracle Cloud (adapter not built). Everyone else is either not in the registry or in with
+`platform:"resolve"` awaiting a supported ATS detection.
+
+**Root diagnosis (BT, 2026-09-28)**: reactive miss-patching is the wrong loop. Coverage must be
+measured against a **ground-truth denominator**, not the last miss you happened to see. Next cycle
+switches to StatsCan-CBC-driven planning — see JB-57 (#110) and §5 below.
+
+### Still-open gaps (open GitHub issues, ordered by leverage)
+
+**Coverage / adapters (P0-P1):**
+- **JB-57 London coverage census** (#110) — denominator-first: StatsCan CBC → gap report → planning
+- **JB-5** (#5) — resolve the 22+ existing `platform:"resolve"` entries
+- **JB-47 Dayforce adapter** (#80) — biggest Canadian gap (Rogers, Bell, CIBC)
+- **JB-48 Workable more seeds** (#81) — 2 of 5 done, Cloudflare-blocked
+- **JB-48b Workable detail fetch** (#98) — blocked by Cloudflare 1015
+- **JB-32 Adzuna spike** (#43), **JB-33 Job Bank Canada** (#44), **JB-54 Eluta spike** (#87)
+
+**Scoring / parsing:**
+- **JB-52 thin-JD enrichment** (#85) — Workday/Getro detail-page fetch
+- **JB-53 multi-persona CV profiles** (#86)
+- **JB-31 LLM router ADR-002** (#42)
+- **JB-27 auto tag** (#32)
+
+**Data quality:** JB-15 LMIA (#15), JB-16 non-tech vertical (#16), JB-17 CSA quality (#17).
+
+**UI Phase 2 (deferred until coverage lands):** JB-9 (#9), JB-10 (#10), JB-11 (#11), JB-13 (#13), JB-14 (#14).
 
 ---
 
@@ -123,45 +147,54 @@ recent PR. Docs that do not match reality train you to ignore your own documenta
 
 ## 5. ⏭️ NEXT ACTION — start here
 
-_Updated 2026-09-28, late evening._ How to work: `BRANCHING.md`. Start a **fresh chat** each session
-(this repo is the memory; long chats burn the weekly usage limit fast). Use Sonnet for routine git/PR work.
+_Updated 2026-09-28, evening (post-overnight-run)._ How to work: `BRANCHING.md`. Start a **fresh chat** each session
+(this repo is the memory; long chats burn the weekly usage limit fast).
 
 ### 🔁 SESSION-RESUME POINT — fresh Claude, read this block first
 
-If you are a Claude session opening in this repo, resume the overnight autonomous run:
+If you are a Claude session opening in this repo, resume the **denominator-first coverage cycle**:
 
-1. **Read** the plan file at `C:\Users\Namrata\.claude\plans\atomic-chasing-aurora.md` — this is the design context (coverage layers, LLM-where, why LinkedIn is a signal source not a scrape target).
+1. **Read** the plan file at `C:\Users\Namrata\.claude\plans\atomic-chasing-aurora.md` — design context: coverage funnel (layers 1-5), why LinkedIn is a signal source not a scrape target, DB-before-ML.
 2. **Load auto-memory** at `C:\Users\Namrata\.claude\projects\c--Users-Namrata-attsis-shorts\memory\MEMORY.md` — especially `feedback_github_process.md`, `feedback_smoke_before_merge.md`, `feedback_tag_before_work.md`, `feedback_fix_isnt_fix.md`, `project_ai_empire_obsidian_sync_deletes.md`.
-3. **Confirm permission rules** by reading `.claude/settings.json` — `defaultMode: bypassPermissions`, deny rules cover all delete ops + production-branch touches + cross-repo writes + WebFetch/WebSearch.
-4. **BT authorisation for the overnight run** (given 2026-09-28 late evening): full autonomy for commit / push / open PR / squash-merge to **`main` only**. Production branch is off-limits (deny rules enforce). No branch deletes. Check local server (`cd site && python -m http.server 8000`, `curl http://localhost:8000/`) after every build.
-5. **Start with PR-A** below — branches `feature/jb-50-skills-db`, `feature/jb-51-multi-word-skills`, `feature/jb-46-linkedin-scout`, `feature/jb-45-ledc-seed` in that order. Each: `git tag pre-jb-NN` → branch → code+tests → `pytest tests/ -q` (≥174) → `cd engine && python smoke_test.py` (11/11) → local-server check → commit → push → PR → wait for CI → squash-merge main.
-6. **Stop conditions** — surface to BT (do NOT push through): test/smoke red you can't resolve, spec ambiguity you'd have to guess at, LEDC directory HTML shape change breaking parser, CI red twice in a row, ai-empire Obsidian sync fires the Stop hook.
+3. **Confirm permission rules** by reading `.claude/settings.json` — `defaultMode: bypassPermissions`, deny rules cover all delete ops + production-branch touches + cross-repo writes + WebFetch/WebSearch. **Terminal launch honors bypass fully; VS Code extension has its own approval overlay that will still prompt** — run from PowerShell / bash for silent autonomous execution.
+4. **BT authorisation (standing, from 2026-09-28)**: full autonomy for commit / push / open PR / squash-merge to **`main` only**. Production branch is off-limits (deny rules enforce). No branch deletes. Check local server (`cd site && python -m http.server 8000`, `curl http://localhost:8000/`) after every build. Same authorization applies to any BL you pick from §5 below unless BT overrides.
+5. **Overnight-run status (2026-09-28)** — all 4 PRs shipped to `main`:
+   - ✅ PR #106 JB-50 canonical skills + titles DB v1 (closed #83)
+   - ✅ PR #107 JB-51 multi-word skills bigrams/trigrams (closed #84)
+   - ✅ PR #108 JB-46 LinkedIn scout tool (closed #79)
+   - ✅ PR #109 JB-45 v2 seed 119 LEDC companies (closed #78)
+6. **Sweep recall (2026-09-28)** = **7/23 = 30%** (was 6/20 = 30%). Numerator +1, denominator +3, ratio flat. Reason: skills DB (JB-50/51) improves *scoring* recall, not *coverage* recall; LEDC seeds are all `platform:"resolve"` awaiting JB-43 resolver + adapter support; LinkedIn scout is manual-trigger. **BT's response**: stop reactive miss-patching, move to denominator-first coverage measurement.
+7. **Stop conditions** — surface to BT: test/smoke red you can't resolve, spec ambiguity you'd have to guess at, CI red twice in a row, ai-empire Obsidian sync fires the Stop hook (restore `docs/Status/STATUS.md` from HEAD per `project_ai_empire_obsidian_sync_deletes.md`).
 
-### Overnight autonomous plan (2026-09-28 → 2026-09-29 morning)
+### Next BLs on the table
 
-Claude will land **four independent PRs**, each on its own branch, tests + smoke green, opened AND
-squash-merged to `main`. BT reviews the resulting main in the morning. Order and rationale:
+**#110 JB-57 London-first coverage census** (filed 2026-09-28, P0) — the denominator play. Uses StatsCan
+table **33-10-1176** (Canadian Business Counts, June 2026) as ground truth. Verified 2026-09-28:
+London CMA has ~700 tech-relevant employers with employees (NAICS 5415=313, 5413=178, 51=162, 5182=18,
+334=16, 3345=11, 3364=3). Our registry has ~173 companies for all of Canada → London coverage <5%.
+Build `tools/london_coverage.py` to produce a numeric gap report; then template for KW-Barrie, Toronto,
+Ottawa, and eventually all 11 Ontario / 76 Canadian economic regions. **Non-goal**: sourcing company
+*names* (that's follow-up JB-58 via ONBIS / LinkedIn scout at scale).
 
-1. **PR-A — JB-50 Skills DB v1** (#83, ~2-3h)
-   `data/skills.json` with ~500 canonical tech skills + aliases; wired into `jobfilter.py` + `site/index.html`.
-   Biggest single scoring-recall lever per the plan.
-2. **PR-B — JB-51 Multi-word skills** (#84, ~1-2h; depends on PR-A)
-   Bigrams/trigrams from skills.json (e.g. "power integrity", "signal integrity").
-3. **PR-C — JB-46 LinkedIn scout tool** (#79, ~2h)
-   `tools/linkedin_scout.py`: URL in → HTML GET → parse `og:site_name` + preview card → propose
-   `companies.json` diff. No scraping in daily loop — human-triggered CLI only. Cache at
-   `data/linkedin_scout_cache.json` (gitignored). Fallback: paste-JD-text mode.
-4. **PR-D — JB-45 v2 registry seed (LEDC directory)** (#78, ~2h)
-   Parse LEDC Business Directory (public) → `companies.json` additions with `platform: "resolve"`.
-   Target: 54 → ~120 companies. JB-43 resolver takes over on next sweep.
+**#80 JB-47 Dayforce adapter** (~2-3h) — biggest known Canadian ATS gap (Rogers/Bell/CIBC).
+Real-endpoint verification risk — do the adapter first, then live-verify with 2-3 seeds before merging.
 
-**Not touched overnight** (needs BT judgment): JB-47 Dayforce (real-endpoint verification risk),
-JB-52 thin-JD enrichment (rate-limit risk), ADRs 002/003/004/005, any merges.
+**#5 JB-5** — resolve the 22+ `platform:"resolve"` entries already in the registry. Fastest path to
+lifting the sweep-recall numerator using code that already exists (JB-43 resolver).
 
-**Morning checklist for BT:**
-- Review PR-A → merge → PR-B (auto-rebase if needed) → PR-C → PR-D
-- Run `python tools/sweep_recall.py` after each merge — recall should rise
-- Run `python tools/compare_runs.py` — no company should drop to zero
+**Not now** (deferred pending BT judgment): #85 JB-52 thin-JD enrichment (rate-limit risk),
+#86 JB-53 multi-persona (touches UI Phase 2), #43/#87/#44 spikes (ADRs first), #81 JB-48 Workable
+(blocked on Cloudflare 1015 for #98).
+
+### Housekeeping notes (2026-09-28)
+- Closed #82 JB-49 Breezy manually — shipped in PR #99 but PR body used `Refs #82` not `Closes #82`
+  so GitHub auto-close never fired. **Future rule**: every PR body MUST use `Closes #NN` for the
+  linking issue, or the ledger drifts. Consider adding a checklist item to PR template.
+
+**Morning checklist template (after any merge):**
+- Run `python tools/sweep_recall.py` — recall should rise (or at minimum, no regression)
+- Run `python tools/compare_runs.py` — no company should drop to zero jobs
+- Watch `sweep.yml` deploy; live board at https://arvint89.github.io/Attsis-jobboard/
 
 ### Tools you can run any time
 `python tools/sweep_recall.py` · `python tools/compare_runs.py` · `python tools/probes/probe_communitech.py`
@@ -171,7 +204,7 @@ JB-52 thin-JD enrichment (rate-limit risk), ADRs 002/003/004/005, any merges.
 
 ## 6. Work in flight
 - Nothing uncommitted on `main`.
-- Overnight run (see §5) will land 4 branches: `feature/jb-50-skills-db`, `feature/jb-51-multi-word-skills`, `feature/jb-46-linkedin-scout`, `feature/jb-45-ledc-seed`.
+- Overnight run (2026-09-28) landed clean — all 4 PRs merged: #106 (JB-50), #107 (JB-51), #108 (JB-46), #109 (JB-45 v2). Ready for the next BL from §5.
 
 ---
 
