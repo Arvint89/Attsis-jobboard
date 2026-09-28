@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-09-28** (evening: JB-57 landed). Everything needed to resume is on disk. No chat transcript required._
+_Last updated: **2026-09-28** (evening: JB-57 + JB-47 landed). Everything needed to resume is on disk. No chat transcript required._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -44,10 +44,10 @@ The board is **live and healthy**. The pipeline works end to end.
 
 | Check | Result |
 |---|---|
-| Registry size | **173 companies** (54 core + 119 LEDC seeded via #109) |
-| Unit tests | **224 passed** ✅ (was 194; +17 from JB-57 coverage census; +13 from prior overnight cycle) |
+| Registry size | **176 companies** (173 + 3 Dayforce seeds via #114) |
+| Unit tests | **231 passed** ✅ (+7 from JB-47 dayforce adapter + detect row) |
 | Smoke checks | **11/11 passed** ✅ |
-| Sweep recall | **7/23 = 30%** (2026-09-28 post-JB-57; flat as designed — JB-57 measures, JB-58 sources) — target 70% |
+| Sweep recall | **7/23 = 30%** (2026-09-28 post-JB-47; flat as designed — Dayforce seeds await site-ID verification) — target 70% |
 
 ### Shipped since 2026-09-21 baseline
 
@@ -61,6 +61,7 @@ The board is **live and healthy**. The pipeline works end to end.
 - **JB-51** Multi-word skill extraction — bigrams/trigrams from skills.json (#107).
 - **JB-55** Company canonicalization (`engine/company_key.py`) + discovered-company persistence (`engine/discovered.py`) + auto-promote alerts at `sweep_count >= 3` (#104).
 - **JB-56** DeepTrekker ring 0 — bare "London" ambiguity resolver in `geo.py` + per-viewer ring fallback via `_reg_city` (#103).
+- **JB-47** Dayforce (Ceridian) adapter — `fetch_dayforce` + detect rule + Loblaw/Sobeys/LCBO seeds (#114). Site IDs need manual verification (JB-47b follow-up).
 - **JB-57** London CMA coverage census — `tools/london_coverage.py` + `tools/statcan_cbc_download.py` + ADR-007 (#112). Denominator-first pivot delivered.
 - **Smoke fix** save+restore `site/data/jobs.json` + `board_standalone` around `--demo` (#102).
 - **ADR-006 workflow** route deploy through `production` branch (#75).
@@ -81,8 +82,8 @@ switches to StatsCan-CBC-driven planning — see JB-57 (#110) and §5 below.
 
 **Coverage / adapters (P0-P1):**
 - **JB-58 London name sourcing** (not yet filed) — populate the ~700-employer denominator with actual company names via ONBIS / LinkedIn scout at scale; per-NAICS numerator attribution
+- **JB-47b Dayforce seed verification** (not yet filed) — verify subdomains + fill site IDs for Loblaw/Sobeys/LCBO; also v2 for shared `jobs.dayforcehcm.com/{lang}/{tenant}/{site}` portal shape (Trudell) — plausibly one small PR
 - **JB-5** (#5) — resolve the 22+ existing `platform:"resolve"` entries (fastest numerator lift with code already in tree)
-- **JB-47 Dayforce adapter** (#80) — biggest Canadian gap (Rogers, Bell, CIBC)
 - **JB-48 Workable more seeds** (#81) — 2 of 5 done, Cloudflare-blocked
 - **JB-48b Workable detail fetch** (#98) — blocked by Cloudflare 1015
 - **JB-32 Adzuna spike** (#43), **JB-33 Job Bank Canada** (#44), **JB-54 Eluta spike** (#87)
@@ -159,13 +160,14 @@ If you are a Claude session opening in this repo, resume the **denominator-first
 2. **Load auto-memory** at `C:\Users\Namrata\.claude\projects\c--Users-Namrata-attsis-shorts\memory\MEMORY.md` — especially `feedback_github_process.md`, `feedback_smoke_before_merge.md`, `feedback_tag_before_work.md`, `feedback_fix_isnt_fix.md`, `project_ai_empire_obsidian_sync_deletes.md`.
 3. **Confirm permission rules** by reading `.claude/settings.json` — `defaultMode: bypassPermissions`, deny rules cover all delete ops + production-branch touches + cross-repo writes + WebFetch/WebSearch. **Terminal launch honors bypass fully; VS Code extension has its own approval overlay that will still prompt** — run from PowerShell / bash for silent autonomous execution.
 4. **BT authorisation (standing, from 2026-09-28)**: full autonomy for commit / push / open PR / squash-merge to **`main` only**. Production branch is off-limits (deny rules enforce). No branch deletes. Check local server (`cd site && python -m http.server 8000`, `curl http://localhost:8000/`) after every build. Same authorization applies to any BL you pick from §5 below unless BT overrides.
-5. **Shipped 2026-09-28** — 5 PRs to `main`:
+5. **Shipped 2026-09-28** — 6 PRs to `main`:
    - ✅ PR #106 JB-50 canonical skills + titles DB v1 (closed #83)
    - ✅ PR #107 JB-51 multi-word skills bigrams/trigrams (closed #84)
    - ✅ PR #108 JB-46 LinkedIn scout tool (closed #79)
    - ✅ PR #109 JB-45 v2 seed 119 LEDC companies (closed #78)
    - ✅ PR #112 JB-57 London CMA coverage census (closed #110) — denominator-first pivot delivered
-6. **Sweep recall (2026-09-28 evening)** = **7/23 = 30%** — flat post-JB-57 as designed: JB-57 measures the gap, it does not close it. JB-58 (name sourcing) will move the numerator. Reactive miss-patching is officially retired.
+   - ✅ PR #114 JB-47 Dayforce adapter + Loblaw/Sobeys/LCBO seeds (closed #80)
+6. **Sweep recall (2026-09-28 evening)** = **7/23 = 30%** — flat post-JB-47 as designed: Dayforce seeds await site-ID verification (JB-47b). JB-58 (name sourcing) will move the numerator when filed + scoped.
 7. **Stop conditions** — surface to BT: test/smoke red you can't resolve, spec ambiguity you'd have to guess at, CI red twice in a row, ai-empire Obsidian sync fires the Stop hook (restore `docs/Status/STATUS.md` from HEAD per `project_ai_empire_obsidian_sync_deletes.md`).
 
 ### Next BLs on the table
@@ -177,11 +179,13 @@ report per-NAICS numerators, not just an overall count. This is the payoff for t
 BT to file the issue with a concrete scope before starting (paid ONBIS access? free scrape? which
 NAICS first?).
 
-**#5 JB-5** — resolve the 22+ existing `platform:"resolve"` entries. Fastest numerator lift with code
-already in tree (JB-43 resolver + JB-46 scout). No new adapters required for most.
+**JB-47b Dayforce seed verification** (not yet filed — small follow-up to JB-47) — the 3 seeds
+shipped in #114 have `site: ""` (per issue non-goal). Verify subdomains for Loblaw/Sobeys/LCBO
+(currently best-guess), fill real site IDs from each portal, and add a v2 code path for the shared
+`jobs.dayforcehcm.com/{lang}/{tenant}/{site}` pattern used by Trudell. One-PR sized.
 
-**#80 JB-47 Dayforce adapter** (~2-3h) — biggest known Canadian ATS gap (Rogers/Bell/CIBC).
-Real-endpoint verification risk — build adapter, live-verify with 2-3 seeds before merging.
+**#5 JB-5** — resolve the 22+ existing `platform:"resolve"` entries. Fastest numerator lift with code
+already in tree (JB-43 resolver + JB-46 scout + JB-47 dayforce). No new adapters required for most.
 
 **Not now** (deferred pending BT judgment): #85 JB-52 thin-JD enrichment (rate-limit risk),
 #86 JB-53 multi-persona (touches UI Phase 2), #43/#87/#44 spikes (ADRs first), #81 JB-48 Workable
@@ -205,7 +209,7 @@ Real-endpoint verification risk — build adapter, live-verify with 2-3 seeds be
 
 ## 6. Work in flight
 - Nothing uncommitted on `main`.
-- 2026-09-28 landed clean — 5 PRs merged: #106 (JB-50), #107 (JB-51), #108 (JB-46), #109 (JB-45 v2), #112 (JB-57). Ready for the next BL from §5 — top pick is **JB-58 London name sourcing**.
+- 2026-09-28 landed clean — 6 PRs merged: #106 (JB-50), #107 (JB-51), #108 (JB-46), #109 (JB-45 v2), #112 (JB-57), #114 (JB-47). Ready for the next BL from §5 — top pick is **JB-58 London name sourcing** (needs BT scoping); then **JB-47b** (small follow-up); then **JB-5**.
 
 ---
 
