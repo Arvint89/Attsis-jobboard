@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-09-28**. Everything needed to resume is on disk. No chat transcript required._
+_Last updated: **2026-09-28** (evening: JB-57 landed). Everything needed to resume is on disk. No chat transcript required._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -45,9 +45,9 @@ The board is **live and healthy**. The pipeline works end to end.
 | Check | Result |
 |---|---|
 | Registry size | **173 companies** (54 core + 119 LEDC seeded via #109) |
-| Unit tests | **194 passed** ✅ (was 174; +20 from skills DB + LinkedIn scout + multi-word) |
+| Unit tests | **224 passed** ✅ (was 194; +17 from JB-57 coverage census; +13 from prior overnight cycle) |
 | Smoke checks | **11/11 passed** ✅ |
-| Sweep recall | **7/23 = 30%** (2026-09-28; was 6/20 = 30% at 2026-09-21) — target 70% |
+| Sweep recall | **7/23 = 30%** (2026-09-28 post-JB-57; flat as designed — JB-57 measures, JB-58 sources) — target 70% |
 
 ### Shipped since 2026-09-21 baseline
 
@@ -61,6 +61,7 @@ The board is **live and healthy**. The pipeline works end to end.
 - **JB-51** Multi-word skill extraction — bigrams/trigrams from skills.json (#107).
 - **JB-55** Company canonicalization (`engine/company_key.py`) + discovered-company persistence (`engine/discovered.py`) + auto-promote alerts at `sweep_count >= 3` (#104).
 - **JB-56** DeepTrekker ring 0 — bare "London" ambiguity resolver in `geo.py` + per-viewer ring fallback via `_reg_city` (#103).
+- **JB-57** London CMA coverage census — `tools/london_coverage.py` + `tools/statcan_cbc_download.py` + ADR-007 (#112). Denominator-first pivot delivered.
 - **Smoke fix** save+restore `site/data/jobs.json` + `board_standalone` around `--demo` (#102).
 - **ADR-006 workflow** route deploy through `production` branch (#75).
 - **Ops** Claude Code permission rules + HANDOFF refresh (#105).
@@ -79,8 +80,8 @@ switches to StatsCan-CBC-driven planning — see JB-57 (#110) and §5 below.
 ### Still-open gaps (open GitHub issues, ordered by leverage)
 
 **Coverage / adapters (P0-P1):**
-- **JB-57 London coverage census** (#110) — denominator-first: StatsCan CBC → gap report → planning
-- **JB-5** (#5) — resolve the 22+ existing `platform:"resolve"` entries
+- **JB-58 London name sourcing** (not yet filed) — populate the ~700-employer denominator with actual company names via ONBIS / LinkedIn scout at scale; per-NAICS numerator attribution
+- **JB-5** (#5) — resolve the 22+ existing `platform:"resolve"` entries (fastest numerator lift with code already in tree)
 - **JB-47 Dayforce adapter** (#80) — biggest Canadian gap (Rogers, Bell, CIBC)
 - **JB-48 Workable more seeds** (#81) — 2 of 5 done, Cloudflare-blocked
 - **JB-48b Workable detail fetch** (#98) — blocked by Cloudflare 1015
@@ -158,29 +159,29 @@ If you are a Claude session opening in this repo, resume the **denominator-first
 2. **Load auto-memory** at `C:\Users\Namrata\.claude\projects\c--Users-Namrata-attsis-shorts\memory\MEMORY.md` — especially `feedback_github_process.md`, `feedback_smoke_before_merge.md`, `feedback_tag_before_work.md`, `feedback_fix_isnt_fix.md`, `project_ai_empire_obsidian_sync_deletes.md`.
 3. **Confirm permission rules** by reading `.claude/settings.json` — `defaultMode: bypassPermissions`, deny rules cover all delete ops + production-branch touches + cross-repo writes + WebFetch/WebSearch. **Terminal launch honors bypass fully; VS Code extension has its own approval overlay that will still prompt** — run from PowerShell / bash for silent autonomous execution.
 4. **BT authorisation (standing, from 2026-09-28)**: full autonomy for commit / push / open PR / squash-merge to **`main` only**. Production branch is off-limits (deny rules enforce). No branch deletes. Check local server (`cd site && python -m http.server 8000`, `curl http://localhost:8000/`) after every build. Same authorization applies to any BL you pick from §5 below unless BT overrides.
-5. **Overnight-run status (2026-09-28)** — all 4 PRs shipped to `main`:
+5. **Shipped 2026-09-28** — 5 PRs to `main`:
    - ✅ PR #106 JB-50 canonical skills + titles DB v1 (closed #83)
    - ✅ PR #107 JB-51 multi-word skills bigrams/trigrams (closed #84)
    - ✅ PR #108 JB-46 LinkedIn scout tool (closed #79)
    - ✅ PR #109 JB-45 v2 seed 119 LEDC companies (closed #78)
-6. **Sweep recall (2026-09-28)** = **7/23 = 30%** (was 6/20 = 30%). Numerator +1, denominator +3, ratio flat. Reason: skills DB (JB-50/51) improves *scoring* recall, not *coverage* recall; LEDC seeds are all `platform:"resolve"` awaiting JB-43 resolver + adapter support; LinkedIn scout is manual-trigger. **BT's response**: stop reactive miss-patching, move to denominator-first coverage measurement.
+   - ✅ PR #112 JB-57 London CMA coverage census (closed #110) — denominator-first pivot delivered
+6. **Sweep recall (2026-09-28 evening)** = **7/23 = 30%** — flat post-JB-57 as designed: JB-57 measures the gap, it does not close it. JB-58 (name sourcing) will move the numerator. Reactive miss-patching is officially retired.
 7. **Stop conditions** — surface to BT: test/smoke red you can't resolve, spec ambiguity you'd have to guess at, CI red twice in a row, ai-empire Obsidian sync fires the Stop hook (restore `docs/Status/STATUS.md` from HEAD per `project_ai_empire_obsidian_sync_deletes.md`).
 
 ### Next BLs on the table
 
-**#110 JB-57 London-first coverage census** (filed 2026-09-28, P0) — the denominator play. Uses StatsCan
-table **33-10-1176** (Canadian Business Counts, June 2026) as ground truth. Verified 2026-09-28:
-London CMA has ~700 tech-relevant employers with employees (NAICS 5415=313, 5413=178, 51=162, 5182=18,
-334=16, 3345=11, 3364=3). Our registry has ~173 companies for all of Canada → London coverage <5%.
-Build `tools/london_coverage.py` to produce a numeric gap report; then template for KW-Barrie, Toronto,
-Ottawa, and eventually all 11 Ontario / 76 Canadian economic regions. **Non-goal**: sourcing company
-*names* (that's follow-up JB-58 via ONBIS / LinkedIn scout at scale).
+**JB-58 London name sourcing** (not yet filed — follow-up to JB-57, P0) — now that the denominator
+lands (~700 London tech employers, ADR-007), populate it with real company names via ONBIS pull +
+`tools/linkedin_scout.py` at scale. Also NAICS-tag the registry so `tools/london_coverage.py` can
+report per-NAICS numerators, not just an overall count. This is the payoff for the JB-57 pivot.
+BT to file the issue with a concrete scope before starting (paid ONBIS access? free scrape? which
+NAICS first?).
+
+**#5 JB-5** — resolve the 22+ existing `platform:"resolve"` entries. Fastest numerator lift with code
+already in tree (JB-43 resolver + JB-46 scout). No new adapters required for most.
 
 **#80 JB-47 Dayforce adapter** (~2-3h) — biggest known Canadian ATS gap (Rogers/Bell/CIBC).
-Real-endpoint verification risk — do the adapter first, then live-verify with 2-3 seeds before merging.
-
-**#5 JB-5** — resolve the 22+ `platform:"resolve"` entries already in the registry. Fastest path to
-lifting the sweep-recall numerator using code that already exists (JB-43 resolver).
+Real-endpoint verification risk — build adapter, live-verify with 2-3 seeds before merging.
 
 **Not now** (deferred pending BT judgment): #85 JB-52 thin-JD enrichment (rate-limit risk),
 #86 JB-53 multi-persona (touches UI Phase 2), #43/#87/#44 spikes (ADRs first), #81 JB-48 Workable
@@ -204,7 +205,7 @@ lifting the sweep-recall numerator using code that already exists (JB-43 resolve
 
 ## 6. Work in flight
 - Nothing uncommitted on `main`.
-- Overnight run (2026-09-28) landed clean — all 4 PRs merged: #106 (JB-50), #107 (JB-51), #108 (JB-46), #109 (JB-45 v2). Ready for the next BL from §5.
+- 2026-09-28 landed clean — 5 PRs merged: #106 (JB-50), #107 (JB-51), #108 (JB-46), #109 (JB-45 v2), #112 (JB-57). Ready for the next BL from §5 — top pick is **JB-58 London name sourcing**.
 
 ---
 
