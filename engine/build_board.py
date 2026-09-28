@@ -30,6 +30,8 @@ import geo
 import facets
 import history
 import resolver as _resolver
+import discovered as _discovered
+from company_key import company_key
 
 FLAG_LEGEND = {
     'remote': 'Role is remote-friendly',
@@ -258,6 +260,7 @@ def gather(demo: bool):
         j["_ring"] = None                        # geo resolves ring from the real location
         j["_industry"] = j.get("industry") or "other"
         j["_sponsors"] = None
+        j["_discovered"] = True                  # JB-55: fed to discovered.record()
     jobs += got
     LAST_RESOLVER["stats"] = dict(_r.stats)
     LAST_RESOLVER["cache"] = dict(_r.cache)
@@ -291,9 +294,13 @@ def source_funnel(classified):
 
 
 def dedupe(jobs):
+    """JB-55: dedupe by canonicalized company (so "Fidus Systems Inc." and "Fidus Systems"
+    don't count as two roles) + normalized title/location."""
     seen, out = set(), []
     for j in jobs:
-        key = (j.get("company", "").lower(), j.get("title", "").lower(), j.get("location", "").lower())
+        key = (company_key(j.get("company", "")),
+               j.get("title", "").strip().lower(),
+               j.get("location", "").strip().lower())
         if key in seen:
             continue
         seen.add(key)
@@ -395,11 +402,13 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
 
     # JB-3: also place every SOURCE-DISCOVERED company (not in the curated registry)
     # so the map/directory lists *all* companies seen this run -- refreshed every build.
-    reg_names = {e["name"].strip().lower() for e in load_registry()}
-    placed = {c["name"].strip().lower() for c in companies_map}
+    # JB-55: match by canonicalized key so "Fidus Systems Inc." doesn't get re-placed
+    # next to registry entry "Fidus Systems".
+    reg_names = {company_key(e["name"]) for e in load_registry()}
+    placed = {company_key(c["name"]) for c in companies_map}
     for r in (matches + below):
-        key = r["company"].strip().lower()
-        if key in reg_names or key in placed or r.get("lat") is None:
+        key = company_key(r["company"])
+        if not key or key in reg_names or key in placed or r.get("lat") is None:
             continue
         placed.add(key)
         s, a = strong.get(r["company"], 0), anyc.get(r["company"], 0)
@@ -437,6 +446,12 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     }
     # JB-42: compare with the previous live run; alerts ride along in jobs.json + Action log
     payload["alerts"] = history.record(payload, DATA, live=not demo)
+    # JB-55: persist source-discovered companies across sweeps + auto-promote alerts.
+    # Feeds from raw (post-dedupe) so companies whose only role was excluded still count.
+    reg_keys = {company_key(e["name"]) for e in load_registry()}
+    disc_jobs = [j for j in raw if j.get("_discovered")]
+    _, promote_alerts = _discovered.record(disc_jobs, reg_keys, DATA, live=not demo)
+    payload["alerts"] = list(payload["alerts"]) + promote_alerts
     with open(os.path.join(DATA, "jobs.json"), "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:
