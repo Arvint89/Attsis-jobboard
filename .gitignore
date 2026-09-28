@@ -25,6 +25,9 @@ site/data/resolver_cache.json
 site/data/discovered_companies.json
 site/data/skills.json
 
+# JB-46: linkedin_scout cache -- one HTTP GET per URL, then forever cached
+data/linkedin_scout_cache.json
+
 # BT's local sandbox / feedback drops -- not part of the repo
 Claude Design/
 
