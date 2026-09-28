@@ -4604,6 +4604,409 @@
       "canonical": "Braintree",
       "aliases": [],
       "category": "tools_saas"
+    },
+    {
+      "canonical": "distributed systems",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "microservices architecture",
+      "aliases": [
+        "microservice architecture"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "event-driven architecture",
+      "aliases": [
+        "event driven architecture",
+        "eda"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "domain-driven design",
+      "aliases": [
+        "domain driven design",
+        "ddd"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "clean architecture",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "systems programming",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "object-oriented programming",
+      "aliases": [
+        "object oriented programming",
+        "oop"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "functional programming",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "test automation",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "performance testing",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "load testing",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "regression testing",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "end-to-end testing",
+      "aliases": [
+        "end to end testing",
+        "e2e testing"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "machine learning",
+      "aliases": [
+        "ml pipeline"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "deep learning",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "reinforcement learning",
+      "aliases": [
+        "rl"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "natural language processing",
+      "aliases": [
+        "nlp"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "computer vision",
+      "aliases": [
+        "cv"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "digital signal processing",
+      "aliases": [
+        "dsp"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "signal processing",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "image processing",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "speech recognition",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "sensor fusion",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "image sensor",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "feature engineering",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "statistical modeling",
+      "aliases": [
+        "statistical modelling"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "time series",
+      "aliases": [
+        "time-series"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "anomaly detection",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "recommendation system",
+      "aliases": [
+        "recommender system",
+        "recommendation engine"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "model deployment",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "model monitoring",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "data engineering",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "data pipeline",
+      "aliases": [
+        "data pipelines"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "data warehouse",
+      "aliases": [
+        "data warehousing"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "data lake",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "data modeling",
+      "aliases": [
+        "data modelling"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "data governance",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "data quality",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "high-speed design",
+      "aliases": [
+        "high speed design"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "power management",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "power electronics",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "embedded software",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "embedded systems",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "real-time systems",
+      "aliases": [
+        "real time systems"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "model predictive control",
+      "aliases": [
+        "mpc"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "control systems",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "root cause analysis",
+      "aliases": [
+        "rca"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "fault tolerance",
+      "aliases": [
+        "fault tolerant"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "high availability",
+      "aliases": [
+        "ha"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "load balancing",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "service mesh",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "api gateway",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "event streaming",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "change data capture",
+      "aliases": [
+        "cdc"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "continuous deployment",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "network security",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "application security",
+      "aliases": [
+        "appsec"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "cloud security",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "ux research",
+      "aliases": [
+        "user research"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "interaction design",
+      "aliases": [
+        "ixd"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "information architecture",
+      "aliases": [
+        "ia"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "design system",
+      "aliases": [
+        "design systems"
+      ],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "project management",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "program management",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "agile coaching",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "product analytics",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "growth hacking",
+      "aliases": [],
+      "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "revenue operations",
+      "aliases": [
+        "revops"
+      ],
+      "category": "multi_word_concepts"
     }
   ],
   "titles": [
