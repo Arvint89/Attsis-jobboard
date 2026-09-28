@@ -475,6 +475,12 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         json.dump(payload, f, indent=2, ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:
         json.dump(unresolved, f, indent=2, ensure_ascii=False)
+    # JB-50: publish the skills DB as a static asset so the browser scorer can
+    # fetch it. Source of truth is <root>/data/skills.json.
+    _skills_src = os.path.join(ROOT, "data", "skills.json")
+    if os.path.exists(_skills_src):
+        import shutil as _shutil
+        _shutil.copyfile(_skills_src, os.path.join(DATA, "skills.json"))
     # JB-43: publish the resolver cache next to jobs.json so the next run can prime it
     # (like history.json — gitignored, refreshed each build).
     if LAST_RESOLVER["cache"] is not None:
@@ -485,10 +491,19 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     if os.path.exists(tpl_path):
         import re as _re
         tpl = open(tpl_path, encoding="utf-8").read()
-        inline = "<script>window.__EMBED__ = " + json.dumps(payload, ensure_ascii=False) + ";</script>\n"
-        # replace the whole fetch(...) bootstrap (any form) with a direct init() call
+        # JB-50: embed the skills DB so the standalone works fully offline
+        skills_payload = {}
+        if os.path.exists(_skills_src):
+            with open(_skills_src, encoding="utf-8") as _sf:
+                skills_payload = json.load(_sf)
+        inline = (
+            "<script>window.__EMBED__ = " + json.dumps(payload, ensure_ascii=False)
+            + "; window.__EMBED_SKILLS__ = " + json.dumps(skills_payload, ensure_ascii=False)
+            + ";</script>\n"
+        )
+        # replace both fetch bootstraps with the embedded-boot variant
         std = _re.sub(r"fetch\('\./data/jobs\.json.*?\}\);",
-                      "init(window.__EMBED__);", tpl, flags=_re.S)
+                      "bootWithSkills(window.__EMBED__);", tpl, flags=_re.S)
         std = std.replace("<script>", inline + "<script>", 1)
         with open(os.path.join(ROOT, "site", "board_standalone.html"), "w", encoding="utf-8") as f:
             f.write(std)
