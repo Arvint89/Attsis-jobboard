@@ -23,3 +23,7 @@ site/data/history.json
 site/data/resolve.json
 site/data/resolver_cache.json
 site/data/discovered_companies.json
+
+# per-user Claude Code overrides (project-scoped rules in .claude/settings.json ARE checked in)
+.claude/settings.local.json
+.claude/*.local.json
