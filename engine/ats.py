@@ -310,6 +310,54 @@ def fetch_workday(company, slug, tenant=None, site=None, dc="wd1", queries=None,
     return out
 
 
+def fetch_dayforce(company, slug, site=None, lang="en-US", **_):
+    """Dayforce (Ceridian) Candidate Portal (JB-47).
+
+    Heavy in Canadian mid-market + enterprise: Rogers, Loblaw, LCBO, Metro,
+    Sobeys, RBI, plus many hospitals. Each tenant runs its own portal at
+    `{client}.dayforcehcm.com/CandidatePortal/...`, so a job listing needs
+    two identifiers: the client subdomain (`slug`) and the per-tenant site
+    identifier (`site`, filled from the registry entry's `site` field).
+
+    We hit the portal's public JSON list endpoint. Shape varies across
+    Dayforce versions -- some return {"Postings": [...]}, some
+    {"postings": [...]}, some a bare list -- so we read all three
+    defensively. Empty results and unknown-site-id both come back as [].
+
+    NOTE (JB-47): per-tenant site IDs must be filled in manually the first
+    time (the issue's non-goal). Seed rows use `site: ""` until BT verifies.
+    """
+    client = (slug or "").strip()
+    site_id = (site or "").strip()
+    if not client:
+        return []
+    url = f"https://{client}.dayforcehcm.com/CandidatePortal/{lang}/{client}/Posting/List"
+    params = {"siteid": site_id, "pageIndex": 0, "pageSize": 200}
+    data = _get(url, params=params).json()
+    if isinstance(data, list):
+        postings = data
+    else:
+        postings = data.get("Postings") or data.get("postings") or []
+    out = []
+    for j in postings:
+        title = j.get("Title") or j.get("title") or j.get("PositionTitle") or ""
+        loc = j.get("Location") or j.get("location") or ""
+        if isinstance(loc, dict):
+            loc = (loc.get("DisplayName") or loc.get("Name")
+                   or ", ".join(x for x in [loc.get("City"), loc.get("State"), loc.get("Country")] if x)
+                   or "")
+        posting_id = j.get("ParentId") or j.get("PostingId") or j.get("Id") or j.get("id")
+        posting_url = j.get("Url") or j.get("url")
+        if not posting_url and posting_id is not None:
+            posting_url = (f"https://{client}.dayforcehcm.com/CandidatePortal/{lang}/"
+                           f"{client}/Site/{site_id}/Posting/View/{posting_id}")
+        posted = (j.get("DatePosted") or j.get("PostedDate") or j.get("PostingStartDate")
+                  or j.get("posted_date"))
+        desc = j.get("Description") or j.get("description") or ""
+        out.append(_norm(company, title, loc, posting_url or "", posted, desc, "dayforce"))
+    return out
+
+
 FETCHERS = {
     "greenhouse": fetch_greenhouse,
     "lever": fetch_lever,
@@ -321,6 +369,7 @@ FETCHERS = {
     "breezy": fetch_breezy,
     "rippling": fetch_rippling,
     "workday": fetch_workday,
+    "dayforce": fetch_dayforce,
 }
 
 

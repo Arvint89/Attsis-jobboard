@@ -127,6 +127,70 @@ def test_breezy_empty_list_is_safe():
     assert ats.fetch_breezy("Acme", "acme") == []
 
 
+def test_dayforce_normalizes_string_location():
+    # JB-47: {client}.dayforcehcm.com/CandidatePortal/{lang}/{client}/Posting/List
+    # returns {"Postings": [...]} in the common Ceridian shape.
+    patch({"Postings": [{
+        "Title": "Network Engineer",
+        "Location": "Toronto, ON, Canada",
+        "ParentId": 12345,
+        "PostingStartDate": "2026-09-15",
+        "Description": "&lt;p&gt;Cisco, BGP, MPLS&lt;/p&gt;",
+    }]})
+    j = ats.fetch_dayforce("Rogers", "rogers", site="RogersDefault")[0]
+    assert REQUIRED <= set(j)
+    assert j["title"] == "Network Engineer"
+    assert j["location"] == "Toronto, ON, Canada"
+    # URL synthesized when the payload doesn't provide one
+    assert "rogers.dayforcehcm.com" in j["url"]
+    assert "RogersDefault" in j["url"] and "12345" in j["url"]
+    assert "Cisco" in j["description"] and "<" not in j["description"]
+    assert j["source"] == "dayforce"
+
+
+def test_dayforce_normalizes_dict_location_and_bare_list():
+    # Some tenants return a bare list rather than {"Postings": [...]} and use
+    # a dict for Location. Both variants must yield the same normalized shape.
+    patch([{
+        "title": "Cashier",
+        "location": {"City": "Brampton", "State": "ON", "Country": "Canada"},
+        "PostingId": 999,
+        "url": "https://loblaw.dayforcehcm.com/CandidatePortal/en-CA/loblaw/Site/Retail/Posting/View/999",
+        "PostedDate": "2026-09-10",
+    }])
+    j = ats.fetch_dayforce("Loblaw", "loblaw", site="Retail")[0]
+    assert j["title"] == "Cashier"
+    assert j["location"] == "Brampton, ON, Canada"
+    assert j["url"].endswith("/View/999")   # explicit URL wins over synthesis
+    assert j["posted"] == "2026-09-10"
+
+
+def test_dayforce_empty_results_is_safe():
+    patch({"Postings": []})
+    assert ats.fetch_dayforce("Acme", "acme", site="Default") == []
+
+
+def test_dayforce_missing_slug_returns_empty_without_network():
+    # Guard against a resolve-in-flight entry (no slug filled yet). Must not
+    # even try to fetch -- prevents a stray request to '..dayforcehcm.com/...'.
+    called = {"n": 0}
+    def sentinel(*a, **kw):
+        called["n"] += 1
+        raise AssertionError("should not fetch when slug is empty")
+    ats._get = sentinel
+    assert ats.fetch_dayforce("Acme", "", site="X") == []
+    assert called["n"] == 0
+
+
+def test_dayforce_registered_in_fetchers_and_recognized():
+    assert "dayforce" in ats.FETCHERS
+    # fetch_company must recognise platform:'dayforce' as a supported adapter
+    # (returns [], None on happy fetch; here we short-circuit via missing slug).
+    jobs, err = ats.fetch_company({"name": "X", "platform": "dayforce", "slug": ""})
+    assert jobs == []
+    assert err is None
+
+
 def patch_urls(router):
     """Route _get by URL substring -> payload (for adapters that make >1 call)."""
     def fake(url, method="GET", **kw):

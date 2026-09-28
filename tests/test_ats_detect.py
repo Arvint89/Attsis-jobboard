@@ -16,6 +16,8 @@ CASES = [
     ("https://ats.rippling.com/canada-rocket-company/jobs", {"platform": "rippling", "slug": "canada-rocket-company", "supported": True}),
     ("https://nokia.wd3.myworkdayjobs.com/en-US/careers", {"platform": "workday", "slug": "nokia", "tenant": "nokia", "site": "careers", "dc": "wd3", "supported": True}),
     ("https://acme.wd1.myworkdayjobs.com/External", {"platform": "workday", "slug": "acme", "tenant": "acme", "site": "External", "dc": "wd1", "supported": True}),
+    ("https://loblaw.dayforcehcm.com/CandidatePortal/en-CA/loblaw", {"platform": "dayforce", "slug": "loblaw", "supported": True}),
+    ("https://jobs.dayforcehcm.com/en-US/tml/TMICANDIDATEPORTAL", None),  # JB-47: shared portal is adapter-v2
     ("https://vitalbio.na.teamtailor.com/jobs/671261", {"platform": "teamtailor", "slug": "vitalbio", "supported": False}),
     ("https://generaldynamics-ca-careers.ttcportals.com/search/jobs", {"platform": "ttcportals", "slug": "generaldynamics-ca-careers", "supported": False}),
     ("https://recruiting.ultipro.ca/STA5000/JobBoard", {"platform": "ultipro", "slug": "STA5000", "supported": False}),

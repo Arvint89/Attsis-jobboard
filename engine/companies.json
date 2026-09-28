@@ -2096,6 +2096,45 @@
       "industry": "manufacturing",
       "sponsors": null,
       "city": "London"
+    },
+    {
+      "name": "Loblaw Companies Limited",
+      "ring": 4,
+      "platform": "dayforce",
+      "slug": "loblaw",
+      "site": "",
+      "careers_url": "https://loblaw.dayforcehcm.com/CandidatePortal/en-CA/loblaw",
+      "flags": [],
+      "note": "JB-47 seed; slug + site TBD (subdomain best-guess: loblaw; site_id needs manual verification per issue non-goal)",
+      "industry": "retail",
+      "sponsors": null,
+      "city": "Brampton"
+    },
+    {
+      "name": "Sobeys",
+      "ring": 4,
+      "platform": "dayforce",
+      "slug": "sobeys",
+      "site": "",
+      "careers_url": "https://sobeys.dayforcehcm.com/CandidatePortal/en-CA/sobeys",
+      "flags": [],
+      "note": "JB-47 seed; slug + site TBD (subdomain best-guess: sobeys; site_id needs manual verification)",
+      "industry": "retail",
+      "sponsors": null,
+      "city": "Stellarton"
+    },
+    {
+      "name": "LCBO",
+      "ring": 4,
+      "platform": "dayforce",
+      "slug": "lcbo",
+      "site": "",
+      "careers_url": "https://lcbo.dayforcehcm.com/CandidatePortal/en-CA/lcbo",
+      "flags": [],
+      "note": "JB-47 seed; slug + site TBD (subdomain best-guess: lcbo; site_id needs manual verification)",
+      "industry": "retail",
+      "sponsors": null,
+      "city": "Toronto"
     }
   ]
 }
