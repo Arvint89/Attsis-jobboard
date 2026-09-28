@@ -90,6 +90,14 @@ def _city_in(t):
     return max(matches, key=len) if matches else None   # longest match wins
 
 
+_AMBIGUOUS = {                                    # bare name -> [(qualifiers, target key in _C)]
+    "london": [
+        ((" on", " ontario"), "london"),                              # London ON (default entry)
+        ((" uk", " england", " gb", " united kingdom"), "london uk"), # London UK
+    ],
+}
+
+
 def locate(location):
     """(lat, lng, precision) where precision in {'remote','city','country',None}."""
     t = (location or "").lower()
@@ -99,6 +107,19 @@ def locate(location):
         return None, None, "remote"
     country = _country_in(t)
     ck = _city_in(t)
+    # JB-56 (DeepTrekker fix): bare "London" is ambiguous between London ON and London UK.
+    # Halma-tenant Workday postings say "London" alone but usually mean London UK; we were
+    # stamping them as London ON (ring 0 from BT's home) and placing DT/other subs there
+    # on the map. Require a country/state qualifier before matching, and ROUTE to the right
+    # coord entry when a qualifier is present. Home resolution in _ring_single uses
+    # _city_in directly, so a bare "London" home still works via that path.
+    if ck in _AMBIGUOUS and country is None:
+        routed = None
+        for qualifiers, target in _AMBIGUOUS[ck]:
+            if any(q in t for q in qualifiers):
+                routed = target
+                break
+        ck = routed
     if ck and (country is None or _C[ck][2] == country):
         return _C[ck][0], _C[ck][1], "city"          # city matches (or no country stated)
     if country and country != "ca" and country in _COUNTRY_CENTROID:

@@ -222,6 +222,7 @@ def gather(demo: bool):
         for j in got:
             j["_reg_flags"] = entry.get("flags", [])
             j["_ring"] = entry.get("ring")
+            j["_reg_city"] = entry.get("city")   # JB-56: per-viewer ring fallback (registry.ring is BT-baked)
             j["_industry"] = entry.get("industry", "other")
             j["_sponsors"] = entry.get("sponsors")
         jobs += got
@@ -234,6 +235,7 @@ def gather(demo: bool):
         for j in got:
             j["_reg_flags"] = entry.get("flags", [])
             j["_ring"] = entry.get("ring")
+            j["_reg_city"] = entry.get("city")   # JB-56
             j["_industry"] = entry.get("industry", "other")
             j["_sponsors"] = entry.get("sponsors")
         jobs += got
@@ -255,11 +257,18 @@ def gather(demo: bool):
                                resolver=_r)
     errors += info["errors"]
     LAST_DISCOVERY.update(info)
+    # JB-56: cross-reference discovered jobs against the registry by name so that
+    # shared-tenant Workday postings (e.g. Halma hosts DeepTrekker + siblings; the
+    # ATS returns them all stamped with one name) still fall back to the correct
+    # registered HQ city when the job's own location string is ambiguous.
+    reg_by_name = {e["name"].strip().lower(): e for e in registry}
     for j in got:
-        j["_reg_flags"] = []
+        match = reg_by_name.get((j.get("company") or "").strip().lower())
+        j["_reg_flags"] = match.get("flags", []) if match else []
         j["_ring"] = None                        # geo resolves ring from the real location
-        j["_industry"] = j.get("industry") or "other"
-        j["_sponsors"] = None
+        j["_reg_city"] = match.get("city") if match else None
+        j["_industry"] = (match.get("industry") if match else j.get("industry")) or "other"
+        j["_sponsors"] = match.get("sponsors") if match else None
         j["_discovered"] = True                  # JB-55: fed to discovered.record()
     jobs += got
     LAST_RESOLVER["stats"] = dict(_r.stats)
@@ -343,11 +352,21 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         near = geo.nearest_location(home, j.get("location", ""))   # JB-34
         ring, km, is_remote = geo.ring_for(home, j.get("location", ""))
         if ring is None:
-            ring = j.get("_ring")   # registry ring only when geo can't resolve (Canadian unknown city)
+            # JB-56: prefer the registered HQ city (per-viewer via home) over the
+            # baked-in registry.ring, which was BT-specific. Ring is now derived
+            # from wherever the viewer is + the registered city — same code path
+            # scales to a multi-user product.
+            reg_city = j.get("_reg_city")
+            if reg_city:
+                ring, km, _ = geo.ring_for(home, reg_city)
+            if ring is None:
+                ring = j.get("_ring")   # last-resort legacy hint (single-user era)
         # JB-3: sources can supply exact coords + arrangement directly; fall back otherwise
         lat, lng = j.get("lat"), j.get("lng")
         if lat is None or lng is None:
             lat, lng = geo.coords_of(near)   # for the map (JB-26); nearest part (JB-34)
+            if (lat is None or lng is None) and j.get("_reg_city"):
+                lat, lng = geo.coords_of(j["_reg_city"])   # JB-56: registered HQ as map fallback
         arrangement = j.get("arrangement") or facets.arrangement(j.get("location", ""), j.get("description", ""))
         country = facets.country(near)
         industry = facets.industry(j.get("_industry", ""), j.get("description", ""))
