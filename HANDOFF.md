@@ -126,10 +126,21 @@ recent PR. Docs that do not match reality train you to ignore your own documenta
 _Updated 2026-09-28, late evening._ How to work: `BRANCHING.md`. Start a **fresh chat** each session
 (this repo is the memory; long chats burn the weekly usage limit fast). Use Sonnet for routine git/PR work.
 
+### 🔁 SESSION-RESUME POINT — fresh Claude, read this block first
+
+If you are a Claude session opening in this repo, resume the overnight autonomous run:
+
+1. **Read** the plan file at `C:\Users\Namrata\.claude\plans\atomic-chasing-aurora.md` — this is the design context (coverage layers, LLM-where, why LinkedIn is a signal source not a scrape target).
+2. **Load auto-memory** at `C:\Users\Namrata\.claude\projects\c--Users-Namrata-attsis-shorts\memory\MEMORY.md` — especially `feedback_github_process.md`, `feedback_smoke_before_merge.md`, `feedback_tag_before_work.md`, `feedback_fix_isnt_fix.md`, `project_ai_empire_obsidian_sync_deletes.md`.
+3. **Confirm permission rules** by reading `.claude/settings.json` — `defaultMode: bypassPermissions`, deny rules cover all delete ops + production-branch touches + cross-repo writes + WebFetch/WebSearch.
+4. **BT authorisation for the overnight run** (given 2026-09-28 late evening): full autonomy for commit / push / open PR / squash-merge to **`main` only**. Production branch is off-limits (deny rules enforce). No branch deletes. Check local server (`cd site && python -m http.server 8000`, `curl http://localhost:8000/`) after every build.
+5. **Start with PR-A** below — branches `feature/jb-50-skills-db`, `feature/jb-51-multi-word-skills`, `feature/jb-46-linkedin-scout`, `feature/jb-45-ledc-seed` in that order. Each: `git tag pre-jb-NN` → branch → code+tests → `pytest tests/ -q` (≥174) → `cd engine && python smoke_test.py` (11/11) → local-server check → commit → push → PR → wait for CI → squash-merge main.
+6. **Stop conditions** — surface to BT (do NOT push through): test/smoke red you can't resolve, spec ambiguity you'd have to guess at, LEDC directory HTML shape change breaking parser, CI red twice in a row, ai-empire Obsidian sync fires the Stop hook.
+
 ### Overnight autonomous plan (2026-09-28 → 2026-09-29 morning)
 
-Claude will land **four independent PRs**, each on its own branch, tests + smoke green, opened but
-**not merged**. BT reviews and squash-merges in the morning. Order and rationale:
+Claude will land **four independent PRs**, each on its own branch, tests + smoke green, opened AND
+squash-merged to `main`. BT reviews the resulting main in the morning. Order and rationale:
 
 1. **PR-A — JB-50 Skills DB v1** (#83, ~2-3h)
    `data/skills.json` with ~500 canonical tech skills + aliases; wired into `jobfilter.py` + `site/index.html`.
