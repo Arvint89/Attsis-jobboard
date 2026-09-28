@@ -228,14 +228,37 @@ const EXCL=["technician","operator","assembler","millwright","welder","machinist
 const GAP=["physical design","asic design","analog ic","ic design","tapeout","tape-out","place and route","standard cell"];
 const POWERCTX=["substation","distribution","high-voltage grid","building services","hvac","protection & control","protection and control","power system","kv ","megawatt","switchgear","transformer design"];
 const VARIANT_SKIP=new Set(["product engineer","systems engineer","design engineer"]);
+/* JB-50: skills DB — populated from data/skills.json at boot (see loadSkillsDb).
+   Tech-scoped title categories mirror engine/jobfilter.py _TECH_TITLE_CATS. */
+const DB_TITLE_CATS=new Set(["software_eng","data","devops_platform","hardware","qa_test","product_pm","design","architect_solutions","other_eng","software_specialized","software_by_lang","software_by_framework","additional_data_ml"]);
+let DB_SKILLS=[], DB_TITLES=[];
+function loadSkillsDb(db){
+  if(!db) return;
+  DB_SKILLS=[];
+  (db.skills||[]).forEach(row=>{
+    const forms=[row.canonical||"",...(row.aliases||[])];
+    forms.forEach(f=>{const lo=(f||"").toLowerCase().trim(); if(lo) DB_SKILLS.push(lo);});
+  });
+  DB_TITLES=[];
+  (db.titles||[]).forEach(row=>{
+    if(!DB_TITLE_CATS.has(row.category)) return;
+    const forms=[row.canonical||"",...(row.aliases||[])];
+    forms.forEach(f=>{const lo=(f||"").toLowerCase().trim(); if(lo) DB_TITLES.push(lo);});
+  });
+  DB_SKILLS=[...new Set(DB_SKILLS)]; DB_TITLES=[...new Set(DB_TITLES)];
+}
 function titleVariants(ts){const out=[...ts];ts.forEach(t=>{if(t.endsWith(" engineer")&&!VARIANT_SKIP.has(t)){const r=t.slice(0,-9);out.push(r+" designer",r+" developer",r+" engineering");}});return [...new Set(out)];}
 function scoreJob(j, p){
   const title=(j.title||"").toLowerCase(), body=(j.text||j.snippet||"").toLowerCase(), loc=(j.location||"").toLowerCase();
   const descLen=Math.max(0, body.length-title.length-2);          // j.text = title + ". " + description
   const has=(t,arr)=>arr.filter(n=>t.includes(n));
   if(has(" "+title+" ",EXCL).length) return {verdict:"excluded"};
-  const titleHit=titleVariants(p.titles).filter(t=>tokp(title,t));
-  const conf=[...new Set(p.skills.filter(s=>tokp(body,s)))];
+  const cvTitleHit=titleVariants(p.titles).filter(t=>tokp(title,t));
+  const dbTitleHit=DB_TITLES.filter(t=>tokp(title,t));
+  const titleHit=[...new Set([...cvTitleHit,...dbTitleHit])];
+  const cvConf=p.skills.filter(s=>tokp(body,s));
+  const dbConf=DB_SKILLS.filter(s=>tokp(body,s));
+  const conf=[...new Set([...cvConf,...dbConf])];
   if(!titleHit.length && conf.length<2) return {verdict:"excluded"};
   let score = titleHit.length?5:2, reasons=[];                    // your CV's own titles count as core
   reasons.push(titleHit.length?("title match: "+titleHit.slice(0,2).join(", ")):"keyword-only match");
@@ -466,7 +489,18 @@ function init(d){
   try{const p=localStorage.getItem('jobboard_profile');if(p){PROFILE=JSON.parse(p);}}catch(e){}
   if(PROFILE)showBoard(); else showSetup();
 }
-fetch('./data/jobs.json?_='+Date.now()).then(r=>r.json()).then(init).catch(e=>{$('#meta').textContent='Could not load data/jobs.json — run the fetcher first.';showSetup();});
+/* JB-50: load the canonical skills DB alongside jobs.json (best-effort — a
+   missing/broken DB just leaves DB_SKILLS/DB_TITLES empty, browser falls back
+   to CV-only scoring). window.__EMBED_SKILLS__ short-circuits the fetch for
+   the offline standalone build. */
+function bootWithSkills(d){
+  if(window.__EMBED_SKILLS__){loadSkillsDb(window.__EMBED_SKILLS__); init(d); return;}
+  fetch('./data/skills.json?_='+Date.now())
+    .then(r=>r.ok?r.json():null)
+    .then(db=>{loadSkillsDb(db); init(d);})
+    .catch(()=>init(d));
+}
+fetch('./data/jobs.json?_='+Date.now()).then(r=>r.json()).then(bootWithSkills).catch(e=>{$('#meta').textContent='Could not load data/jobs.json — run the fetcher first.';showSetup();});
 </script>
 </body>
 </html>

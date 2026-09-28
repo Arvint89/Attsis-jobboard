@@ -68,6 +68,45 @@ TITLE_CORE = _variants(TITLE_CORE)
 TITLE_ADJACENT = _variants(TITLE_ADJACENT)
 TITLE_FPGA = _variants(TITLE_FPGA)
 ALL_TITLES = TITLE_CORE + TITLE_FPGA + TITLE_ADJACENT
+# JB-50: augment ALL_TITLES + SKILL_CONFIRMERS with the canonical skills DB.
+# The DB is deterministic and human-curated (data/skills.json); it widens recall
+# for skills/titles the CV never mentioned. The scoring formula is unchanged --
+# DB hits fall into the same "keyword-only" / "confirmer bonus" paths. Core vs
+# adjacent vs fpga scoring stays CV-driven because we do NOT add DB rows to
+# TITLE_CORE/TITLE_FPGA/TITLE_ADJACENT.
+#
+# Title categories are scoped to tech-adjacent ones so a broad DB (sales, hr,
+# hospitality, retail, ...) does not turn generic business roles into relevance
+# hits for the current tech-focused profile. All skill categories are added --
+# skills widen the confirmer pool but do not decide relevance alone (>=2 needed
+# to clear gate-1, so noise stays bounded).
+_TECH_TITLE_CATS = {
+    "software_eng", "data", "devops_platform", "hardware", "qa_test",
+    "product_pm", "design", "architect_solutions", "other_eng",
+    "software_specialized", "software_by_lang", "software_by_framework",
+    "additional_data_ml",
+}
+try:
+    import skills_db as _sdb
+    _db = _sdb.load_db()
+    _seen_conf = set(SKILL_CONFIRMERS)
+    for _row in _db.get("skills", []):
+        for _form in [_row.get("canonical", "")] + list(_row.get("aliases") or []):
+            _f = (_form or "").lower().strip()
+            if _f and _f not in _seen_conf:
+                SKILL_CONFIRMERS.append(_f)
+                _seen_conf.add(_f)
+    _seen_titles = set(ALL_TITLES)
+    for _row in _db.get("titles", []):
+        if _row.get("category") not in _TECH_TITLE_CATS:
+            continue
+        for _form in [_row.get("canonical", "")] + list(_row.get("aliases") or []):
+            _f = (_form or "").lower().strip()
+            if _f and _f not in _seen_titles:
+                ALL_TITLES.append(_f)
+                _seen_titles.add(_f)
+except Exception:
+    pass
 # JB-38: profile gaps (IC/silicon) and power/building-services context lower the score
 EXCL_GAP = _M["exclusions"].get("gap", ["physical design", "asic design", "analog ic", "ic design",
                                         "tapeout", "tape-out", "place and route", "standard cell"])
