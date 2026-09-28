@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-09-18**. Everything needed to resume is on disk. No chat transcript required._
+_Last updated: **2026-09-28**. Everything needed to resume is on disk. No chat transcript required._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -38,38 +38,39 @@ job-hunt tool. Prioritise coverage and generalisation over tuning the scorer to 
 
 ---
 
-## 2. Where it actually stands (verified 2026-09-18)
+## 2. Where it actually stands (verified 2026-09-28)
 
 The board is **live and healthy**. The pipeline works end to end.
 
 | Check | Result |
 |---|---|
-| Live data freshness | `generated: 2026-09-18T16:42Z`, `mode: live` ✅ |
-| Raw jobs fetched | **61** |
-| Jobs visible on the board | **24** |
-| Unit tests | **41 passed** ✅ |
+| Registry size | **54 companies** (was 32 at 2026-09-18) |
+| Unit tests | **174 passed** ✅ (was 41) |
 | Smoke checks | **11/11 passed** ✅ |
+| Sweep recall baseline | **6/20 = 30%** (2026-09-21) — target 70% |
 
-### Why the board shows 24 when 61 were fetched — this is NOT a bug
+### Shipped since 2026-09-21 baseline
 
-`default_per_company: 8` caps how many roles one employer may contribute.
-Tenstorrent alone posted **31**, so it is trimmed to 8:
+- **JB-43** Careers Resolver — full 4-step wire-in (PRs #88, #90, #91, #92); resolver cache published in jobs.json meta.
+- **JB-45 v1** Registry seeding — 9 miss-list companies as `platform: "resolve"` (#94); Trudell Medical (Dayforce, London) via #89.
+- **JB-48** Workable adapter + 2 verified Canadian seeds (#96).
+- **JB-49** Breezy HR adapter + 2 seed companies (#99).
+- **JB-55** Company canonicalization (`engine/company_key.py`) + discovered-company persistence (`engine/discovered.py`) + auto-promote alerts at `sweep_count >= 3` (#104).
+- **JB-56** DeepTrekker ring 0 — bare "London" ambiguity resolver in `geo.py` + per-viewer ring fallback via `_reg_city` (#103).
+- **Smoke fix** save+restore `site/data/jobs.json` + `board_standalone` around `--demo` (#102).
+- **ADR-006 workflow** route deploy through `production` branch (#75).
 
-```
-Tenstorrent 8 (of 31) + Xanadu 3 + VueReal 2 + BinSentry 2 + Canada Rocket 2
-+ Flosonics 1 + ZTR 1 + Geotab 1 + Myant 1 + Open Ocean 1 + NorthOne 1 + GHD 1  =  24
-```
+### Still-open gaps (open GitHub issues)
 
-### The real problems (these ARE bugs / gaps)
-
-1. **Only 12 distinct companies produce jobs.** `unresolved: 22` — 22 of 32 registry
-   companies have no working ATS adapter, so they contribute nothing. This is the single
-   biggest cause of a thin board. (→ JB-5)
-2. **The Getro tier badly under-fetches.** MaRS returned 6 jobs and Communitech 1, from
-   boards hosting thousands. Cause: `DEFAULT_QUERIES` in `engine/sources.py` is 11 narrow
-   keywords fired at a relevance-ranked API. (→ JB-5)
-3. **LEDC (London — home city) contributes nothing** because PR #36 is not merged yet.
-4. **Only 1 role scores above `min_score: 7`** without a CV loaded.
+- **JB-45 registry seeding sprint** (#78) — 54 → 200 target, only v1 landed.
+- **JB-46 LinkedIn scout tool** (#79) — BT's original ask (job 4470987790).
+- **JB-47 Dayforce adapter** (#80) — biggest Canadian gap (Rogers, Bell, CIBC).
+- **JB-48b Workable detail fetch** (#98) — blocked by Cloudflare 1015.
+- **JB-50 curated titles + skills DB** (#83) — biggest scoring-recall lever.
+- **JB-51 multi-word skill extraction** (#84) — bigrams/trigrams ("power integrity").
+- **JB-52 thin-JD enrichment** (#85) — Workday/Getro detail-page fetch.
+- **JB-53 multi-persona CV profiles** (#86).
+- **JB-54 Eluta.ca spike** (#87).
 
 ---
 
@@ -122,50 +123,34 @@ recent PR. Docs that do not match reality train you to ignore your own documenta
 
 ## 5. ⏭️ NEXT ACTION — start here
 
-_Updated 2026-09-21, late evening._ How to work: `BRANCHING.md`. Start a **fresh chat** each session
+_Updated 2026-09-28, late evening._ How to work: `BRANCHING.md`. Start a **fresh chat** each session
 (this repo is the memory; long chats burn the weekly usage limit fast). Use Sonnet for routine git/PR work.
 
-### Where things stand (live, verified 2026-09-21)
-| Metric | Morning | Evening |
-|---|---|---|
-| Roles kept on board | 65 | **165** |
-| Strong (7+) | 1 | **14** |
-| Companies tracked directly | ~12 | **~170** (registry + 130 discovered via apply links) |
-| Jobs examined per run | ~200 | **~5,500** |
-| Run time (fetch+build) | ~60 s | **81 s** (`run_seconds` in jobs.json) |
-| **Sweep recall** (board shows the daily sweep's 7+ roles) | – | **6/20 = 30%** ← baseline |
+### Overnight autonomous plan (2026-09-28 → 2026-09-29 morning)
 
-### Merged today
-CI + branch protection + auto-merge · map fixes · salary · filters · mobile · multi-location ·
-cleanup · **JB-38** scoring recalibrated (golden tests from sweep log) · **JB-5** follow apply links
-to company ATS · **JB-39** Communitech public board 628 + Getro pagination fix (20/page) + regional
-discovery · **JB-40** Rippling location, Workday keyword search, "engineering" titles · **JB-41**
-parallel fetch · **JB-42** run history + regression alarm + `tools/compare_runs.py` + `tools/sweep_recall.py`.
+Claude will land **four independent PRs**, each on its own branch, tests + smoke green, opened but
+**not merged**. BT reviews and squash-merges in the morning. Order and rationale:
 
-### ⏳ In progress — JB-43 (branch `feature/jb-43-careers-resolver`, WIP pushed; issue: `gh issue list --search JB-43`)
-Done on the branch: `engine/resolver.py` (Resolver: detect_ats(url) → else fetch page once →
-detect_ats_in_html; per-site cache published as `data/resolver_cache.json`, misses rechecked weekly,
-hits monthly, max 200 new lookups/run) and greenhouse embed detection in `ats_detect.py`
-(`boards.greenhouse.io/embed/job_board?for=X`).
-**Still to do:**
-1. Tests: `tests/test_resolver.py` (cache fresh/stale, cap, fetch failure, embed URL → greenhouse slug).
-2. Wire into `build_board.enrich_via_ats`: stubs whose URL isn't an ATS → group by company →
-   `Resolver.resolve(first_url)` (parallel_map) → if supported, promote like detected ones.
-3. Wire registry `platform: "resolve"` entries: resolve their `careers_url`, fetch if found.
-4. Load cache via `resolver.load_cache()` at start of a live run; `save_cache()` to `site/data/`;
-   add `site/data/resolver_cache.json` to `.gitignore`; add resolver stats to jobs.json.
-5. Merge, then `python tools/sweep_recall.py` and `python tools/compare_runs.py` — recall should rise.
+1. **PR-A — JB-50 Skills DB v1** (#83, ~2-3h)
+   `data/skills.json` with ~500 canonical tech skills + aliases; wired into `jobfilter.py` + `site/index.html`.
+   Biggest single scoring-recall lever per the plan.
+2. **PR-B — JB-51 Multi-word skills** (#84, ~1-2h; depends on PR-A)
+   Bigrams/trigrams from skills.json (e.g. "power integrity", "signal integrity").
+3. **PR-C — JB-46 LinkedIn scout tool** (#79, ~2h)
+   `tools/linkedin_scout.py`: URL in → HTML GET → parse `og:site_name` + preview card → propose
+   `companies.json` diff. No scraping in daily loop — human-triggered CLI only. Cache at
+   `data/linkedin_scout_cache.json` (gitignored). Fallback: paste-JD-text mode.
+4. **PR-D — JB-45 v2 registry seed (LEDC directory)** (#78, ~2h)
+   Parse LEDC Business Directory (public) → `companies.json` additions with `platform: "resolve"`.
+   Target: 54 → ~120 companies. JB-43 resolver takes over on next sweep.
 
-### Next after JB-43
-- **JB-44** seed registry from `Job_application` lists + sweep log (7 of the 14 recall misses are
-  companies the board has never heard of: Sciemetric, Semtech, PerkinElmer, Wellspect, AMD, Per Vices, Adtran).
-- Adapters: Oracle Cloud (Nokia), UltiPro (6 Ontario cos), Teamtailor (3, incl. Vital Bio) — probe first.
-- Regional EDO directories as seeds (LEDC Business Directory first).
-- Title-only postings (Workday/Getro) top out ~6: consider fetching Workday job detail for descriptions.
-- Bump GitHub Actions versions (Node 20 deprecation warnings; ubuntu-latest → 26 on Oct 19).
-- ADR-002 still PROPOSED (LLM router) — decide before any LLM work.
-- Pause the Claude "daily job sweep" scheduled task if no longer needed (uses weekly usage; the
-  board's GitHub Action costs zero Claude usage).
+**Not touched overnight** (needs BT judgment): JB-47 Dayforce (real-endpoint verification risk),
+JB-52 thin-JD enrichment (rate-limit risk), ADRs 002/003/004/005, any merges.
+
+**Morning checklist for BT:**
+- Review PR-A → merge → PR-B (auto-rebase if needed) → PR-C → PR-D
+- Run `python tools/sweep_recall.py` after each merge — recall should rise
+- Run `python tools/compare_runs.py` — no company should drop to zero
 
 ### Tools you can run any time
 `python tools/sweep_recall.py` · `python tools/compare_runs.py` · `python tools/probes/probe_communitech.py`
@@ -174,8 +159,8 @@ hits monthly, max 200 new lookups/run) and greenhouse embed detection in `ats_de
 ---
 
 ## 6. Work in flight
-- `feature/jb-43-careers-resolver` — WIP commit, not a PR yet (see §5).
-- Nothing else uncommitted.
+- Nothing uncommitted on `main`.
+- Overnight run (see §5) will land 4 branches: `feature/jb-50-skills-db`, `feature/jb-51-multi-word-skills`, `feature/jb-46-linkedin-scout`, `feature/jb-45-ledc-seed`.
 
 ---
 
@@ -237,6 +222,6 @@ docs/project/       GITHUB_PROJECT_SETUP · RELEASE_PROCESS · PROJECT_PLAN
 
 ### How to verify everything still works
 ```powershell
-python -m pytest tests/ -q          # expect 41 passed
+python -m pytest tests/ -q          # expect 174 passed
 cd engine ; python smoke_test.py    # expect 11/11 PASS
 ```
