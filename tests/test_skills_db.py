@@ -139,3 +139,78 @@ def test_resolve_returns_dict_shape(tmp_path):
     assert set(out.keys()) == {"skills", "titles"}
     assert "FPGA" in out["skills"] and "C++" in out["skills"]
     assert "firmware engineer" in out["titles"]
+
+
+# --- JB-51: multi-word skill matching -----------------------------------------
+
+def test_live_db_has_high_speed_design():
+    """JB-51: 'high-speed design' (and its space variant) must resolve."""
+    sdb.load_db.cache_clear()
+    sdb._compiled_index.cache_clear()
+    hyphen_hits = set(sdb.resolve_skills("Extensive high-speed design experience.", path=LIVE_DB))
+    space_hits = set(sdb.resolve_skills("Extensive high speed design experience.", path=LIVE_DB))
+    assert "high-speed design" in hyphen_hits
+    assert "high-speed design" in space_hits
+
+
+def test_live_db_multi_word_ml_concepts_present():
+    """JB-51: common ML bigrams/trigrams resolve from a realistic JD sentence."""
+    sdb.load_db.cache_clear()
+    sdb._compiled_index.cache_clear()
+    text = (
+        "We build machine learning systems using deep learning, natural language "
+        "processing, and computer vision, with strong data engineering and time "
+        "series anomaly detection."
+    )
+    hits = set(sdb.resolve_skills(text, path=LIVE_DB))
+    expected = {
+        "machine learning", "deep learning", "natural language processing",
+        "computer vision", "data engineering", "time series", "anomaly detection",
+    }
+    missing = expected - hits
+    assert not missing, f"live DB missing ML multi-word skills: {missing}"
+
+
+def test_live_db_multi_word_hardware_concepts_present():
+    """JB-51: hardware/embedded multi-word phrases resolve."""
+    sdb.load_db.cache_clear()
+    sdb._compiled_index.cache_clear()
+    text = (
+        "Design power electronics with high-speed design, model predictive "
+        "control, control systems, and embedded software for real-time systems."
+    )
+    hits = set(sdb.resolve_skills(text, path=LIVE_DB))
+    expected = {
+        "power electronics", "high-speed design", "model predictive control",
+        "control systems", "embedded software", "real-time systems",
+    }
+    missing = expected - hits
+    assert not missing, f"live DB missing hardware multi-word skills: {missing}"
+
+
+def test_multi_word_no_partial_phrase_match(tmp_path):
+    """'signal integrity' must not match 'signal' alone, nor 'integrity' alone."""
+    p = _mini_db(tmp_path)
+    only_first = sdb.resolve_skills("We look for signal experience.", path=p)
+    only_second = sdb.resolve_skills("Integrity is important here.", path=p)
+    assert "signal integrity" not in only_first
+    assert "signal integrity" not in only_second
+
+
+def test_multi_word_boundary_safe(tmp_path):
+    """Multi-word skill must not match inside a longer compound token."""
+    p = os.path.join(tmp_path, "skills.json")
+    payload = {
+        "skills": [
+            {"canonical": "data pipeline", "aliases": [], "category": "multi_word_concepts"},
+        ],
+        "titles": [],
+    }
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(payload, f)
+    sdb.load_db.cache_clear()
+    sdb._compiled_index.cache_clear()
+    # Should match with normal boundaries...
+    assert "data pipeline" in sdb.resolve_skills("Own the data pipeline.", path=p)
+    # ...but NOT when either token is glued to a longer word (metadata-pipeline should fail).
+    assert "data pipeline" not in sdb.resolve_skills("Metadata pipelineXY runs nightly.", path=p)
