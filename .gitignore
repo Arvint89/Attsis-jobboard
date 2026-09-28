@@ -28,6 +28,9 @@ site/data/skills.json
 # JB-46: linkedin_scout cache -- one HTTP GET per URL, then forever cached
 data/linkedin_scout_cache.json
 
+# JB-45 v2: LEDC directory CSV cache (2.3 MB, refetch with tools/seed_ledc.py --fetch)
+data/ledc_directory.csv
+
 # BT's local sandbox / feedback drops -- not part of the repo
 Claude Design/
 
