@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-09-29** (JB-47b Dayforce shared-portal + Trudell migration landed). Everything needed to resume is on disk. No chat transcript required._
+_Last updated: **2026-09-29** (JB-47b-followup live check: all 4 Dayforce seeds reverted to `resolve`; adapter code + verify workflow stay). Everything needed to resume is on disk. No chat transcript required._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -38,17 +38,18 @@ job-hunt tool. Prioritise coverage and generalisation over tuning the scorer to 
 
 ---
 
-## 2. Where it actually stands (verified 2026-09-29, post-JB-47b)
+## 2. Where it actually stands (verified 2026-09-29, post-JB-47b-followup)
 
 The board is **live and healthy**. The pipeline works end to end.
 
 | Check | Result |
 |---|---|
-| Registry size | **176 companies** (173 + 3 Dayforce v1 seeds via #114; Trudell migrated resolve→dayforce_shared via #119) |
-| Unit tests | **240 passed** ✅ (+6 from JB-47b shared-portal adapter + detect rows) |
+| Registry size | **176 companies** (Dayforce seeds Loblaw/Sobeys/LCBO/Trudell reverted to `resolve` via #122 after live check proved subdomains/URLs wrong; adapter code stays) |
+| Unit tests | **240 passed** ✅ |
 | Smoke checks | **11/11 passed** ✅ |
 | Release tagging | **Auto** — `VERSION` → `v<VERSION>` on push to main (JB-27, #116); idempotent no-op if tag exists |
-| Sweep recall | **7/23 = 30%** (2026-09-28 post-JB-47; flat as designed — Dayforce v1 seeds await site-ID verification, Trudell (v2) live post-merge) — target 70% |
+| Adapter live-check | `verify-dayforce.yml` (workflow_dispatch, JB-47b-followup #121) — read-only diagnostic, keeps around for JB-47c |
+| Sweep recall | **7/23 = 30%** (2026-09-28); flat, Dayforce companies now correctly skipped rather than silently 404ing every run. Real numerator lift waits on JB-5 resolver sweep — target 70% |
 
 ### Shipped since 2026-09-21 baseline
 
@@ -65,7 +66,8 @@ The board is **live and healthy**. The pipeline works end to end.
 - **JB-47** Dayforce (Ceridian) adapter — `fetch_dayforce` + detect rule + Loblaw/Sobeys/LCBO seeds (#114). Site IDs need manual verification (JB-47b follow-up).
 - **JB-57** London CMA coverage census — `tools/london_coverage.py` + `tools/statcan_cbc_download.py` + ADR-007 (#112). Denominator-first pivot delivered.
 - **JB-27** Auto-tag from VERSION — `.github/workflows/tag.yml` + VERSION file + 3 CI guards (#116). First live run on merge was the expected `tag v0.11.0 already exists; nothing to do` no-op — idempotency proven end-to-end.
-- **JB-47b** Dayforce shared-portal adapter — `fetch_dayforce_shared` for `jobs.dayforcehcm.com/{lang}/{tenant}/{site}` shape + detect rule + Trudell migrated resolve→dayforce_shared (#119). Unblocks the JB-47 non-goal. Trudell now goes through the ATS tier; if the guessed API path is wrong the fetch degrades to [] cleanly.
+- **JB-47b** Dayforce shared-portal adapter — `fetch_dayforce_shared` for `jobs.dayforcehcm.com/{lang}/{tenant}/{site}` shape + detect rule + Trudell migrated resolve→dayforce_shared (#119). Adapter code correct + tested; live URLs were guessed and turned out wrong (see JB-47b-followup).
+- **JB-47b-followup** Live verification — `verify-dayforce.yml` workflow + `tools/verify_dayforce.py` (#121). Ran once against main (run 36513420813): all 4 Dayforce entries fetch against wrong URLs — Loblaw/LCBO subdomains NXDOMAIN, Sobeys 404, Trudell shared-portal API path wrong. All 4 reverted to `platform: "resolve"` via #122 with diagnostic notes so JB-47c starts armed with real failure modes.
 - **Smoke fix** save+restore `site/data/jobs.json` + `board_standalone` around `--demo` (#102).
 - **ADR-006 workflow** route deploy through `production` branch (#75).
 - **Ops** Claude Code permission rules + HANDOFF refresh (#105).
@@ -85,7 +87,7 @@ switches to StatsCan-CBC-driven planning — see JB-57 (#110) and §5 below.
 
 **Coverage / adapters (P0-P1):**
 - **JB-58 London name sourcing** (not yet filed) — populate the ~700-employer denominator with actual company names via ONBIS / LinkedIn scout at scale; per-NAICS numerator attribution
-- **JB-47b-followup Dayforce v1 seed verification** (not yet filed) — verify subdomains + fill real site IDs for Loblaw/Sobeys/LCBO (JB-47 v1 seeds). Needs live network; sandbox cannot verify. Do on BT's machine or in a manual workflow run.
+- **JB-47c Dayforce URL research** (not yet filed) — find real Dayforce subdomains for Loblaw/Sobeys/LCBO (or confirm they're not on Dayforce), and find the shared-portal API endpoint for Trudell. Needs a browser + devtools; sandbox cannot help. Each `resolve` entry has diagnostic notes from JB-47b-followup showing exactly what failed.
 - **JB-5** (#5) — resolve the 22+ existing `platform:"resolve"` entries (fastest numerator lift with code already in tree)
 - **JB-48 Workable more seeds** (#81) — 2 of 5 done, Cloudflare-blocked
 - **JB-48b Workable detail fetch** (#98) — blocked by Cloudflare 1015
@@ -162,7 +164,7 @@ If you are a Claude session opening in this repo, resume the **denominator-first
 2. **Load auto-memory** at `C:\Users\Namrata\.claude\projects\c--Users-Namrata-attsis-shorts\memory\MEMORY.md` — especially `feedback_github_process.md`, `feedback_smoke_before_merge.md`, `feedback_tag_before_work.md`, `feedback_fix_isnt_fix.md`, `project_ai_empire_obsidian_sync_deletes.md`.
 3. **Confirm permission rules** by reading `.claude/settings.json` — `defaultMode: bypassPermissions`, deny rules cover all delete ops + production-branch touches + cross-repo writes + WebFetch/WebSearch. **Terminal launch honors bypass fully; VS Code extension has its own approval overlay that will still prompt** — run from PowerShell / bash for silent autonomous execution.
 4. **BT authorisation (standing, from 2026-09-28)**: full autonomy for commit / push / open PR / squash-merge to **`main` only**. Production branch is off-limits (deny rules enforce). No branch deletes. Check local server (`cd site && python -m http.server 8000`, `curl http://localhost:8000/`) after every build. Same authorization applies to any BL you pick from §5 below unless BT overrides.
-5. **Shipped 2026-09-28 → 2026-09-29** — 8 PRs to `main`:
+5. **Shipped 2026-09-28 → 2026-09-29** — 10 PRs to `main`:
    - ✅ PR #106 JB-50 canonical skills + titles DB v1 (closed #83)
    - ✅ PR #107 JB-51 multi-word skills bigrams/trigrams (closed #84)
    - ✅ PR #108 JB-46 LinkedIn scout tool (closed #79)
@@ -171,7 +173,9 @@ If you are a Claude session opening in this repo, resume the **denominator-first
    - ✅ PR #114 JB-47 Dayforce adapter + Loblaw/Sobeys/LCBO seeds (closed #80)
    - ✅ PR #116 JB-27 auto-tag from VERSION (closed #32) — manual-tagging drift eliminated
    - ✅ PR #119 JB-47b Dayforce shared-portal adapter + Trudell migration (closed #118)
-6. **Sweep recall (2026-09-28 evening)** = **7/23 = 30%** — flat post-JB-47 as designed: v1 seeds still await site-ID verification (JB-47b-followup); Trudell now goes through ATS tier post-#119 but its API path is best-guess and confirms live on next sweep. JB-58 (name sourcing) will move the numerator when filed + scoped.
+   - ✅ PR #121 JB-47b-followup verify-dayforce harness (Refs #118)
+   - ✅ PR #122 revert 4 Dayforce seeds → `resolve` after live check exposed wrong URLs
+6. **Sweep recall (2026-09-28 evening)** = **7/23 = 30%** — flat. Dayforce seeds no longer waste sweep time (correctly skipped as `resolve`). Real numerator lift needs either JB-47c (research the correct Dayforce URLs) or JB-5 (resolve the ~150 existing `resolve` entries — same CI-workflow pattern as verify-dayforce).
 7. **Stop conditions** — surface to BT: test/smoke red you can't resolve, spec ambiguity you'd have to guess at, CI red twice in a row, ai-empire Obsidian sync fires the Stop hook (restore `docs/Status/STATUS.md` from HEAD per `project_ai_empire_obsidian_sync_deletes.md`).
 
 ### Next BLs on the table
@@ -183,11 +187,11 @@ report per-NAICS numerators, not just an overall count. This is the payoff for t
 BT to file the issue with a concrete scope before starting (paid ONBIS access? free scrape? which
 NAICS first?).
 
-**JB-47b-followup Dayforce v1 seed verification** (not yet filed — remaining half of JB-47b) —
-the 3 seeds shipped in #114 (Loblaw/Sobeys/LCBO) have `site: ""` and best-guess subdomains.
-Verify each subdomain against a live browser, fill real site IDs from the portal, update
-`companies.json`. Also verify Trudell's shared-portal API path works (added by #119 but
-unverified live). Needs network — do on BT's machine or via a manual `sweep.yml` workflow_dispatch run + log inspection.
+**JB-47c Dayforce URL research** (not yet filed — supersedes the JB-47b-followup slot) —
+JB-47b-followup #121+#122 proved the shipped subdomains and API path were all wrong via a
+live workflow run. Each reverted `resolve` entry now carries a note with the exact failure.
+Next step needs a browser + devtools to find real URLs, or confirm these companies aren't on
+Dayforce. Not doable from sandbox.
 
 **#5 JB-5** — resolve the 22+ existing `platform:"resolve"` entries. Fastest numerator lift with code
 already in tree (JB-43 resolver + JB-46 scout + JB-47 dayforce). No new adapters required for most.
@@ -214,8 +218,9 @@ already in tree (JB-43 resolver + JB-46 scout + JB-47 dayforce). No new adapters
 
 ## 6. Work in flight
 - Nothing uncommitted on `main`.
-- 2026-09-28 → 2026-09-29 landed clean — 8 PRs merged: #106 (JB-50), #107 (JB-51), #108 (JB-46), #109 (JB-45 v2), #112 (JB-57), #114 (JB-47), #116 (JB-27), #119 (JB-47b shared-portal). Ready for the next BL from §5 — top pick is **JB-58 London name sourcing** (needs BT scoping); then **JB-5**; then **JB-47b-followup** (live verification only — do on your machine).
+- 2026-09-28 → 2026-09-29 landed clean — 10 PRs merged: #106, #107, #108, #109, #112, #114, #116, #119, #121, #122. Ready for the next BL — top pick is **JB-5 resolver sweep** (same CI-workflow pattern as verify-dayforce; unblocked, sandbox-doable); then **JB-58** (needs BT scoping); then **JB-47c** (needs a browser).
 - **Release ops changed** (2026-09-29 with JB-27): to cut a release, edit `VERSION` + `CHANGELOG.md` in the same commit → merge to main → `auto-tag` workflow creates `v<VERSION>` on that commit automatically. No manual `git tag` step. See `VERSIONING.md`.
+- **New CI pattern established** (2026-09-29): `workflow_dispatch` + read-only diagnostic script is now the way to run live-network probes from sandbox-driven work. `verify-dayforce.yml` is the reference. Reuse for JB-5, future adapter validation.
 
 ---
 
@@ -269,7 +274,7 @@ engine/             ats.py · sources.py · jobfilter.py · geo.py · facets.py 
                     companies.json (registry) · sources.json (boards) · smoke_test.py
 site/               index.html (the whole UI) · data/jobs.json (generated)
 tests/              41 unit tests
-.github/workflows/  sweep.yml (fetch + deploy) · ci.yml (tests on PR) · tag.yml (auto-tag from VERSION, JB-27)
+.github/workflows/  sweep.yml (fetch + deploy) · ci.yml (tests on PR) · tag.yml (auto-tag from VERSION, JB-27) · verify-dayforce.yml (on-demand adapter probe, JB-47b-followup)
 docs/               ARCHITECTURE · SPEC · BUSINESS_PLAN · DIAGRAMS · UI_DESIGN ...
 docs/decisions/     ADR-001 branching model  ← the workflow decision
 docs/project/       GITHUB_PROJECT_SETUP · RELEASE_PROCESS · PROJECT_PLAN
