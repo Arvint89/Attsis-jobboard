@@ -1,0 +1,26 @@
+name: verify-dayforce
+
+# JB-47b-followup: on-demand live check of the Dayforce adapters.
+# Runs tools/verify_dayforce.py against `main` and prints one block per
+# registered Dayforce company. Read the log to confirm the subdomains
+# and site ids from JB-47 (#114) and JB-47b (#119) return real jobs.
+#
+# Read-only: no commits, no deploys. Safe to trigger any time.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r engine/requirements.txt
+      - name: Run Dayforce verifier
+        run: python tools/verify_dayforce.py
