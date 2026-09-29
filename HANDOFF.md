@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-09-29** (JB-47b-followup live check: all 4 Dayforce seeds reverted to `resolve`; adapter code + verify workflow stay). Everything needed to resume is on disk. No chat transcript required._
+_Last updated: **2026-09-29** (JB-5 batch 1: resolve-sweep harness #124 + promotion PR #125 promoted 11 companies to real ATS platforms; 148 resolve entries remain — mostly LEDC-directory small manufacturers with no discoverable ATS). Everything needed to resume is on disk. No chat transcript required._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -38,18 +38,19 @@ job-hunt tool. Prioritise coverage and generalisation over tuning the scorer to 
 
 ---
 
-## 2. Where it actually stands (verified 2026-09-29, post-JB-47b-followup)
+## 2. Where it actually stands (verified 2026-09-29, post-JB-5-batch1)
 
 The board is **live and healthy**. The pipeline works end to end.
 
 | Check | Result |
 |---|---|
-| Registry size | **176 companies** (Dayforce seeds Loblaw/Sobeys/LCBO/Trudell reverted to `resolve` via #122 after live check proved subdomains/URLs wrong; adapter code stays) |
+| Registry size | **176 companies** |
 | Unit tests | **240 passed** ✅ |
 | Smoke checks | **11/11 passed** ✅ |
 | Release tagging | **Auto** — `VERSION` → `v<VERSION>` on push to main (JB-27, #116); idempotent no-op if tag exists |
-| Adapter live-check | `verify-dayforce.yml` (workflow_dispatch, JB-47b-followup #121) — read-only diagnostic, keeps around for JB-47c |
-| Sweep recall | **7/23 = 30%** (2026-09-28); flat, Dayforce companies now correctly skipped rather than silently 404ing every run. Real numerator lift waits on JB-5 resolver sweep — target 70% |
+| Adapter live-check | `verify-dayforce.yml` + `resolve-sweep.yml` (both workflow_dispatch, read-only diagnostics) |
+| `platform:"resolve"` entries | **148** (was 160; 11 promoted in JB-5 batch 1 #125, 1 held back — S L H Transport false positive) |
+| Sweep recall | **7/23 = 30%** (2026-09-28). Real numerator lift from JB-5 batch 1 will show on next sweep — 11 companies now fetch directly instead of via resolver. Target 70% |
 
 ### Shipped since 2026-09-21 baseline
 
@@ -68,6 +69,7 @@ The board is **live and healthy**. The pipeline works end to end.
 - **JB-27** Auto-tag from VERSION — `.github/workflows/tag.yml` + VERSION file + 3 CI guards (#116). First live run on merge was the expected `tag v0.11.0 already exists; nothing to do` no-op — idempotency proven end-to-end.
 - **JB-47b** Dayforce shared-portal adapter — `fetch_dayforce_shared` for `jobs.dayforcehcm.com/{lang}/{tenant}/{site}` shape + detect rule + Trudell migrated resolve→dayforce_shared (#119). Adapter code correct + tested; live URLs were guessed and turned out wrong (see JB-47b-followup).
 - **JB-47b-followup** Live verification — `verify-dayforce.yml` workflow + `tools/verify_dayforce.py` (#121). Ran once against main (run 36513420813): all 4 Dayforce entries fetch against wrong URLs — Loblaw/LCBO subdomains NXDOMAIN, Sobeys 404, Trudell shared-portal API path wrong. All 4 reverted to `platform: "resolve"` via #122 with diagnostic notes so JB-47c starts armed with real failure modes.
+- **JB-5 batch 1** Resolve-sweep harness + first promotion batch — `tools/resolve_sweep.py` + `.github/workflows/resolve-sweep.yml` (#124, workflow_dispatch), then promotion PR #125. Sweep classified 160 resolve entries → **12 supported hits, 4 adapter gaps, 144 misses**. Promoted 11 to their real platform+slug (2× workable, 4× bamboohr, 1× rippling, 2× workday, 1× greenhouse, 1× smartrecruiters). S L H Transport held back — sweep detected `dayforce slug='www'` but that's a resolver false positive (`www.slh.ca` misread as tenant). Adapter-gap frequency for future priority: **ttcportals: 2, ultipro: 1, scouterecruit: 1**.
 - **Smoke fix** save+restore `site/data/jobs.json` + `board_standalone` around `--demo` (#102).
 - **ADR-006 workflow** route deploy through `production` branch (#75).
 - **Ops** Claude Code permission rules + HANDOFF refresh (#105).
@@ -88,7 +90,7 @@ switches to StatsCan-CBC-driven planning — see JB-57 (#110) and §5 below.
 **Coverage / adapters (P0-P1):**
 - **JB-58 London name sourcing** (not yet filed) — populate the ~700-employer denominator with actual company names via ONBIS / LinkedIn scout at scale; per-NAICS numerator attribution
 - **JB-47c Dayforce URL research** (not yet filed) — find real Dayforce subdomains for Loblaw/Sobeys/LCBO (or confirm they're not on Dayforce), and find the shared-portal API endpoint for Trudell. Needs a browser + devtools; sandbox cannot help. Each `resolve` entry has diagnostic notes from JB-47b-followup showing exactly what failed.
-- **JB-5** (#5) — resolve the 22+ existing `platform:"resolve"` entries (fastest numerator lift with code already in tree)
+- **JB-5 batch 2** (#5) — 148 `platform:"resolve"` entries still open; sweep classified them all as MISS (mostly LEDC-directory small manufacturers with no discoverable ATS via careers-page probes). Next moves either require the JB-46 LinkedIn scout at scale, or new adapters for ttcportals/ultipro/scouterecruit (2/1/1 entries respectively)
 - **JB-48 Workable more seeds** (#81) — 2 of 5 done, Cloudflare-blocked
 - **JB-48b Workable detail fetch** (#98) — blocked by Cloudflare 1015
 - **JB-32 Adzuna spike** (#43), **JB-33 Job Bank Canada** (#44), **JB-54 Eluta spike** (#87)
@@ -164,7 +166,7 @@ If you are a Claude session opening in this repo, resume the **denominator-first
 2. **Load auto-memory** at `C:\Users\Namrata\.claude\projects\c--Users-Namrata-attsis-shorts\memory\MEMORY.md` — especially `feedback_github_process.md`, `feedback_smoke_before_merge.md`, `feedback_tag_before_work.md`, `feedback_fix_isnt_fix.md`, `project_ai_empire_obsidian_sync_deletes.md`.
 3. **Confirm permission rules** by reading `.claude/settings.json` — `defaultMode: bypassPermissions`, deny rules cover all delete ops + production-branch touches + cross-repo writes + WebFetch/WebSearch. **Terminal launch honors bypass fully; VS Code extension has its own approval overlay that will still prompt** — run from PowerShell / bash for silent autonomous execution.
 4. **BT authorisation (standing, from 2026-09-28)**: full autonomy for commit / push / open PR / squash-merge to **`main` only**. Production branch is off-limits (deny rules enforce). No branch deletes. Check local server (`cd site && python -m http.server 8000`, `curl http://localhost:8000/`) after every build. Same authorization applies to any BL you pick from §5 below unless BT overrides.
-5. **Shipped 2026-09-28 → 2026-09-29** — 10 PRs to `main`:
+5. **Shipped 2026-09-28 → 2026-09-29** — 12 PRs to `main`:
    - ✅ PR #106 JB-50 canonical skills + titles DB v1 (closed #83)
    - ✅ PR #107 JB-51 multi-word skills bigrams/trigrams (closed #84)
    - ✅ PR #108 JB-46 LinkedIn scout tool (closed #79)
@@ -175,7 +177,9 @@ If you are a Claude session opening in this repo, resume the **denominator-first
    - ✅ PR #119 JB-47b Dayforce shared-portal adapter + Trudell migration (closed #118)
    - ✅ PR #121 JB-47b-followup verify-dayforce harness (Refs #118)
    - ✅ PR #122 revert 4 Dayforce seeds → `resolve` after live check exposed wrong URLs
-6. **Sweep recall (2026-09-28 evening)** = **7/23 = 30%** — flat. Dayforce seeds no longer waste sweep time (correctly skipped as `resolve`). Real numerator lift needs either JB-47c (research the correct Dayforce URLs) or JB-5 (resolve the ~150 existing `resolve` entries — same CI-workflow pattern as verify-dayforce).
+   - ✅ PR #124 JB-5 resolve-sweep harness (workflow_dispatch, read-only)
+   - ✅ PR #125 JB-5 batch 1 — 11 promotions (workable×2, bamboohr×4, rippling, workday×2, greenhouse, smartrecruiters)
+6. **Sweep recall (2026-09-28 evening)** = **7/23 = 30%**. JB-5 batch 1 (11 companies now fetching directly instead of via resolver) should show on the next sweep — watch `python tools/sweep_recall.py` after the next Action run to confirm the lift.
 7. **Stop conditions** — surface to BT: test/smoke red you can't resolve, spec ambiguity you'd have to guess at, CI red twice in a row, ai-empire Obsidian sync fires the Stop hook (restore `docs/Status/STATUS.md` from HEAD per `project_ai_empire_obsidian_sync_deletes.md`).
 
 ### Next BLs on the table
@@ -193,8 +197,11 @@ live workflow run. Each reverted `resolve` entry now carries a note with the exa
 Next step needs a browser + devtools to find real URLs, or confirm these companies aren't on
 Dayforce. Not doable from sandbox.
 
-**#5 JB-5** — resolve the 22+ existing `platform:"resolve"` entries. Fastest numerator lift with code
-already in tree (JB-43 resolver + JB-46 scout + JB-47 dayforce). No new adapters required for most.
+**#5 JB-5 batch 2** — 148 `platform:"resolve"` entries remain after batch 1 (#125). Sweep proved
+they don't have detectable ATS via careers-page probes — they're mostly LEDC-directory small
+manufacturers using SEO-friendly marketing sites with a "Contact us" jobs page. Two productive
+next moves: (a) new adapters for ttcportals/ultipro/scouterecruit (2/1/1 hits waiting), or
+(b) JB-46 LinkedIn scout at scale to re-classify the 144 misses. Pick based on effort/yield.
 
 **Not now** (deferred pending BT judgment): #85 JB-52 thin-JD enrichment (rate-limit risk),
 #86 JB-53 multi-persona (touches UI Phase 2), #43/#87/#44 spikes (ADRs first), #81 JB-48 Workable
@@ -218,9 +225,9 @@ already in tree (JB-43 resolver + JB-46 scout + JB-47 dayforce). No new adapters
 
 ## 6. Work in flight
 - Nothing uncommitted on `main`.
-- 2026-09-28 → 2026-09-29 landed clean — 10 PRs merged: #106, #107, #108, #109, #112, #114, #116, #119, #121, #122. Ready for the next BL — top pick is **JB-5 resolver sweep** (same CI-workflow pattern as verify-dayforce; unblocked, sandbox-doable); then **JB-58** (needs BT scoping); then **JB-47c** (needs a browser).
+- 2026-09-28 → 2026-09-29 landed clean — 12 PRs merged: #106, #107, #108, #109, #112, #114, #116, #119, #121, #122, #124, #125. Ready for the next BL — top picks: **JB-5 batch 2** (new adapters for ttcportals/ultipro/scouterecruit OR LinkedIn-scout the 144 MISS list); **JB-58** (needs BT scoping); **JB-47c** (needs a browser).
 - **Release ops changed** (2026-09-29 with JB-27): to cut a release, edit `VERSION` + `CHANGELOG.md` in the same commit → merge to main → `auto-tag` workflow creates `v<VERSION>` on that commit automatically. No manual `git tag` step. See `VERSIONING.md`.
-- **New CI pattern established** (2026-09-29): `workflow_dispatch` + read-only diagnostic script is now the way to run live-network probes from sandbox-driven work. `verify-dayforce.yml` is the reference. Reuse for JB-5, future adapter validation.
+- **CI-diagnostic pattern proven twice** (2026-09-29): `workflow_dispatch` + read-only script for live-network probes. `verify-dayforce.yml` (adapter validation) and `resolve-sweep.yml` (bulk resolver sweep) are the references. Reuse for any future sandbox-blocked probe.
 
 ---
 
