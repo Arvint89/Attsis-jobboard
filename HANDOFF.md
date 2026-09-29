@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-09-28** (evening: JB-57 + JB-47 landed). Everything needed to resume is on disk. No chat transcript required._
+_Last updated: **2026-09-29** (JB-27 auto-tag landed; idempotency proven live). Everything needed to resume is on disk. No chat transcript required._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -38,15 +38,16 @@ job-hunt tool. Prioritise coverage and generalisation over tuning the scorer to 
 
 ---
 
-## 2. Where it actually stands (verified 2026-09-28, post-overnight-run)
+## 2. Where it actually stands (verified 2026-09-29, post-JB-27)
 
 The board is **live and healthy**. The pipeline works end to end.
 
 | Check | Result |
 |---|---|
 | Registry size | **176 companies** (173 + 3 Dayforce seeds via #114) |
-| Unit tests | **231 passed** ✅ (+7 from JB-47 dayforce adapter + detect row) |
+| Unit tests | **234 passed** ✅ (+3 from JB-27 VERSION file guards) |
 | Smoke checks | **11/11 passed** ✅ |
+| Release tagging | **Auto** — `VERSION` → `v<VERSION>` on push to main (JB-27, #116); idempotent no-op if tag exists |
 | Sweep recall | **7/23 = 30%** (2026-09-28 post-JB-47; flat as designed — Dayforce seeds await site-ID verification) — target 70% |
 
 ### Shipped since 2026-09-21 baseline
@@ -63,6 +64,7 @@ The board is **live and healthy**. The pipeline works end to end.
 - **JB-56** DeepTrekker ring 0 — bare "London" ambiguity resolver in `geo.py` + per-viewer ring fallback via `_reg_city` (#103).
 - **JB-47** Dayforce (Ceridian) adapter — `fetch_dayforce` + detect rule + Loblaw/Sobeys/LCBO seeds (#114). Site IDs need manual verification (JB-47b follow-up).
 - **JB-57** London CMA coverage census — `tools/london_coverage.py` + `tools/statcan_cbc_download.py` + ADR-007 (#112). Denominator-first pivot delivered.
+- **JB-27** Auto-tag from VERSION — `.github/workflows/tag.yml` + VERSION file + 3 CI guards (#116). First live run on merge was the expected `tag v0.11.0 already exists; nothing to do` no-op — idempotency proven end-to-end.
 - **Smoke fix** save+restore `site/data/jobs.json` + `board_standalone` around `--demo` (#102).
 - **ADR-006 workflow** route deploy through `production` branch (#75).
 - **Ops** Claude Code permission rules + HANDOFF refresh (#105).
@@ -92,7 +94,6 @@ switches to StatsCan-CBC-driven planning — see JB-57 (#110) and §5 below.
 - **JB-52 thin-JD enrichment** (#85) — Workday/Getro detail-page fetch
 - **JB-53 multi-persona CV profiles** (#86)
 - **JB-31 LLM router ADR-002** (#42)
-- **JB-27 auto tag** (#32)
 
 **Data quality:** JB-15 LMIA (#15), JB-16 non-tech vertical (#16), JB-17 CSA quality (#17).
 
@@ -160,13 +161,14 @@ If you are a Claude session opening in this repo, resume the **denominator-first
 2. **Load auto-memory** at `C:\Users\Namrata\.claude\projects\c--Users-Namrata-attsis-shorts\memory\MEMORY.md` — especially `feedback_github_process.md`, `feedback_smoke_before_merge.md`, `feedback_tag_before_work.md`, `feedback_fix_isnt_fix.md`, `project_ai_empire_obsidian_sync_deletes.md`.
 3. **Confirm permission rules** by reading `.claude/settings.json` — `defaultMode: bypassPermissions`, deny rules cover all delete ops + production-branch touches + cross-repo writes + WebFetch/WebSearch. **Terminal launch honors bypass fully; VS Code extension has its own approval overlay that will still prompt** — run from PowerShell / bash for silent autonomous execution.
 4. **BT authorisation (standing, from 2026-09-28)**: full autonomy for commit / push / open PR / squash-merge to **`main` only**. Production branch is off-limits (deny rules enforce). No branch deletes. Check local server (`cd site && python -m http.server 8000`, `curl http://localhost:8000/`) after every build. Same authorization applies to any BL you pick from §5 below unless BT overrides.
-5. **Shipped 2026-09-28** — 6 PRs to `main`:
+5. **Shipped 2026-09-28 → 2026-09-29** — 7 PRs to `main`:
    - ✅ PR #106 JB-50 canonical skills + titles DB v1 (closed #83)
    - ✅ PR #107 JB-51 multi-word skills bigrams/trigrams (closed #84)
    - ✅ PR #108 JB-46 LinkedIn scout tool (closed #79)
    - ✅ PR #109 JB-45 v2 seed 119 LEDC companies (closed #78)
    - ✅ PR #112 JB-57 London CMA coverage census (closed #110) — denominator-first pivot delivered
    - ✅ PR #114 JB-47 Dayforce adapter + Loblaw/Sobeys/LCBO seeds (closed #80)
+   - ✅ PR #116 JB-27 auto-tag from VERSION (closed #32) — manual-tagging drift eliminated
 6. **Sweep recall (2026-09-28 evening)** = **7/23 = 30%** — flat post-JB-47 as designed: Dayforce seeds await site-ID verification (JB-47b). JB-58 (name sourcing) will move the numerator when filed + scoped.
 7. **Stop conditions** — surface to BT: test/smoke red you can't resolve, spec ambiguity you'd have to guess at, CI red twice in a row, ai-empire Obsidian sync fires the Stop hook (restore `docs/Status/STATUS.md` from HEAD per `project_ai_empire_obsidian_sync_deletes.md`).
 
@@ -209,7 +211,8 @@ already in tree (JB-43 resolver + JB-46 scout + JB-47 dayforce). No new adapters
 
 ## 6. Work in flight
 - Nothing uncommitted on `main`.
-- 2026-09-28 landed clean — 6 PRs merged: #106 (JB-50), #107 (JB-51), #108 (JB-46), #109 (JB-45 v2), #112 (JB-57), #114 (JB-47). Ready for the next BL from §5 — top pick is **JB-58 London name sourcing** (needs BT scoping); then **JB-47b** (small follow-up); then **JB-5**.
+- 2026-09-28 → 2026-09-29 landed clean — 7 PRs merged: #106 (JB-50), #107 (JB-51), #108 (JB-46), #109 (JB-45 v2), #112 (JB-57), #114 (JB-47), #116 (JB-27). Ready for the next BL from §5 — top pick is **JB-58 London name sourcing** (needs BT scoping); then **JB-47b** (small follow-up); then **JB-5**.
+- **Release ops changed** (2026-09-29 with JB-27): to cut a release, edit `VERSION` + `CHANGELOG.md` in the same commit → merge to main → `auto-tag` workflow creates `v<VERSION>` on that commit automatically. No manual `git tag` step. See `VERSIONING.md`.
 
 ---
 
@@ -257,13 +260,13 @@ tagging a release, GitHub Projects, and reading a CI failure.
 HANDOFF.md          ← you are here; the resume point
 BACKLOG.md          kanban (Now / Next / Later / Icebox / Done)
 BRANCHING.md        the workflow: trunk-based loop + rules (rewritten 2026-09-21)
-VERSIONING.md       MAJOR.MINOR.BUGS policy; current 0.10.0
+VERSIONING.md       MAJOR.MINOR.BUGS policy; VERSION file drives auto-tag (current 0.11.0)
 CHANGELOG.md        release history
 engine/             ats.py · sources.py · jobfilter.py · geo.py · facets.py · build_board.py
                     companies.json (registry) · sources.json (boards) · smoke_test.py
 site/               index.html (the whole UI) · data/jobs.json (generated)
 tests/              41 unit tests
-.github/workflows/  sweep.yml (fetch + deploy) · ci.yml (tests on PR — new)
+.github/workflows/  sweep.yml (fetch + deploy) · ci.yml (tests on PR) · tag.yml (auto-tag from VERSION, JB-27)
 docs/               ARCHITECTURE · SPEC · BUSINESS_PLAN · DIAGRAMS · UI_DESIGN ...
 docs/decisions/     ADR-001 branching model  ← the workflow decision
 docs/project/       GITHUB_PROJECT_SETUP · RELEASE_PROCESS · PROJECT_PLAN
@@ -271,6 +274,6 @@ docs/project/       GITHUB_PROJECT_SETUP · RELEASE_PROCESS · PROJECT_PLAN
 
 ### How to verify everything still works
 ```powershell
-python -m pytest tests/ -q          # expect 174 passed
+python -m pytest tests/ -q          # expect 234 passed
 cd engine ; python smoke_test.py    # expect 11/11 PASS
 ```
