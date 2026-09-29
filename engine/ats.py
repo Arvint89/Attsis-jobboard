@@ -310,8 +310,35 @@ def fetch_workday(company, slug, tenant=None, site=None, dc="wd1", queries=None,
     return out
 
 
+def _dayforce_normalize(company, postings, view_url_prefix, source="dayforce"):
+    """Shared normalizer for both Dayforce portal shapes (JB-47 / JB-47b).
+
+    view_url_prefix is the tenant/site base ('.../Site/{site_id}') onto which
+    '/Posting/View/{id}' is appended when the payload omits a URL. Keeping
+    this in one place means the per-tenant and shared-portal fetchers can't
+    drift on defensive-shape handling.
+    """
+    out = []
+    for j in postings:
+        title = j.get("Title") or j.get("title") or j.get("PositionTitle") or ""
+        loc = j.get("Location") or j.get("location") or ""
+        if isinstance(loc, dict):
+            loc = (loc.get("DisplayName") or loc.get("Name")
+                   or ", ".join(x for x in [loc.get("City"), loc.get("State"), loc.get("Country")] if x)
+                   or "")
+        posting_id = j.get("ParentId") or j.get("PostingId") or j.get("Id") or j.get("id")
+        posting_url = j.get("Url") or j.get("url")
+        if not posting_url and posting_id is not None:
+            posting_url = f"{view_url_prefix}/Posting/View/{posting_id}"
+        posted = (j.get("DatePosted") or j.get("PostedDate") or j.get("PostingStartDate")
+                  or j.get("posted_date"))
+        desc = j.get("Description") or j.get("description") or ""
+        out.append(_norm(company, title, loc, posting_url or "", posted, desc, source))
+    return out
+
+
 def fetch_dayforce(company, slug, site=None, lang="en-US", **_):
-    """Dayforce (Ceridian) Candidate Portal (JB-47).
+    """Dayforce (Ceridian) Candidate Portal -- per-tenant subdomain (JB-47).
 
     Heavy in Canadian mid-market + enterprise: Rogers, Loblaw, LCBO, Metro,
     Sobeys, RBI, plus many hospitals. Each tenant runs its own portal at
@@ -338,24 +365,39 @@ def fetch_dayforce(company, slug, site=None, lang="en-US", **_):
         postings = data
     else:
         postings = data.get("Postings") or data.get("postings") or []
-    out = []
-    for j in postings:
-        title = j.get("Title") or j.get("title") or j.get("PositionTitle") or ""
-        loc = j.get("Location") or j.get("location") or ""
-        if isinstance(loc, dict):
-            loc = (loc.get("DisplayName") or loc.get("Name")
-                   or ", ".join(x for x in [loc.get("City"), loc.get("State"), loc.get("Country")] if x)
-                   or "")
-        posting_id = j.get("ParentId") or j.get("PostingId") or j.get("Id") or j.get("id")
-        posting_url = j.get("Url") or j.get("url")
-        if not posting_url and posting_id is not None:
-            posting_url = (f"https://{client}.dayforcehcm.com/CandidatePortal/{lang}/"
-                           f"{client}/Site/{site_id}/Posting/View/{posting_id}")
-        posted = (j.get("DatePosted") or j.get("PostedDate") or j.get("PostingStartDate")
-                  or j.get("posted_date"))
-        desc = j.get("Description") or j.get("description") or ""
-        out.append(_norm(company, title, loc, posting_url or "", posted, desc, "dayforce"))
-    return out
+    view_prefix = (f"https://{client}.dayforcehcm.com/CandidatePortal/{lang}/"
+                   f"{client}/Site/{site_id}")
+    return _dayforce_normalize(company, postings, view_prefix, source="dayforce")
+
+
+def fetch_dayforce_shared(company, slug, site=None, lang="en-US", **_):
+    """Dayforce shared portal on `jobs.dayforcehcm.com` (JB-47b).
+
+    Some tenants (e.g. Trudell Medical: `jobs.dayforcehcm.com/en-US/tml/
+    TMICANDIDATEPORTAL`) publish through the shared host instead of a
+    per-client subdomain. The API path is the same `/CandidatePortal/...`
+    shape, but the host is `jobs.dayforcehcm.com` and the URL's tenant
+    segment (`slug` here) is separate from the site id.
+
+    Site id is mandatory on the shared portal -- without it the list
+    endpoint returns everything or nothing depending on the tenant, and
+    the resulting view URLs would be unusable. Missing tenant OR site
+    returns [] without a request.
+    """
+    tenant = (slug or "").strip()
+    site_id = (site or "").strip()
+    if not tenant or not site_id:
+        return []
+    url = f"https://jobs.dayforcehcm.com/CandidatePortal/{lang}/{tenant}/Posting/List"
+    params = {"siteid": site_id, "pageIndex": 0, "pageSize": 200}
+    data = _get(url, params=params).json()
+    if isinstance(data, list):
+        postings = data
+    else:
+        postings = data.get("Postings") or data.get("postings") or []
+    view_prefix = (f"https://jobs.dayforcehcm.com/CandidatePortal/{lang}/"
+                   f"{tenant}/Site/{site_id}")
+    return _dayforce_normalize(company, postings, view_prefix, source="dayforce")
 
 
 FETCHERS = {
@@ -370,6 +412,7 @@ FETCHERS = {
     "rippling": fetch_rippling,
     "workday": fetch_workday,
     "dayforce": fetch_dayforce,
+    "dayforce_shared": fetch_dayforce_shared,
 }
 
 

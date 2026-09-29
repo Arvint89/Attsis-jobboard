@@ -101,11 +101,12 @@
     {
       "name": "Trudell Medical International",
       "ring": 0,
-      "platform": "resolve",
-      "slug": "",
+      "platform": "dayforce_shared",
+      "slug": "tml",
+      "site": "TMICANDIDATEPORTAL",
       "careers_url": "https://www.trudellmed.com/about-us/careers",
       "flags": [],
-      "note": "Dayforce (jobs.dayforcehcm.com/en-US/tml/TMICANDIDATEPORTAL) - blocked on JB-47",
+      "note": "Dayforce shared portal: jobs.dayforcehcm.com/en-US/tml/TMICANDIDATEPORTAL (JB-47b)",
       "industry": "medical",
       "sponsors": null,
       "city": "London"

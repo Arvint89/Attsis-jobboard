@@ -9,7 +9,7 @@ from urllib.parse import urlparse, parse_qs
 
 SUPPORTED = {"greenhouse", "lever", "ashby", "smartrecruiters", "recruitee",
              "workable", "bamboohr", "breezy", "rippling", "workday",
-             "dayforce"}   # must equal set(ats.FETCHERS)
+             "dayforce", "dayforce_shared"}   # must equal set(ats.FETCHERS)
 
 _LOCALE = re.compile(r"^[a-z]{2}-[A-Z]{2}$")
 _URL = re.compile(r'https?://[^\s"\'<>)]+')
@@ -67,9 +67,17 @@ def detect_ats(url: str) -> dict | None:
         if not site:
             return None
         return _res("workday", m.group(1), tenant=m.group(1), site=site, dc=m.group(2))
-    if host.endswith(".dayforcehcm.com") and host != "jobs.dayforcehcm.com":
-        # JB-47: per-client subdomain pattern only. The shared jobs.dayforcehcm.com
-        # portal (Trudell) has the tenant in the URL path; adapter v2 territory.
+    if host == "jobs.dayforcehcm.com":
+        # JB-47b: shared portal jobs.dayforcehcm.com/{lang}/{tenant}/{site}[/...].
+        # First segment is a locale, second is the tenant, third is the site id.
+        rest = seg[1:] if seg and _LOCALE.match(seg[0]) else seg
+        tenant = rest[0] if rest else ""
+        site = rest[1] if len(rest) > 1 else ""
+        if not tenant or not site:
+            return None
+        return _res("dayforce_shared", tenant, site=site)
+    if host.endswith(".dayforcehcm.com"):
+        # JB-47: per-client subdomain pattern.
         return _res("dayforce", host.split(".")[0])
     if host.endswith(".teamtailor.com"):
         return _res("teamtailor", host.split(".")[0])
