@@ -1,0 +1,26 @@
+name: resolve-sweep
+
+# JB-5: on-demand bulk resolver run.
+# Iterates every platform:"resolve" entry in companies.json and asks the
+# JB-43 resolver what ATS its careers page uses. Read-only -- prints
+# results to the log so a follow-up PR can promote the hits.
+#
+# Safe to trigger any time; no commits, no deploys.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r engine/requirements.txt
+      - name: Run resolver sweep
+        run: python tools/resolve_sweep.py
