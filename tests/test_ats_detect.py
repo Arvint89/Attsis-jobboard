@@ -17,7 +17,11 @@ CASES = [
     ("https://nokia.wd3.myworkdayjobs.com/en-US/careers", {"platform": "workday", "slug": "nokia", "tenant": "nokia", "site": "careers", "dc": "wd3", "supported": True}),
     ("https://acme.wd1.myworkdayjobs.com/External", {"platform": "workday", "slug": "acme", "tenant": "acme", "site": "External", "dc": "wd1", "supported": True}),
     ("https://loblaw.dayforcehcm.com/CandidatePortal/en-CA/loblaw", {"platform": "dayforce", "slug": "loblaw", "supported": True}),
-    ("https://jobs.dayforcehcm.com/en-US/tml/TMICANDIDATEPORTAL", None),  # JB-47: shared portal is adapter-v2
+    # JB-47b: shared portal jobs.dayforcehcm.com/{lang}/{tenant}/{site}
+    ("https://jobs.dayforcehcm.com/en-US/tml/TMICANDIDATEPORTAL", {"platform": "dayforce_shared", "slug": "tml", "site": "TMICANDIDATEPORTAL", "supported": True}),
+    ("https://jobs.dayforcehcm.com/en-US/tml/TMICANDIDATEPORTAL/Posting/View/123", {"platform": "dayforce_shared", "slug": "tml", "site": "TMICANDIDATEPORTAL", "supported": True}),
+    # Missing site segment -> None (URL is incomplete for the shared portal)
+    ("https://jobs.dayforcehcm.com/en-US/tml", None),
     ("https://vitalbio.na.teamtailor.com/jobs/671261", {"platform": "teamtailor", "slug": "vitalbio", "supported": False}),
     ("https://generaldynamics-ca-careers.ttcportals.com/search/jobs", {"platform": "ttcportals", "slug": "generaldynamics-ca-careers", "supported": False}),
     ("https://recruiting.ultipro.ca/STA5000/JobBoard", {"platform": "ultipro", "slug": "STA5000", "supported": False}),
