@@ -140,3 +140,57 @@ def test_end_to_end_against_fixture_registry(tmp_path):
     n = lc.london_registry_count(reg)
     out = lc.format_report(counts, n, "2026-06", 10)
     assert "registered London companies:            2" in out
+
+
+# --- CMA templating (JB-58 follow-up) ----------------------------------------
+
+def test_is_cma_accepts_named_cma_only():
+    assert lc.is_cma("Toronto, Ontario (Census metropolitan area)", "Toronto") is True
+    assert lc.is_cma("Waterloo, census metropolitan area, Ontario", "Waterloo") is True
+    # Bare city rejected.
+    assert lc.is_cma("Toronto, Ontario", "Toronto") is False
+    # Wrong cma rejected.
+    assert lc.is_cma("Toronto, Ontario (Census metropolitan area)", "London") is False
+
+
+def test_parse_cbc_csv_switches_cma():
+    counts = lc.parse_cbc_csv(CSV_FIXTURE, cma_name="Toronto")
+    # Only the one Toronto 5415 row (5000) matches.
+    assert counts["5415"] == 5000
+    # London-only rows dropped.
+    assert counts["51"] == 0
+    assert counts["3364"] == 0
+
+
+def test_cma_registry_count_toronto():
+    reg = {"companies": [
+        {"name": "A", "city": "Toronto"},
+        {"name": "B", "city": "Mississauga"},
+        {"name": "C", "city": "Kitchener"},   # Waterloo CMA, not Toronto
+        {"name": "D", "city": "London"},      # London CMA, not Toronto
+    ]}
+    assert lc.cma_registry_count(reg, "Toronto") == 2
+    assert lc.cma_registry_count(reg, "Waterloo") == 1
+    assert lc.cma_registry_count(reg, "London") == 1
+
+
+def test_cma_registry_count_unknown_cma_returns_zero():
+    reg = {"companies": [{"name": "X", "city": "Toronto"}]}
+    assert lc.cma_registry_count(reg, "Nowhere") == 0
+
+
+def test_format_report_uses_cma_name_in_header():
+    out = lc.format_report({"5415": 100}, registered=3, period="2026-06",
+                           min_size=10, cma_name="Toronto")
+    assert "Toronto CMA coverage census" in out
+    assert "registered Toronto companies" in out
+
+
+def test_main_rejects_unknown_cma(tmp_path, capsys):
+    reg_path = tmp_path / "companies.json"
+    reg_path.write_text(json.dumps({"companies": []}), encoding="utf-8")
+    rc = lc.main(["--cma", "Nowhere", "--registry", str(reg_path),
+                  "--cache-dir", str(tmp_path)])
+    assert rc == 2
+    err = capsys.readouterr().err
+    assert "unsupported --cma 'Nowhere'" in err
