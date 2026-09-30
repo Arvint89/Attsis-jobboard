@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-09-29** (JB-5 batch 1: resolve-sweep harness #124 + promotion PR #125 promoted 11 companies to real ATS platforms; 148 resolve entries remain — mostly LEDC-directory small manufacturers with no discoverable ATS). Everything needed to resume is on disk. No chat transcript required._
+_Last updated: **2026-09-30** (overnight run: verify-promotions harness proved JB-5 batch 1 11/11 OK; Semtech/Littelfuse workday tenant/site/dc bug fixed both in registry and in resolve_sweep output; probe-getro harness landed + ran (1 confirmed hit, 25 skips due to Getro's custom-domain migration); coverage census templated to any CMA; design prototype landed at docs/design/prototype/; 4 commercialization + ONBIS issues filed). Everything needed to resume is on disk. No chat transcript required._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -38,19 +38,20 @@ job-hunt tool. Prioritise coverage and generalisation over tuning the scorer to 
 
 ---
 
-## 2. Where it actually stands (verified 2026-09-29, post-JB-5-batch1)
+## 2. Where it actually stands (verified 2026-09-30, post-overnight-run)
 
 The board is **live and healthy**. The pipeline works end to end.
 
 | Check | Result |
 |---|---|
 | Registry size | **176 companies** |
-| Unit tests | **240 passed** ✅ |
+| Unit tests | **246 passed** ✅ (+6 for CMA templating) |
 | Smoke checks | **11/11 passed** ✅ |
 | Release tagging | **Auto** — `VERSION` → `v<VERSION>` on push to main (JB-27, #116); idempotent no-op if tag exists |
-| Adapter live-check | `verify-dayforce.yml` + `resolve-sweep.yml` (both workflow_dispatch, read-only diagnostics) |
-| `platform:"resolve"` entries | **148** (was 160; 11 promoted in JB-5 batch 1 #125, 1 held back — S L H Transport false positive) |
-| Sweep recall | **7/23 = 30%** (2026-09-28). Real numerator lift from JB-5 batch 1 will show on next sweep — 11 companies now fetch directly instead of via resolver. Target 70% |
+| Adapter live-check | **4 CI diagnostic workflows now**: `verify-dayforce.yml`, `resolve-sweep.yml`, `verify-promotions.yml`, `probe-getro.yml` (all workflow_dispatch, read-only) |
+| `platform:"resolve"` entries | **148** (11 promoted in JB-5 batch 1 #125, all 11 verified OK by verify-promotions run) |
+| Sources | **6 boards** in `sources.json` (was 5; +Economic Development Jobs 30254 via #131) |
+| Sweep recall | **7/23 = 30%** (2026-09-28). JB-5 batch 1 lift should show on next sweep — 11 companies now fetch directly. Target 70% |
 
 ### Shipped since 2026-09-21 baseline
 
@@ -73,6 +74,12 @@ The board is **live and healthy**. The pipeline works end to end.
 - **Smoke fix** save+restore `site/data/jobs.json` + `board_standalone` around `--demo` (#102).
 - **ADR-006 workflow** route deploy through `production` branch (#75).
 - **Ops** Claude Code permission rules + HANDOFF refresh (#105).
+- **JB-5 verify-promotions** — `tools/verify_promotions.py` + `.github/workflows/verify-promotions.yml` (#127); live-run verified 11/11 batch-1 companies fetch OK (Semtech=88, Littelfuse=102, others 1-30 jobs each).
+- **JB-5 workday tenant/site/dc** — added missing tenant/site/dc fields to Semtech + Littelfuse registry entries (#128); root-cause fix in `tools/resolve_sweep.py` so future promotions preserve those fields in the paste-ready JSON (#130).
+- **JB-57 CMA templating** — `tools/london_coverage.py` now takes `--cma Toronto|Waterloo|Ottawa|London`; added CMA_CITIES dict for 4 CMAs; +6 tests (#132).
+- **JB-59 Getro probe** — `tools/probe_getro_networks.py` + `.github/workflows/probe-getro.yml` (#129); ran 27 candidates, confirmed **Economic Development Jobs** (network_id 30254) — added via #131. Finding: Getro migrated most boards to custom domains, so `<slug>.getro.com` blind guessing failed (24/25 skips).
+- **JB-55 design prototype** — copied the design-drop zip contents into `docs/design/prototype/` (#133); design reference only, not wired to production.
+- **Commercialization backlog seeded** — filed 4 GitHub issues (#134 Tailor CV button, #135 Intake form, #136 Regional licence config, #137 ONBIS spike) so the design template plan no longer lives only in the prototype markdown.
 
 ### Sweep-miss analysis (2026-09-28, 16 misses of 23 known-good roles)
 
@@ -155,7 +162,7 @@ recent PR. Docs that do not match reality train you to ignore your own documenta
 
 ## 5. ⏭️ NEXT ACTION — start here
 
-_Updated 2026-09-28, evening (post-overnight-run)._ How to work: `BRANCHING.md`. Start a **fresh chat** each session
+_Updated 2026-09-30 (post-overnight-run: 5 more PRs merged — #127 verify-promotions, #128 workday tenant/site/dc fix, #129 probe-getro harness, #130 resolve_sweep field-preservation fix, #131 Economic Development Jobs source, #132 CMA templating, #133 design prototype landing; +4 issues filed: #134-137)._ How to work: `BRANCHING.md`. Start a **fresh chat** each session
 (this repo is the memory; long chats burn the weekly usage limit fast).
 
 ### 🔁 SESSION-RESUME POINT — fresh Claude, read this block first
@@ -184,12 +191,11 @@ If you are a Claude session opening in this repo, resume the **denominator-first
 
 ### Next BLs on the table
 
-**JB-58 London name sourcing** (not yet filed — follow-up to JB-57, P0) — now that the denominator
-lands (~700 London tech employers, ADR-007), populate it with real company names via ONBIS pull +
-`tools/linkedin_scout.py` at scale. Also NAICS-tag the registry so `tools/london_coverage.py` can
-report per-NAICS numerators, not just an overall count. This is the payoff for the JB-57 pivot.
-BT to file the issue with a concrete scope before starting (paid ONBIS access? free scrape? which
-NAICS first?).
+**#137 JB-58 ONBIS spike** (filed 2026-09-30) — now that the denominator lands (~700 London tech
+employers, ADR-007), populate it with real company names via ONBIS. Spike answers: paid vs free
+access, data-shape (does it give us name+city+size?), rate limits, adapter cost. BT to review the
+spike before we build an adapter. Also NAICS-tag the registry so `tools/london_coverage.py` can
+report per-NAICS numerators, not just an overall count.
 
 **JB-47c Dayforce URL research** (not yet filed — supersedes the JB-47b-followup slot) —
 JB-47b-followup #121+#122 proved the shipped subdomains and API path were all wrong via a
@@ -200,8 +206,20 @@ Dayforce. Not doable from sandbox.
 **#5 JB-5 batch 2** — 148 `platform:"resolve"` entries remain after batch 1 (#125). Sweep proved
 they don't have detectable ATS via careers-page probes — they're mostly LEDC-directory small
 manufacturers using SEO-friendly marketing sites with a "Contact us" jobs page. Two productive
-next moves: (a) new adapters for ttcportals/ultipro/scouterecruit (2/1/1 hits waiting), or
-(b) JB-46 LinkedIn scout at scale to re-classify the 144 misses. Pick based on effort/yield.
+next moves: (a) new adapters for ttcportals/ultipro/scouterecruit (2/1/1 hits waiting) — **needs
+live API discovery, sandbox can't help**, and (b) JB-46 LinkedIn scout at scale to re-classify
+the 144 misses. Pick based on effort/yield.
+
+**Commercialization backlog (from `docs/design/prototype/COMMERCIALIZATION_PLAN.md`, filed 2026-09-30):**
+- **#134 JB-60 Tailor CV button** (P1, week 1 of the plan) — small `site/index.html` change, ready to build
+- **#135 JB-61 Intake form** (P1, week 1) — static form + PIPEDA notice, ready to build
+- **#136 JB-62 Regional licence config** (P2, week 5-6) — tenant JSON + `?tenant=slug` renderer
+- Not yet filed: bot digest (offer 2), pitch deck (offer 3), tailoring SOP + prompt (week 1). Design template §2 has the full 8-week timeline.
+
+**Next Getro probe iteration** (JB-59 v2) — first run (#129, run 36671740109) showed Getro migrated
+most boards to custom domains. Need probe-v2 with real hostnames: MaRS `techjobs.marsdd.com`,
+Communitech `jobs.communitech.ca`, Invest Ottawa `jobs.investottawa.ca`, DMZ, Volta, Platform
+Calgary — grab actual URLs from a browser first, then re-probe.
 
 **Not now** (deferred pending BT judgment): #85 JB-52 thin-JD enrichment (rate-limit risk),
 #86 JB-53 multi-persona (touches UI Phase 2), #43/#87/#44 spikes (ADRs first), #81 JB-48 Workable
@@ -225,9 +243,9 @@ next moves: (a) new adapters for ttcportals/ultipro/scouterecruit (2/1/1 hits wa
 
 ## 6. Work in flight
 - Nothing uncommitted on `main`.
-- 2026-09-28 → 2026-09-29 landed clean — 12 PRs merged: #106, #107, #108, #109, #112, #114, #116, #119, #121, #122, #124, #125. Ready for the next BL — top picks: **JB-5 batch 2** (new adapters for ttcportals/ultipro/scouterecruit OR LinkedIn-scout the 144 MISS list); **JB-58** (needs BT scoping); **JB-47c** (needs a browser).
+- 2026-09-30 overnight: 7 more PRs merged (#127, #128, #129, #130, #131, #132, #133) + 4 issues filed (#134-137). Ready for the next BL — top picks: **#134/#135 tailor button + intake form** (P1 commercialization, ready to build); **#137 ONBIS spike** (needs BT scope confirmation); **JB-5 batch 2** ttcportals adapter (needs live API discovery); **probe-getro v2** with real custom-domain URLs.
 - **Release ops changed** (2026-09-29 with JB-27): to cut a release, edit `VERSION` + `CHANGELOG.md` in the same commit → merge to main → `auto-tag` workflow creates `v<VERSION>` on that commit automatically. No manual `git tag` step. See `VERSIONING.md`.
-- **CI-diagnostic pattern proven twice** (2026-09-29): `workflow_dispatch` + read-only script for live-network probes. `verify-dayforce.yml` (adapter validation) and `resolve-sweep.yml` (bulk resolver sweep) are the references. Reuse for any future sandbox-blocked probe.
+- **CI-diagnostic pattern now proven 4 times** (2026-09-29/30): `workflow_dispatch` + read-only script for live-network probes. References: `verify-dayforce.yml` (adapter validation), `resolve-sweep.yml` (bulk resolver sweep), `verify-promotions.yml` (post-promotion live check), `probe-getro.yml` (aggregator discovery). Reuse for any future sandbox-blocked probe.
 
 ---
 
@@ -289,6 +307,6 @@ docs/project/       GITHUB_PROJECT_SETUP · RELEASE_PROCESS · PROJECT_PLAN
 
 ### How to verify everything still works
 ```powershell
-python -m pytest tests/ -q          # expect 240 passed
+python -m pytest tests/ -q          # expect 246 passed
 cd engine ; python smoke_test.py    # expect 11/11 PASS
 ```
