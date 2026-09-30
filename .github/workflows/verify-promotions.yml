@@ -1,0 +1,29 @@
+name: verify-promotions
+
+# JB-5 batch 1 (#125): on-demand live check of the 11 companies promoted
+# from platform:"resolve" to a real ATS. Runs against main (job-sweep.yml
+# only builds `production`, so we need a main-facing diagnostic to verify
+# integration-branch work).
+#
+# Read-only -- prints per-company job counts to the log so a follow-up PR
+# can revert any resolver-false-positive slugs back to "resolve".
+#
+# Safe to trigger any time; no commits, no deploys.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r engine/requirements.txt
+      - name: Run promotion verification
+        run: python tools/verify_promotions.py
