@@ -17,6 +17,11 @@
       "network_id": 8936
     },
     {
+      "platform": "getro",
+      "name": "Economic Development Jobs",
+      "network_id": 30254
+    },
+    {
       "platform": "ledc",
       "name": "LEDC Tech",
       "base": "https://londontechjobs.ca"
