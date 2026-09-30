@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="./colors_and_type.css">
+<link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+body{margin:0;background:var(--bg);}
+a{color:var(--link);text-decoration:none;}
+a:hover{color:var(--link-hover);}
+input::placeholder{color:var(--fg-subtle);}
+.leaflet-container{background:#0F1628;font-family:Inter,system-ui,sans-serif;}
+.leaflet-tooltip{background:#141D35;color:#E8F0FF;border:1px solid #2A3A5C;box-shadow:none;font-size:12px;}
+.leaflet-tooltip-top:before{border-top-color:#2A3A5C;}
+.leaflet-control-attribution{background:rgba(10,14,26,0.7)!important;color:#7A8BB0!important;}
+.leaflet-control-attribution a{color:#A8B8D8!important;}
+.leaflet-bar a{background:#141D35!important;color:#E8F0FF!important;border-color:#2A3A5C!important;}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:var(--gradient-bg-hero);background-repeat:no-repeat;background-size:100% 520px;background-color:var(--bg);color:var(--fg);font-family:var(--font-body);">
+
+  <nav style="position:sticky;top:0;z-index:100;background:var(--bg-elevated);border-bottom:1px solid var(--border-subtle);">
+    <div style="max-width:1280px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-0.02em;">
+        <svg viewBox="0 0 52 52" fill="none" width="28" height="28"><circle cx="26" cy="26" r="22" stroke="url(#nG)" stroke-width="1.5"></circle><line x1="26" y1="4" x2="26" y2="48" stroke="url(#nG)" stroke-width="1.5"></line><line x1="4" y1="26" x2="48" y2="26" stroke="url(#nG)" stroke-width="1.5"></line><circle cx="26" cy="26" r="4" fill="#00D4FF"></circle><defs><linearGradient id="nG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00D4FF"></stop><stop offset=".5" stop-color="#4F8EF7"></stop><stop offset="1" stop-color="#C77DFF"></stop></linearGradient></defs></svg>
+        <span>Attsis <span style="color:var(--fg-subtle);font-weight:500;">Jobs</span></span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;flex:1 1 480px;min-width:0;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+          <button onClick="{{ t.onClick }}" style="display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0;background:{{ t.bg }};color:{{ t.fg }};border:1px solid {{ t.border }};padding:8px 14px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">
+            <i class="{{ t.icon }}" style="font-size:14px;"></i>{{ t.label }}
+          </button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ cv }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-family:var(--font-mono);font-size:12px;color:var(--fg-subtle);letter-spacing:0.08em;">RANKED FOR</span>
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--accent-soft);border:1px solid var(--accent-line);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--accent);">BT</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noCv }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openProfile }}" style="display:flex;align-items:center;gap:8px;background:var(--accent);color:var(--fg-inverse);border:none;padding:10px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;box-shadow:var(--glow-cyan);"><i class="icon-user-round" style="font-size:14px;"></i>Build profile</button>
+      </sc-if>
+    </div>
+  </nav>
+
+  <sc-if value="{{ isBoard }}" hint-placeholder-val="{{ true }}">
+  <header style="max-width:1280px;margin:0 auto;padding:48px 24px 32px;display:flex;flex-wrap:wrap;gap:32px;align-items:flex-end;">
+    <div style="flex:1.618 1 0;min-width:min(100%,440px);display:flex;flex-direction:column;gap:16px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--radius-pill);background:var(--badge-live-bg);border:1px solid var(--badge-live-border);color:var(--badge-live-fg);font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;"><span style="width:6px;height:6px;border-radius:50%;background:var(--attsis-green);box-shadow:0 0 8px var(--attsis-green);"></span>Live</span>
+        <span style="font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:var(--ls-mono);text-transform:uppercase;color:var(--fg-subtle);">Updated Sep 22, 2026 · {{ totalRoles }} roles · {{ totalCos }} employers</span>
+      </div>
+      <h1 style="font-size:clamp(34px,5vw,56px);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin:0;text-wrap:balance;">Hardware and embedded roles, <span class="axis-text">straight from employers.</span></h1>
+      <p style="font-size:var(--fs-md);color:var(--fg-muted);max-width:560px;margin:0;text-wrap:pretty;">Every role comes from the company's own careers system, then gets ranked against your CV — in your browser. Nothing uploads.</p>
+    </div>
+
+    <sc-if value="{{ noCv }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:1 1 0;min-width:min(100%,320px);background:var(--bg-card);border:1px solid var(--accent-line);border-radius:var(--radius-xl);padding:24px;display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;letter-spacing:-0.01em;">Rank these against your profile</div>
+          <div style="font-size:var(--fs-sm);color:var(--fg-muted);">Scores below use a general embedded/hardware profile until you build yours.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;">
+          <sc-for list="{{ srcMini }}" as="m" hint-placeholder-count="5">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border-radius:var(--radius-md);background:var(--bg-raised);border:1px solid var(--border-subtle);">
+              <i class="{{ m.icon }}" style="font-size:20px;color:var(--accent);"></i>
+              <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;color:var(--fg-muted);text-align:center;">{{ m.short }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+          <button onClick="{{ openProfile }}" style="display:flex;align-items:center;gap:8px;background:var(--accent);color:var(--fg-inverse);border:none;padding:11px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;box-shadow:var(--glow-cyan);">Build your profile<i class="icon-arrow-right" style="font-size:14px;"></i></button>
+          <button onClick="{{ sampleProfile }}" style="background:none;border:none;padding:0;color:var(--link);font-size:var(--fs-sm);cursor:pointer;" style-hover="color:var(--link-hover);">Try a sample profile</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ cv }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1 1 0;min-width:min(100%,320px);background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xl);padding:24px;display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:var(--ls-mono);text-transform:uppercase;color:var(--fg-subtle);">Your profile</div>
+            <div style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;">Bharanidharan T.</div>
+            <div style="font-size:var(--fs-sm);color:var(--fg-muted);">London, ON · {{ srcCount }} sources · {{ kwCount }} keywords</div>
+          </div>
+          <button onClick="{{ openProfile }}" style="background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--fg-muted);padding:8px 14px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;" style-hover="border-color:var(--border-strong);color:var(--fg);"><i class="icon-pencil" style="font-size:14px;"></i>Edit</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <sc-for list="{{ addedSrc }}" as="a" hint-placeholder-count="4">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12px;padding:4px 10px;border-radius:var(--radius-pill);background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--fg-muted);"><i class="{{ a.icon }}" style="font-size:14px;color:{{ a.color }};"></i>{{ a.short }}</span>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </header>
+
+  <div style="max-width:1280px;margin:0 auto;padding:0 24px 64px;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+
+    <main style="flex:1.618 1 0;min-width:min(100%,560px);display:flex;flex-direction:column;gap:16px;">
+
+      <div style="display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;padding:12px 16px;border-radius:var(--radius-lg);background:var(--bg-card);border:1px solid var(--badge-locked-border);">
+        <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--attsis-purple);display:flex;align-items:center;gap:6px;"><i class="icon-sparkles" style="font-size:14px;"></i>Today · Sep 23</span>
+        <sc-for list="{{ briefItems }}" as="b" hint-placeholder-count="4">
+          <button onClick="{{ b.onClick }}" style="display:inline-flex;align-items:center;gap:6px;background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--fg);padding:5px 12px;border-radius:var(--radius-pill);font-size:13px;cursor:pointer;" style-hover="border-color:var(--badge-locked-border);"><i class="{{ b.icon }}" style="font-size:14px;color:{{ b.color }};"></i>{{ b.text }}</button>
+        </sc-for>
+      </div>
+
+      <div style="background:var(--bg-card);border:1px solid var(--badge-locked-border);border-radius:var(--radius-lg);padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--glow-purple);">
+        <div style="display:flex;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-pill);padding:4px 4px 4px 16px;">
+          <i class="icon-sparkles" style="font-size:16px;color:var(--attsis-purple);"></i>
+          <input value="{{ askText }}" onInput="{{ onAsk }}" onKeyDown="{{ onAskKey }}" placeholder="Ask in plain words — e.g. hybrid firmware roles within 100 km paying $130k+" style="flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--fg);font-family:var(--font-body);font-size:15px;padding:10px 0;">
+          <button onClick="{{ runAsk }}" style="display:flex;align-items:center;gap:6px;background:var(--attsis-purple);color:var(--fg-inverse);border:none;padding:9px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;">Ask</button>
+        </div>
+        <sc-if value="{{ hasParsed }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--attsis-purple);">Understood as</span>
+            <sc-for list="{{ aiChips }}" as="c" hint-placeholder-count="3">
+              <button onClick="{{ c.onRemove }}" style="display:inline-flex;align-items:center;gap:6px;background:var(--badge-locked-bg);border:1px solid var(--badge-locked-border);color:var(--fg);padding:3px 8px 3px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">{{ c.label }}<i class="icon-x" style="font-size:14px;color:var(--fg-subtle);"></i></button>
+            </sc-for>
+            <button onClick="{{ clearAsk }}" style="background:none;border:none;color:var(--link);font-size:13px;cursor:pointer;">Clear</button>
+            <span style="margin-left:auto;font-size:12px;color:var(--fg-subtle);">The AI only sets filters — ranking stays rule-based.</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noParsed }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Try</span>
+            <sc-for list="{{ askSuggest }}" as="g" hint-placeholder-count="3">
+              <button onClick="{{ g.onClick }}" style="background:transparent;border:1px solid var(--border-subtle);color:var(--fg-muted);padding:4px 12px;border-radius:var(--radius-pill);font-size:13px;cursor:pointer;" style-hover="border-color:var(--badge-locked-border);color:var(--fg);">{{ g.text }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;border-radius:var(--radius-lg);background:var(--accent-soft);border:1px solid var(--accent-line);">
+        <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-right:4px;">Your preferences</span>
+        <sc-for list="{{ prefChips }}" as="p" hint-placeholder-count="4">
+          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12px;padding:3px 10px;border-radius:var(--radius-pill);background:var(--bg-card);border:1px solid var(--border-subtle);color:var(--fg);"><i class="{{ p.icon }}" style="font-size:14px;color:var(--fg-subtle);"></i>{{ p.label }}</span>
+        </sc-for>
+        <button onClick="{{ openProfile }}" style="margin-left:auto;background:none;border:none;color:var(--link);font-family:var(--font-mono);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;" style-hover="color:var(--link-hover);"><i class="icon-pencil" style="font-size:14px;"></i>Edit</button>
+      </div>
+
+      <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px;display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+          <div style="flex:1 1 260px;display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:0 12px;">
+            <i class="icon-search" style="font-size:16px;color:var(--fg-subtle);"></i>
+            <input value="{{ q }}" onInput="{{ onQ }}" placeholder="Search company, title or skill" style="flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--fg);font-family:var(--font-body);font-size:15px;padding:11px 0;">
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg-subtle);">Sort
+            <select value="{{ sort }}" onChange="{{ onSort }}" style="background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:10px 12px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:14px;text-transform:none;letter-spacing:0;">
+              <option value="score">Best fit</option>
+              <option value="distance">Nearest</option>
+              <option value="newest">Newest</option>
+              <option value="salary">Highest salary</option>
+              <option value="attsis">Attsis compatibility</option>
+            </select>
+          </label>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);margin-right:2px;">Within</span>
+            <sc-for list="{{ distOpts }}" as="o" hint-placeholder-count="5">
+              <button onClick="{{ o.onClick }}" style="background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.border }};padding:6px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">{{ o.label }}</button>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);margin-right:2px;">Work</span>
+            <sc-for list="{{ arrOpts }}" as="o" hint-placeholder-count="4">
+              <button onClick="{{ o.onClick }}" style="background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.border }};padding:6px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">{{ o.label }}</button>
+            </sc-for>
+          </div>
+          <button onClick="{{ toggleStrong }}" style="display:flex;align-items:center;gap:8px;background:{{ strongBtn.bg }};color:{{ strongBtn.fg }};border:1px solid {{ strongBtn.border }};padding:6px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="{{ strongBtn.icon }}" style="font-size:14px;"></i>Strong fits only (7+)</button>
+          <button onClick="{{ toggleMore }}" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--fg-muted);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;cursor:pointer;margin-left:auto;" style-hover="color:var(--accent);"><i class="icon-sliders-horizontal" style="font-size:14px;"></i>{{ moreLabel }}</button>
+        </div>
+        <sc-if value="{{ showMore }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:16px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border-subtle);">
+            <label style="display:flex;flex-direction:column;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Industry
+              <select value="{{ industry }}" onChange="{{ onIndustry }}" style="background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:9px 12px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:14px;text-transform:none;letter-spacing:0;min-width:200px;">
+                <option value="">Any industry</option>
+                <sc-for list="{{ industries }}" as="ind" hint-placeholder-count="4"><option value="{{ ind }}">{{ ind }}</option></sc-for>
+              </select>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Per employer
+              <select value="{{ perCo }}" onChange="{{ onPerCo }}" style="background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:9px 12px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:14px;text-transform:none;letter-spacing:0;">
+                <option value="0">All roles</option><option value="3">Top 3</option><option value="1">Top 1</option>
+              </select>
+            </label>
+            <button onClick="{{ reset }}" style="align-self:flex-end;background:none;border:1px solid var(--border-subtle);color:var(--fg-muted);padding:9px 14px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;" style-hover="border-color:var(--border-strong);color:var(--fg);">Reset filters</button>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:0 4px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div style="font-family:var(--font-mono);font-size:13px;color:var(--fg-muted);letter-spacing:0.04em;"><b style="color:var(--fg);">{{ shownCount }}</b> {{ rolesWord }} · <b style="color:var(--attsis-green);">{{ strongCount }}</b> strong fits</div>
+          <sc-for list="{{ areaChips }}" as="a" hint-placeholder-count="0">
+            <button onClick="{{ a.onClear }}" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--accent);padding:3px 8px 3px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="icon-map-pin" style="font-size:14px;"></i>{{ a.label }}<i class="icon-x" style="font-size:14px;"></i></button>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:4px;padding:3px;border-radius:var(--radius-pill);background:var(--bg-card);border:1px solid var(--border-subtle);">
+          <sc-for list="{{ layoutOpts }}" as="o" hint-placeholder-count="3">
+            <button onClick="{{ o.onClick }}" style="display:flex;align-items:center;gap:6px;background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.border }};padding:5px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="{{ o.icon }}" style="font-size:14px;"></i>{{ o.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ noCv }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:13px;color:var(--fg-subtle);">General profile · <a href="#" onClick="{{ openProfileLink }}">build your profile</a> to re-rank</div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ isMapMode }}" hint-placeholder-val="{{ false }}">
+        <div style="aspect-ratio:1.618/1;min-height:420px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border-subtle);">
+            <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Pins</span>
+            <sc-for list="{{ pinOpts }}" as="o" hint-placeholder-count="2">
+              <button onClick="{{ o.onClick }}" style="background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.border }};padding:4px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">{{ o.label }}</button>
+            </sc-for>
+            <button onClick="{{ toggleOff }}" style="display:flex;align-items:center;gap:6px;background:{{ offBtn.bg }};color:{{ offBtn.fg }};border:1px solid {{ offBtn.border }};padding:4px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="icon-circle-dashed" style="font-size:14px;"></i>Not tracked yet · {{ offCount }}</button>
+            <button onClick="{{ toggleMove }}" style="display:flex;align-items:center;gap:6px;margin-left:auto;background:{{ moveBtn.bg }};color:{{ moveBtn.fg }};border:1px solid {{ moveBtn.border }};padding:4px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="{{ moveBtn.icon }}" style="font-size:14px;"></i>Search as I move the map</button>
+          </div>
+          <div ref="{{ mapRef }}" style="flex:1;min-height:0;background:var(--bg-elevated);"></div>
+          <div style="display:flex;gap:6px 16px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-top:1px solid var(--border-subtle);font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);">
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:0;border-top:1px dashed var(--attsis-cyan);"></span>50 · 100 · 200 km from home</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--attsis-green);"></span>8+</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--attsis-cyan);"></span>7</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--attsis-slate);border:1px solid var(--attsis-rim);"></span>6 and under</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;border:1.5px dashed var(--attsis-fog);"></span>Not tracked yet</span>
+            <span style="margin-left:auto;">{{ remoteNote }}</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px dashed var(--border);border-radius:var(--radius-lg);padding:48px 24px;text-align:center;color:var(--fg-muted);display:flex;flex-direction:column;gap:8px;align-items:center;">
+          <i class="{{ emptyIcon }}" style="font-size:24px;color:var(--fg-subtle);"></i>
+          <div>{{ emptyText }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showNear }}" hint-placeholder-val="{{ true }}">
+        <div style="border:1px dashed var(--badge-locked-border);border-radius:var(--radius-lg);padding:12px 16px;display:flex;flex-direction:column;gap:12px;background:var(--badge-locked-bg);">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <i class="icon-sparkles" style="font-size:16px;color:var(--attsis-purple);"></i>
+            <span style="font-size:14px;color:var(--fg);flex:1 1 240px;">AI found <b>{{ nearCount }} roles</b> your keywords scored low — they use different words for what you do.</span>
+            <button onClick="{{ toggleNear }}" style="background:none;border:1px solid var(--badge-locked-border);color:var(--fg);padding:5px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">{{ nearBtn }}</button>
+          </div>
+          <sc-if value="{{ nearOpen }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ nearItems }}" as="n" hint-placeholder-count="2">
+              <div style="display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;padding:12px;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--border-subtle);">
+                <div style="width:40px;height:40px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;background:var(--bg-raised);border:1px solid var(--border-subtle);font-family:var(--font-mono);font-weight:700;color:var(--fg-subtle);">{{ n.score }}</div>
+                <div style="display:flex;flex-direction:column;gap:6px;min-width:0;">
+                  <div style="font-weight:600;font-size:15px;">{{ n.title }} <span style="font-weight:400;color:var(--fg-muted);">· {{ n.company }} · {{ n.city }}</span></div>
+                  <div style="font-size:13px;color:var(--fg-muted);text-wrap:pretty;">{{ n.why }}</div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button onClick="{{ n.onShow }}" style="background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--fg);padding:5px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">Show role</button>
+                    <button onClick="{{ n.onAdd }}" style="display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--badge-locked-border);color:var(--attsis-purple);padding:5px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="icon-plus" style="font-size:14px;"></i>{{ n.addLabel }}</button>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showCards }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <sc-for list="{{ jobs }}" as="j" hint-placeholder-count="6">
+          <article onMouseEnter="{{ j.onEnter }}" onMouseLeave="{{ j.onLeave }}" style="background:var(--bg-card);border:1px solid {{ j.cardBorder }};border-radius:var(--radius-lg);transition:border-color 200ms, background 200ms;" style-hover="border-color:var(--border-strong);">
+            <div onClick="{{ j.toggle }}" style="display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:16px;padding:16px 16px 16px 16px;cursor:pointer;align-items:start;">
+              <div style="width:56px;height:56px;border-radius:var(--radius-md);display:flex;flex-direction:column;align-items:center;justify-content:center;background:{{ j.tierBg }};border:1px solid {{ j.tierBorder }};color:{{ j.tierFg }};">
+                <div style="font-family:var(--font-mono);font-weight:700;font-size:22px;line-height:1;">{{ j.score }}</div>
+                <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;margin-top:3px;opacity:0.85;">/10</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;min-width:0;">
+                <div style="font-weight:600;font-size:17px;line-height:1.3;color:var(--fg);text-wrap:pretty;">{{ j.title }}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px;color:var(--fg-muted);align-items:center;">
+                  <span style="color:var(--fg);">{{ j.company }}</span>
+                  <span style="display:flex;align-items:center;gap:4px;"><i class="icon-map-pin" style="font-size:14px;color:var(--fg-subtle);"></i>{{ j.city }}</span>
+                  <span style="font-family:var(--font-mono);font-size:12px;color:var(--fg-subtle);">{{ j.distLabel }}</span>
+                  <span style="font-family:var(--font-mono);font-size:12px;color:var(--fg-subtle);">{{ j.ago }}</span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;">
+                  <span style="font-family:var(--font-mono);font-size:12px;padding:2px 10px;border-radius:var(--radius-pill);background:{{ j.salBg }};border:1px solid {{ j.salBorder }};color:{{ j.salFg }};font-weight:{{ j.salWeight }};">{{ j.salLabel }}</span>
+                  <span style="font-family:var(--font-mono);font-size:12px;padding:2px 10px;border-radius:var(--radius-pill);background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--attsis-blue);">{{ j.arrLabel }}</span>
+                  <span style="font-family:var(--font-mono);font-size:12px;padding:2px 10px;border-radius:var(--radius-pill);background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--attsis-purple);">{{ j.industry }}</span>
+                  <sc-if value="{{ j.sponsors }}" hint-placeholder-val="{{ false }}"><span style="font-family:var(--font-mono);font-size:12px;padding:2px 10px;border-radius:var(--radius-pill);background:var(--badge-live-bg);border:1px solid var(--badge-live-border);color:var(--badge-live-fg);">Sponsors visas</span></sc-if>
+                  <sc-if value="{{ j.showNum }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12px;padding:2px 10px;border-radius:var(--radius-pill);background:rgba(255,107,157,0.10);border:1px solid rgba(255,107,157,0.35);color:var(--attsis-rose);"><i class="icon-hash" style="font-size:12px;"></i>{{ j.numChip }}</span></sc-if>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;">
+                  <sc-for list="{{ j.prefChecks }}" as="c" hint-placeholder-count="3">
+                    <span style="display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:12px;color:{{ c.color }};"><i class="{{ c.icon }}" style="font-size:14px;"></i>{{ c.label }}</span>
+                  </sc-for>
+                </div>
+                <div style="font-size:13px;color:var(--fg-subtle);display:flex;gap:6px;align-items:baseline;"><span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg-subtle);">Why</span><span style="color:var(--fg-muted);">{{ j.whyShort }}</span></div>
+              </div>
+              <div style="display:flex;gap:4px;align-items:center;">
+                <button onClick="{{ j.toggleSave }}" title="Save" style="width:40px;height:40px;border-radius:50%;background:{{ j.saveBg }};border:1px solid {{ j.saveBorder }};color:{{ j.saveFg }};cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="{{ j.saveIcon }}" style="font-size:16px;"></i></button>
+                <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:var(--fg-subtle);"><i class="{{ j.chevron }}" style="font-size:20px;"></i></div>
+              </div>
+            </div>
+
+            <sc-if value="{{ j.open }}" hint-placeholder-val="{{ false }}">
+              <div style="border-top:1px solid var(--border-subtle);padding:20px 16px 20px 88px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:24px;">
+                <section style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Why it fits</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    <sc-for list="{{ j.have }}" as="h" hint-placeholder-count="4"><span style="font-family:var(--font-mono);font-size:12px;padding:2px 10px;border-radius:var(--radius-pill);background:var(--badge-live-bg);border:1px solid var(--badge-live-border);color:var(--badge-live-fg);">{{ h }}</span></sc-for>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <sc-for list="{{ j.reasons }}" as="r" hint-placeholder-count="3"><div style="font-family:var(--font-mono);font-size:12px;color:var(--fg-muted);display:flex;gap:8px;"><span style="color:var(--accent);">›</span>{{ r }}</div></sc-for>
+                  </div>
+                </section>
+                <section style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Gaps to address</div>
+                  <div style="font-size:14px;color:var(--fg);">You match <b style="font-family:var(--font-mono);color:var(--accent);">{{ j.haveN }}</b> of <b style="font-family:var(--font-mono);">{{ j.keyN }}</b> key terms.</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    <sc-for list="{{ j.missing }}" as="m" hint-placeholder-count="3"><span style="font-family:var(--font-mono);font-size:12px;padding:2px 10px;border-radius:var(--radius-pill);background:var(--badge-pending-bg);border:1px solid var(--badge-pending-border);color:var(--badge-pending-fg);">{{ m }}</span></sc-for>
+                  </div>
+                </section>
+                <sc-if value="{{ j.showNum }}" hint-placeholder-val="{{ false }}">
+                <section style="display:flex;flex-direction:column;gap:12px;grid-column:1 / -1;padding:14px;border-radius:var(--radius-md);background:rgba(255,107,157,0.08);border:1px solid rgba(255,107,157,0.30);">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--attsis-rose);display:flex;align-items:center;gap:6px;"><i class="icon-hash" style="font-size:14px;"></i>Attsis reading</span>
+                    <span style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--attsis-rose);">{{ j.numScore }}/5 compatibility</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">
+                    <sc-for list="{{ j.numSides }}" as="sd" hint-placeholder-count="2">
+                      <div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:var(--radius-md);background:var(--bg-card);border:1px solid var(--border-subtle);">
+                        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">{{ sd.who }}</span>
+                        <span style="font-size:14px;color:var(--fg);"><b style="font-family:var(--font-mono);">Life Path {{ sd.lp }}</b> · Year of the {{ sd.animal }}</span>
+                        <span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);">{{ sd.dateNote }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.6;color:var(--fg);">
+                    <div style="display:flex;gap:8px;"><i class="icon-hash" style="font-size:16px;color:var(--attsis-rose);flex-shrink:0;margin-top:3px;"></i><span><b>{{ j.numLevel }}.</b> {{ j.numText }}</span></div>
+                    <div style="display:flex;gap:8px;"><i class="icon-moon-star" style="font-size:16px;color:var(--attsis-rose);flex-shrink:0;margin-top:3px;"></i><span><b>{{ j.zLevel }}.</b> {{ j.zText }}</span></div>
+                    <div style="display:flex;gap:8px;"><i class="icon-calendar-check" style="font-size:16px;color:var(--attsis-rose);flex-shrink:0;margin-top:3px;"></i><span>{{ j.bestDay }}</span></div>
+                  </div>
+                  <div style="font-size:12px;color:var(--fg-subtle);">For reflection only — it never changes the fit score or ranking.</div>
+                </section>
+                </sc-if>
+                <section style="display:flex;flex-direction:column;gap:10px;grid-column:1 / -1;padding:12px 14px;border-radius:var(--radius-md);background:var(--badge-locked-bg);border:1px solid var(--badge-locked-border);">
+                  <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--attsis-purple);display:flex;align-items:center;gap:6px;"><i class="icon-sparkles" style="font-size:14px;"></i>Read by AI · checked against the posting</div>
+                  <div style="font-size:14px;line-height:1.6;color:var(--fg);text-wrap:pretty;">{{ j.aiSummary }}</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px 20px;">
+                    <sc-for list="{{ j.aiFacts }}" as="f" hint-placeholder-count="5">
+                      <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">{{ f.label }}</span><span style="font-size:13px;color:var(--fg);">{{ f.value }}</span></div>
+                    </sc-for>
+                  </div>
+                </section>
+                <section style="display:flex;flex-direction:column;gap:10px;grid-column:1 / -1;">
+                  <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">From the posting</div>
+                  <p style="font-size:14px;line-height:1.7;color:var(--fg-muted);margin:0;max-width:72ch;">{{ j.snippet }}</p>
+                  <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;color:var(--fg-subtle);text-transform:uppercase;">Source · {{ j.source }} · posted {{ j.postedLong }}</div>
+                </section>
+                <div style="grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding-top:16px;border-top:1px solid var(--border-subtle);">
+                  <button onClick="{{ j.onApply }}" style="border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--fg-inverse);padding:10px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;box-shadow:var(--glow-cyan);">Apply on {{ j.companyShort }}<i class="icon-external-link" style="font-size:14px;"></i></button>
+                  <button onClick="{{ j.toggleSave }}" style="display:inline-flex;align-items:center;gap:8px;background:var(--bg-raised);color:var(--fg);border:1px solid var(--border-subtle);padding:10px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;" style-hover="border-color:var(--border-strong);"><i class="{{ j.saveIcon }}" style="font-size:14px;"></i>{{ j.saveLabel }}</button>
+                  <button onClick="{{ j.onTailor }}" style="display:inline-flex;align-items:center;gap:8px;margin-left:auto;background:var(--badge-locked-bg);color:var(--badge-locked-fg);border:1px solid var(--badge-locked-border);padding:10px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;cursor:pointer;" style-hover="box-shadow:var(--glow-purple);"><i class="icon-wand-sparkles" style="font-size:14px;"></i>Tailor CV + cover letter</button>
+                </div>
+              </div>
+            </sc-if>
+          </article>
+        </sc-for>
+      </div>
+      </sc-if>
+    </main>
+
+    <sc-if value="{{ showRail }}" hint-placeholder-val="{{ true }}">
+      <aside style="flex:1 1 0;min-width:min(100%,300px);max-width:100%;display:flex;flex-direction:column;gap:16px;position:sticky;top:88px;">
+        <div style="background:var(--bg-card);border:1px solid var(--accent-line);border-radius:var(--radius-lg);padding:24px;display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;gap:10px;"><i class="icon-bell" style="font-size:20px;color:var(--accent);"></i><div style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;letter-spacing:-0.01em;">New strong fits, daily</div></div>
+          <p style="font-size:14px;line-height:1.6;color:var(--fg-muted);margin:0;">One message each morning with roles scoring 7+ against your CV. Nothing on quiet days.</p>
+          <sc-if value="{{ alertOff }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <button onClick="{{ subscribe }}" style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--fg-inverse);border:none;padding:11px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;box-shadow:var(--glow-cyan);"><i class="icon-send" style="font-size:14px;"></i>Get alerts in Telegram</button>
+              <div style="display:flex;gap:8px;">
+                <input placeholder="or your email" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);color:var(--fg);border-radius:var(--radius-pill);padding:10px 14px;font-family:var(--font-body);font-size:14px;outline:none;">
+                <button onClick="{{ subscribe }}" style="background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--fg);padding:10px 14px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">Join</button>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ alertOn }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--radius-md);background:var(--badge-live-bg);border:1px solid var(--badge-live-border);color:var(--badge-live-fg);font-size:14px;"><i class="icon-check-circle" style="font-size:16px;"></i>Alerts on · next digest 8:00 am</div>
+          </sc-if>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:24px;display:flex;flex-direction:column;gap:14px;">
+          <div style="font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:var(--ls-mono);text-transform:uppercase;color:var(--fg-subtle);">How scores work</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:12px;"><span style="width:44px;text-align:center;font-family:var(--font-mono);font-weight:700;font-size:13px;padding:3px 0;border-radius:var(--radius-sm);background:var(--badge-live-bg);border:1px solid var(--badge-live-border);color:var(--attsis-green);">8–10</span><span style="font-size:14px;color:var(--fg-muted);">Strong fit — apply</span></div>
+            <div style="display:flex;align-items:center;gap:12px;"><span style="width:44px;text-align:center;font-family:var(--font-mono);font-weight:700;font-size:13px;padding:3px 0;border-radius:var(--radius-sm);background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--accent);">7</span><span style="font-size:14px;color:var(--fg-muted);">Good fit — check the gaps</span></div>
+            <div style="display:flex;align-items:center;gap:12px;"><span style="width:44px;text-align:center;font-family:var(--font-mono);font-weight:700;font-size:13px;padding:3px 0;border-radius:var(--radius-sm);background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--fg-subtle);">1–6</span><span style="font-size:14px;color:var(--fg-muted);">Partial — stretch role</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--border-subtle);font-family:var(--font-mono);font-size:12px;color:var(--fg-subtle);line-height:1.5;">
+            <div>Title matches your CV <span style="color:var(--fg);">+5</span></div>
+            <div>Your skills in the posting <span style="color:var(--fg);">+1 to +3</span></div>
+            <div>Senior / lead <span style="color:var(--fg);">+1</span> · Commutable or remote <span style="color:var(--fg);">+1</span></div>
+          </div>
+          <div style="font-size:13px;color:var(--fg-subtle);">Rule-based. No AI in the loop, so every point is shown on the card.</div>
+        </div>
+      </aside>
+    </sc-if>
+
+    <sc-if value="{{ isSplit }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:1 1 0;min-width:min(100%,340px);position:sticky;top:88px;">
+        <div style="height:calc(100vh - 112px);min-height:520px;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border-subtle);">
+            <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Pins</span>
+            <sc-for list="{{ pinOpts }}" as="o" hint-placeholder-count="2">
+              <button onClick="{{ o.onClick }}" style="background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.border }};padding:4px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">{{ o.label }}</button>
+            </sc-for>
+            <button onClick="{{ toggleOff }}" style="display:flex;align-items:center;gap:6px;background:{{ offBtn.bg }};color:{{ offBtn.fg }};border:1px solid {{ offBtn.border }};padding:4px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="icon-circle-dashed" style="font-size:14px;"></i>Not tracked yet · {{ offCount }}</button>
+            <button onClick="{{ toggleMove }}" style="display:flex;align-items:center;gap:6px;margin-left:auto;background:{{ moveBtn.bg }};color:{{ moveBtn.fg }};border:1px solid {{ moveBtn.border }};padding:4px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="{{ moveBtn.icon }}" style="font-size:14px;"></i>Search as I move the map</button>
+          </div>
+          <div ref="{{ mapRef }}" style="flex:1;min-height:0;background:var(--bg-elevated);"></div>
+          <div style="display:flex;gap:6px 16px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-top:1px solid var(--border-subtle);font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);">
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:0;border-top:1px dashed var(--attsis-cyan);"></span>50 · 100 · 200 km from home</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--attsis-green);"></span>8+</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--attsis-cyan);"></span>7</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--attsis-slate);border:1px solid var(--attsis-rim);"></span>6 and under</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;border:1.5px dashed var(--attsis-fog);"></span>Not tracked yet</span>
+            <span style="margin-left:auto;">{{ remoteNote }}</span>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1280px;margin:0 auto;padding:40px 24px 64px;display:flex;flex-direction:column;gap:32px;">
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:720px;">
+      <div style="font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:var(--ls-mono);text-transform:uppercase;color:var(--fg-subtle);">Your profile · read in your browser</div>
+      <h2 style="font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-0.02em;margin:0;text-wrap:balance;">What should we match you on?</h2>
+      <p style="font-size:var(--fs-md);color:var(--fg-muted);margin:0;text-wrap:pretty;">Add as many sources as you have. We pull keywords from each, merge them, and you decide what stays. Hardware, firmware and software all count.</p>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+      <div style="flex:1.618 1 0;min-width:min(100%,520px);display:flex;flex-direction:column;gap:12px;">
+        <sc-for list="{{ sources }}" as="s" hint-placeholder-count="5">
+          <div style="background:var(--bg-card);border:1px solid {{ s.border }};border-radius:var(--radius-lg);padding:20px;display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;">
+            <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--bg-raised);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;color:{{ s.color }};"><i class="{{ s.icon }}" style="font-size:20px;"></i></div>
+            <div style="display:flex;flex-direction:column;gap:12px;min-width:0;">
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                  <span style="font-weight:600;font-size:16px;">{{ s.name }}</span>
+                  <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:2px 8px;border-radius:var(--radius-pill);border:1px solid {{ s.tagBorder }};color:{{ s.tagFg }};background:{{ s.tagBg }};">{{ s.tag }}</span>
+                </div>
+                <div style="font-size:14px;color:var(--fg-muted);text-wrap:pretty;">{{ s.desc }}</div>
+              </div>
+
+              <sc-if value="{{ s.showFileAdd }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button onClick="{{ s.onAdd }}" style="display:flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent);border:1px dashed var(--accent-line);padding:9px 16px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;cursor:pointer;" style-hover="border-color:var(--accent);"><i class="icon-upload" style="font-size:14px;"></i>{{ s.uploadLabel }}</button>
+                  <button onClick="{{ s.onAdd }}" style="display:flex;align-items:center;gap:8px;background:transparent;color:var(--fg-muted);border:1px solid var(--border-subtle);padding:9px 16px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;cursor:pointer;" style-hover="border-color:var(--border-strong);color:var(--fg);"><i class="icon-clipboard-paste" style="font-size:14px;"></i>Paste text</button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ s.showGhAdd }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <div style="flex:1 1 220px;display:flex;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-pill);padding:0 14px;">
+                    <span style="font-family:var(--font-mono);font-size:13px;color:var(--fg-subtle);">github.com/</span>
+                    <input value="{{ ghUser }}" onInput="{{ onGhUser }}" placeholder="username" style="flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--fg);font-family:var(--font-mono);font-size:13px;padding:10px 0;">
+                  </div>
+                  <button onClick="{{ s.onAdd }}" style="background:var(--accent);color:var(--fg-inverse);border:none;padding:10px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;">Read repos</button>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ s.showLinks }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <sc-for list="{{ links }}" as="l" hint-placeholder-count="1">
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius-md);background:var(--bg-raised);border:1px solid var(--border-subtle);">
+                      <i class="icon-globe" style="font-size:14px;color:var(--fg-subtle);"></i>
+                      <span style="flex:1;min-width:0;font-family:var(--font-mono);font-size:13px;color:var(--fg);overflow:hidden;text-overflow:ellipsis;">{{ l.url }}</span>
+                      <button onClick="{{ l.onRemove }}" title="Remove" style="background:none;border:none;color:var(--fg-subtle);cursor:pointer;display:flex;" style-hover="color:var(--danger);"><i class="icon-x" style="font-size:16px;"></i></button>
+                    </div>
+                  </sc-for>
+                  <div style="display:flex;gap:8px;">
+                    <input value="{{ draftLink }}" onInput="{{ onDraftLink }}" onKeyDown="{{ onLinkKey }}" placeholder="hackaday.io/you, yoursite.com, gitlab.com/you…" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);color:var(--fg);border-radius:var(--radius-pill);padding:10px 14px;font-family:var(--font-mono);font-size:13px;outline:none;">
+                    <button onClick="{{ addLink }}" style="background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--fg);padding:10px 16px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">Add link</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ s.added }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:var(--radius-md);background:var(--badge-live-bg);border:1px solid var(--badge-live-border);">
+                    <i class="icon-check-circle" style="font-size:16px;color:var(--attsis-green);"></i>
+                    <span style="flex:1;min-width:0;font-family:var(--font-mono);font-size:13px;color:var(--fg);">{{ s.addedLabel }}</span>
+                    <span style="font-family:var(--font-mono);font-size:12px;color:var(--attsis-green);">{{ s.kwLabel }}</span>
+                    <button onClick="{{ s.onRemove }}" style="background:none;border:none;color:var(--fg-subtle);cursor:pointer;font-family:var(--font-mono);font-size:12px;" style-hover="color:var(--danger);">Remove</button>
+                  </div>
+                  <sc-if value="{{ s.hasProof }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                      <sc-for list="{{ s.proof }}" as="p" hint-placeholder-count="3">
+                        <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12px;padding:3px 10px;border-radius:var(--radius-pill);background:var(--badge-locked-bg);border:1px solid var(--badge-locked-border);color:var(--badge-locked-fg);"><i class="icon-badge-check" style="font-size:14px;"></i>{{ p }}</span>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;">
+          <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--bg-raised);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;color:var(--attsis-mist);"><i class="icon-pencil-line" style="font-size:20px;"></i></div>
+          <div style="display:flex;flex-direction:column;gap:16px;min-width:0;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;align-items:center;gap:10px;"><span style="font-weight:600;font-size:16px;">Add your own</span><span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:2px 8px;border-radius:var(--radius-pill);border:1px solid var(--border-subtle);color:var(--fg-subtle);">Optional</span></div>
+              <div style="font-size:14px;color:var(--fg-muted);">Anything the sources missed — or roles you want next but haven't held yet. Press Enter to add.</div>
+            </div>
+            <sc-for list="{{ manualFields }}" as="f" hint-placeholder-count="3">
+              <label style="display:flex;flex-direction:column;gap:6px;">
+                <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">{{ f.label }}</span>
+                <div style="display:flex;gap:8px;">
+                  <input value="{{ f.value }}" onInput="{{ f.onInput }}" onKeyDown="{{ f.onKey }}" placeholder="{{ f.placeholder }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);color:var(--fg);border-radius:var(--radius-pill);padding:10px 14px;font-family:var(--font-body);font-size:14px;outline:none;">
+                  <button onClick="{{ f.onAdd }}" style="background:var(--bg-raised);border:1px solid var(--border-subtle);color:var(--fg);padding:10px 16px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">Add</button>
+                </div>
+              </label>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--accent-line);border-radius:var(--radius-lg);padding:20px;display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;">
+          <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--accent-soft);border:1px solid var(--accent-line);display:flex;align-items:center;justify-content:center;color:var(--accent);"><i class="icon-sliders-horizontal" style="font-size:20px;"></i></div>
+          <div style="display:flex;flex-direction:column;gap:16px;min-width:0;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <span style="font-weight:600;font-size:16px;">Preferences</span>
+              <div style="font-size:14px;color:var(--fg-muted);">Every role is checked against these. They also decide which roles trigger an alert.</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;">
+              <label style="display:flex;flex-direction:column;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Salary floor
+                <select value="{{ prefSalary }}" onChange="{{ onPrefSalary }}" style="background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:10px 12px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:14px;text-transform:none;letter-spacing:0;">
+                  <option value="0">No floor</option><option value="80">$80k</option><option value="100">$100k</option><option value="120">$120k</option><option value="140">$140k</option><option value="160">$160k</option>
+                </select>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Max distance from London
+                <select value="{{ prefKm }}" onChange="{{ onPrefKm }}" style="background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:10px 12px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:14px;text-transform:none;letter-spacing:0;">
+                  <option value="50">50 km</option><option value="100">100 km</option><option value="200">200 km</option><option value="600">600 km</option><option value="0">Anywhere</option>
+                </select>
+              </label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Alert me at score
+                <select value="{{ prefAlert }}" onChange="{{ onPrefAlert }}" style="background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:10px 12px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:14px;text-transform:none;letter-spacing:0;">
+                  <option value="7">7 or higher</option><option value="8">8 or higher</option><option value="9">9 or higher</option>
+                </select>
+              </label>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Work arrangement</span>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <sc-for list="{{ prefArrOpts }}" as="o" hint-placeholder-count="3">
+                  <button onClick="{{ o.onClick }}" style="display:flex;align-items:center;gap:6px;background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.border }};padding:6px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="{{ o.icon }}" style="font-size:14px;"></i>{{ o.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid rgba(255,107,157,0.35);border-radius:var(--radius-lg);padding:20px;display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;">
+          <div style="width:40px;height:40px;border-radius:var(--radius-md);background:rgba(255,107,157,0.10);border:1px solid rgba(255,107,157,0.35);display:flex;align-items:center;justify-content:center;color:var(--attsis-rose);"><i class="icon-hash" style="font-size:20px;"></i></div>
+          <div style="display:flex;flex-direction:column;gap:14px;min-width:0;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="font-weight:600;font-size:16px;">Attsis numerology</span><span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:2px 8px;border-radius:var(--radius-pill);border:1px solid var(--border-subtle);color:var(--fg-subtle);">Optional</span></div>
+              <div style="font-size:14px;color:var(--fg-muted);text-wrap:pretty;">Your birth date against each employer's incorporation date — Life Path numbers and Chinese zodiac. It stays in this browser and never touches the fit score.</div>
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;">
+              <label style="display:flex;flex-direction:column;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Your birth date
+                <input type="date" value="{{ birth }}" onChange="{{ onBirth }}" style="background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:9px 12px;border-radius:var(--radius-md);font-family:var(--font-mono);font-size:14px;color-scheme:dark;">
+              </label>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                <sc-for list="{{ myNums }}" as="n" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:2px;border-left:2px solid var(--attsis-rose);padding-left:10px;">
+                    <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">{{ n.label }}</span>
+                    <span style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--fg);">{{ n.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid var(--border-subtle);">
+              <div style="flex:1;display:flex;flex-direction:column;gap:2px;"><span style="font-size:14px;color:var(--fg);">Show readings on job cards</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);">Adds a compatibility chip and an "Attsis reading" section</span></div>
+              <button onClick="{{ toggleNum }}" style="width:40px;height:22px;border-radius:var(--radius-pill);background:{{ numTog.trackBg }};border:1px solid {{ numTog.trackBorder }};padding:2px;cursor:pointer;display:flex;justify-content:{{ numTog.justify }};"><span style="width:16px;height:16px;border-radius:50%;background:{{ numTog.knob }};"></span></button>
+            </div>
+            <div style="display:flex;gap:10px;padding:10px 12px;border-radius:var(--radius-md);background:var(--badge-pending-bg);border:1px solid var(--badge-pending-border);font-size:13px;color:var(--fg);line-height:1.5;"><i class="icon-info" style="font-size:16px;color:var(--attsis-amber);flex-shrink:0;"></i>Company dates in this prototype are placeholders. The live version reads each employer's incorporation date from the corporate registry.</div>
+          </div>
+        </div>
+      </div>
+
+      <aside style="flex:1 1 0;min-width:min(100%,320px);max-width:100%;position:sticky;top:88px;background:var(--bg-card);border:1px solid var(--accent-line);border-radius:var(--radius-lg);padding:24px;display:flex;flex-direction:column;gap:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;">
+          <div style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;">What we'll match on</div>
+          <div style="font-family:var(--font-mono);font-size:13px;color:var(--accent);">{{ kwCount }} keywords</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <sc-for list="{{ legend }}" as="g" hint-placeholder-count="5">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);"><span style="width:8px;height:8px;border-radius:50%;background:{{ g.color }};"></span>{{ g.label }}</span>
+          </sc-for>
+        </div>
+
+        <sc-for list="{{ groups }}" as="gr" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">{{ gr.label }}</div>
+            <sc-if value="{{ gr.empty }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--fg-subtle);">{{ gr.emptyText }}</div></sc-if>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ gr.items }}" as="k" hint-placeholder-count="6">
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:4px 6px 4px 10px;border-radius:var(--radius-pill);background:{{ k.bg }};border:1px solid {{ k.border }};color:{{ k.fg }};">
+                  {{ k.label }}
+                  <sc-if value="{{ k.proof }}" hint-placeholder-val="{{ false }}"><i class="icon-badge-check" title="Backed by GitHub" style="font-size:14px;color:var(--attsis-purple);"></i></sc-if>
+                  <span style="display:inline-flex;gap:3px;">
+                    <sc-for list="{{ k.dots }}" as="d" hint-placeholder-count="1"><span title="{{ d.label }}" style="width:6px;height:6px;border-radius:50%;background:{{ d.color }};"></span></sc-for>
+                  </span>
+                  <button onClick="{{ k.onRemove }}" title="Remove" style="background:none;border:none;padding:0 2px;color:var(--fg-subtle);cursor:pointer;display:flex;" style-hover="color:var(--danger);"><i class="icon-x" style="font-size:14px;"></i></button>
+                </span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+
+        <sc-if value="{{ hasRemoved }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ restoreAll }}" style="align-self:flex-start;background:none;border:none;padding:0;color:var(--link);font-size:13px;cursor:pointer;">{{ removedLabel }}</button>
+        </sc-if>
+
+        <div style="display:flex;flex-direction:column;gap:10px;padding-top:16px;border-top:1px solid var(--border-subtle);">
+          <button onClick="{{ saveProfile }}" style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--fg-inverse);border:none;padding:12px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;box-shadow:var(--glow-cyan);opacity:{{ saveOpacity }};">Save and re-rank {{ totalRoles }} roles<i class="icon-arrow-right" style="font-size:14px;"></i></button>
+          <div style="font-size:12px;color:var(--fg-subtle);text-align:center;">Files never leave this device. GitHub is read from its public API.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isTracker }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1280px;margin:0 auto;padding:40px 24px 64px;display:flex;flex-direction:column;gap:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:var(--ls-mono);text-transform:uppercase;color:var(--fg-subtle);">Tracker · {{ trackCount }} roles</div>
+        <h2 style="font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-0.02em;margin:0;">Your applications</h2>
+      </div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        <sc-for list="{{ trackStats }}" as="st" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:2px;border-left:2px solid {{ st.color }};padding-left:12px;">
+            <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--fg-subtle);">{{ st.label }}</span>
+            <span style="font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--fg);">{{ st.value }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+      <div style="flex:1.618 1 0;min-width:min(100%,600px);display:flex;flex-direction:column;gap:24px;">
+        <sc-if value="{{ hasNudges }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--warning);display:flex;align-items:center;gap:8px;"><i class="icon-bell-ring" style="font-size:14px;"></i>Needs your answer · {{ nudgeCount }}</div>
+            <sc-for list="{{ nudges }}" as="n" hint-placeholder-count="3">
+              <div style="background:var(--bg-card);border:1px solid var(--badge-pending-border);border-radius:var(--radius-lg);padding:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+                <i class="{{ n.icon }}" style="font-size:20px;color:var(--warning);"></i>
+                <div style="flex:1 1 280px;display:flex;flex-direction:column;gap:4px;min-width:0;">
+                  <div style="font-size:15px;color:var(--fg);text-wrap:pretty;">{{ n.text }}</div>
+                  <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;color:var(--fg-subtle);text-transform:uppercase;">{{ n.meta }}</div>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <sc-for list="{{ n.actions }}" as="a" hint-placeholder-count="3">
+                    <button onClick="{{ a.onClick }}" style="background:{{ a.bg }};color:{{ a.fg }};border:1px solid {{ a.border }};padding:8px 14px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;" style-hover="box-shadow:var(--glow-cyan);">{{ a.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:start;">
+          <sc-for list="{{ columns }}" as="col" hint-placeholder-count="5">
+            <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:12px;display:flex;flex-direction:column;gap:10px;min-height:160px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 4px 6px;border-bottom:2px solid {{ col.color }};">
+                <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg);">{{ col.label }}</span>
+                <span style="font-family:var(--font-mono);font-size:12px;color:var(--fg-subtle);">{{ col.count }}</span>
+              </div>
+              <sc-if value="{{ col.empty }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--fg-subtle);padding:8px 4px;">{{ col.emptyText }}</div></sc-if>
+              <sc-for list="{{ col.items }}" as="it" hint-placeholder-count="2">
+                <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:var(--border-strong);">
+                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">
+                    <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                      <span style="font-size:13px;color:var(--fg-muted);">{{ it.company }}</span>
+                      <span style="font-weight:600;font-size:14px;line-height:1.3;color:var(--fg);">{{ it.title }}</span>
+                    </div>
+                    <span style="font-family:var(--font-mono);font-size:12px;font-weight:700;padding:2px 7px;border-radius:var(--radius-sm);background:{{ it.tierBg }};border:1px solid {{ it.tierBorder }};color:{{ it.tierFg }};">{{ it.score }}</span>
+                  </div>
+                  <div style="font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);letter-spacing:0.04em;">{{ it.meta }}</div>
+                  <sc-if value="{{ it.hasNext }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--accent);"><i class="icon-calendar" style="font-size:14px;"></i>{{ it.next }}</div></sc-if>
+                  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                    <select value="{{ it.stage }}" onChange="{{ it.onStage }}" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:6px 8px;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:11px;">
+                      <option value="saved">Saved</option><option value="applied">Applied</option><option value="interview">Interviewing</option><option value="offer">Offer</option><option value="closed">Closed</option>
+                    </select>
+                    <sc-if value="{{ it.canPrep }}" hint-placeholder-val="{{ false }}"><button onClick="{{ it.onPrep }}" style="background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--accent);padding:5px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:11px;cursor:pointer;">Prep</button></sc-if>
+                    <sc-if value="{{ it.canTailor }}" hint-placeholder-val="{{ false }}"><button onClick="{{ it.onTailor }}" style="background:var(--badge-locked-bg);border:1px solid var(--badge-locked-border);color:var(--badge-locked-fg);padding:5px 10px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:11px;cursor:pointer;">Tailor</button></sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <aside style="flex:1 1 0;min-width:min(100%,300px);max-width:100%;display:flex;flex-direction:column;gap:16px;position:sticky;top:88px;">
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:14px;">
+          <div style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;">Where we reach you</div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <sc-for list="{{ channels }}" as="ch" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-subtle);">
+                <i class="{{ ch.icon }}" style="font-size:16px;color:var(--fg-muted);"></i>
+                <div style="flex:1;display:flex;flex-direction:column;gap:1px;min-width:0;">
+                  <span style="font-size:14px;color:var(--fg);">{{ ch.label }}</span>
+                  <span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);">{{ ch.note }}</span>
+                </div>
+                <button onClick="{{ ch.onToggle }}" title="{{ ch.label }}" style="width:40px;height:22px;border-radius:var(--radius-pill);background:{{ ch.trackBg }};border:1px solid {{ ch.trackBorder }};padding:2px;cursor:pointer;display:flex;justify-content:{{ ch.justify }};">
+                  <span style="width:16px;height:16px;border-radius:50%;background:{{ ch.knob }};"></span>
+                </button>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">How often</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <sc-for list="{{ freqOpts }}" as="o" hint-placeholder-count="3">
+                <button onClick="{{ o.onClick }}" style="background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.border }};padding:6px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">{{ o.label }}</button>
+              </sc-for>
+            </div>
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);">Quiet hours 9 pm – 8 am · follow-up prompts after 7 days</span>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Preview · Telegram</div>
+          <div style="background:var(--bg-raised);border-radius:var(--radius-lg);padding:14px;display:flex;flex-direction:column;gap:10px;">
+            <div style="font-weight:600;font-size:13px;color:var(--accent);">Attsis Jobs</div>
+            <div style="font-size:14px;line-height:1.5;color:var(--fg);">You applied to <b>Geotab</b> — Lead Developer, Embedded Engineering — <b>8 days ago</b>. Heard back?</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+              <span style="text-align:center;font-size:12px;padding:8px 4px;border-radius:var(--radius-md);background:var(--bg-card);color:var(--accent);">Interview</span>
+              <span style="text-align:center;font-size:12px;padding:8px 4px;border-radius:var(--radius-md);background:var(--bg-card);color:var(--accent);">No reply</span>
+              <span style="text-align:center;font-size:12px;padding:8px 4px;border-radius:var(--radius-md);background:var(--bg-card);color:var(--accent);">Rejected</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--fg-subtle);">One tap updates this board. Same prompt on WhatsApp, email and push.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isTailor }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1280px;margin:0 auto;padding:32px 24px 64px;display:flex;flex-direction:column;gap:24px;">
+    <button onClick="{{ backRoles }}" style="align-self:flex-start;background:none;border:none;padding:0;color:var(--fg-muted);font-family:var(--font-mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;" style-hover="color:var(--accent);"><i class="icon-arrow-left" style="font-size:14px;"></i>Back to roles</button>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:var(--ls-mono);text-transform:uppercase;color:var(--fg-subtle);">Tailor · {{ tj.company }}</div>
+        <h2 style="font-size:clamp(26px,3.6vw,36px);font-weight:700;letter-spacing:-0.02em;margin:0;text-wrap:balance;">{{ tj.title }}</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;padding:12px 16px;border-radius:var(--radius-lg);background:var(--bg-card);border:1px solid var(--border-subtle);">
+        <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--fg-subtle);">JD terms covered</span>
+          <span style="font-family:var(--font-mono);font-size:20px;font-weight:700;"><span style="color:var(--fg-subtle);">{{ tCovBefore }}</span> <span style="color:var(--fg-subtle);">→</span> <span style="color:var(--attsis-green);">{{ tCovAfter }}</span></span></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+      <aside style="flex:1 1 0;min-width:min(100%,260px);max-width:100%;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:14px;">
+        <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">What the posting asks for</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <sc-for list="{{ tj.have }}" as="h" hint-placeholder-count="4"><span style="font-family:var(--font-mono);font-size:12px;padding:2px 10px;border-radius:var(--radius-pill);background:var(--badge-live-bg);border:1px solid var(--badge-live-border);color:var(--badge-live-fg);">{{ h }}</span></sc-for>
+          <sc-for list="{{ tj.missing }}" as="m" hint-placeholder-count="3"><span style="font-family:var(--font-mono);font-size:12px;padding:2px 10px;border-radius:var(--radius-pill);background:var(--badge-pending-bg);border:1px solid var(--badge-pending-border);color:var(--badge-pending-fg);">{{ m }}</span></sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--border-subtle);">
+          <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--fg);"><i class="icon-shield-check" style="font-size:16px;color:var(--attsis-green);"></i>Nothing invented</div>
+          <div style="font-size:13px;color:var(--fg-muted);text-wrap:pretty;">We only reword and reorder what's already in your CV. Gaps you don't have stay gaps — see Prep to close them.</div>
+        </div>
+      </aside>
+
+      <div style="flex:1.618 1 0;min-width:min(100%,480px);display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;gap:6px;">
+          <sc-for list="{{ tTabs }}" as="t" hint-placeholder-count="2">
+            <button onClick="{{ t.onClick }}" style="background:{{ t.bg }};color:{{ t.fg }};border:1px solid {{ t.border }};padding:8px 16px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;">{{ t.label }}</button>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ tIsCv }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <sc-for list="{{ tSugs }}" as="sg" hint-placeholder-count="2">
+              <div style="background:var(--bg-card);border:1px solid {{ sg.border }};border-radius:var(--radius-lg);padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px;">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--fg-subtle);">Your CV</span>
+                  <span style="font-size:14px;line-height:1.6;color:var(--fg-subtle);text-decoration:line-through;text-decoration-color:rgba(122,139,176,0.5);">{{ sg.before }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);">Tailored</span>
+                  <span style="font-size:14px;line-height:1.6;color:var(--fg);">{{ sg.after }}</span>
+                </div>
+                <div style="grid-column:1 / -1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border-subtle);">
+                  <span style="flex:1 1 240px;font-size:13px;color:var(--fg-muted);">{{ sg.why }}</span>
+                  <button onClick="{{ sg.onAccept }}" style="display:flex;align-items:center;gap:6px;background:{{ sg.accBg }};color:{{ sg.accFg }};border:1px solid {{ sg.accBorder }};padding:7px 14px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;"><i class="icon-check" style="font-size:14px;"></i>{{ sg.accLabel }}</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ tIsCl }}" hint-placeholder-val="{{ false }}">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:24px;display:flex;flex-direction:column;gap:14px;max-width:72ch;">
+            <p style="font-size:15px;line-height:1.7;color:var(--fg);margin:0;">Dear {{ tj.company }} hiring team,</p>
+            <p style="font-size:15px;line-height:1.7;color:var(--fg);margin:0;">I'm applying for the {{ tj.title }} role. For eleven years I've built embedded firmware and hardware for battery-powered products in regulated industries — the same mix your posting describes: {{ tj.topThree }}.</p>
+            <p style="font-size:15px;line-height:1.7;color:var(--fg-muted);margin:0;">At my last role I led firmware on ARM Cortex-M sensor products and cut sleep current by 40%, taking two boards from bring-up to production. I'd bring the same habits to your team: measure first, document the design decisions, and hand over hardware that test and manufacturing can trust.</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ tLocked }}" hint-placeholder-val="{{ true }}">
+          <div style="position:relative;">
+            <div style="display:flex;flex-direction:column;gap:12px;opacity:0.5;max-height:140px;overflow:hidden;">
+              <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px;font-size:14px;color:var(--fg-muted);">{{ tLockedPreview }}</div>
+              <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:16px;font-size:14px;color:var(--fg-muted);">+ {{ tLockedCount }} more suggestions, a reordered skills section and a one-page .docx export</div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:0;height:80px;background:linear-gradient(180deg,transparent,var(--bg));pointer-events:none;"></div>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--badge-locked-border);border-radius:var(--radius-xl);padding:24px;display:flex;gap:24px;flex-wrap:wrap;align-items:center;box-shadow:var(--glow-purple);">
+            <div style="flex:1 1 280px;display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;"><i class="icon-lock" style="font-size:20px;color:var(--attsis-purple);"></i>Full tailored CV + cover letter</div>
+              <div style="font-size:14px;color:var(--fg-muted);">For this role: every suggestion, the full cover letter, and a .docx you can send.</div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <button onClick="{{ unlock }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--attsis-purple);color:var(--fg-inverse);border:none;padding:10px 20px;border-radius:var(--radius-pill);cursor:pointer;box-shadow:var(--glow-purple);"><span style="font-family:var(--font-mono);font-size:16px;font-weight:700;">$17.99</span><span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;">This role</span></button>
+              <button onClick="{{ unlock }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;background:transparent;color:var(--fg);border:1px solid var(--border-strong);padding:10px 20px;border-radius:var(--radius-pill);cursor:pointer;"><span style="font-family:var(--font-mono);font-size:16px;font-weight:700;">$8.99/mo</span><span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg-subtle);">Pro · unlimited</span></button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ tUnlocked }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:16px;border-radius:var(--radius-lg);background:var(--badge-live-bg);border:1px solid var(--badge-live-border);">
+            <i class="icon-check-circle" style="font-size:20px;color:var(--attsis-green);"></i>
+            <span style="flex:1 1 240px;font-size:14px;color:var(--fg);">Tailored for {{ tj.company }} · {{ tAccepted }} changes accepted</span>
+            <button style="display:flex;align-items:center;gap:8px;background:var(--accent);color:var(--fg-inverse);border:none;padding:10px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;"><i class="icon-download" style="font-size:14px;"></i>Download .docx</button>
+            <button onClick="{{ tApply }}" style="display:flex;align-items:center;gap:8px;background:var(--bg-raised);color:var(--fg);border:1px solid var(--border-subtle);padding:10px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;">Apply with it<i class="icon-external-link" style="font-size:14px;"></i></button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isPrep }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1280px;margin:0 auto;padding:32px 24px 64px;display:flex;flex-direction:column;gap:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:var(--ls-mono);text-transform:uppercase;color:var(--fg-subtle);">Interview prep · {{ pj.company }}</div>
+        <h2 style="font-size:clamp(26px,3.6vw,36px);font-weight:700;letter-spacing:-0.02em;margin:0;text-wrap:balance;">{{ pj.title }}</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:var(--radius-pill);background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--accent);font-family:var(--font-mono);font-size:12px;"><i class="icon-calendar" style="font-size:14px;"></i>{{ pNext }}</div>
+    </div>
+
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <sc-for list="{{ pTabs }}" as="t" hint-placeholder-count="4">
+        <button onClick="{{ t.onClick }}" style="display:flex;align-items:center;gap:8px;background:{{ t.bg }};color:{{ t.fg }};border:1px solid {{ t.border }};padding:8px 16px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;"><i class="{{ t.icon }}" style="font-size:14px;"></i>{{ t.label }}</button>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+      <aside style="flex:1 1 0;min-width:min(100%,280px);max-width:100%;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:14px;">
+          <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">{{ pSideTitle }}</div>
+          <sc-for list="{{ pSide }}" as="r" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:6px;padding-bottom:12px;border-bottom:1px solid var(--border-subtle);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="width:8px;height:8px;border-radius:50%;background:{{ r.color }};flex-shrink:0;"></span>
+                <span style="font-size:14px;font-weight:600;color:var(--fg);">{{ r.title }}</span>
+              </div>
+              <div style="font-size:13px;color:var(--fg-muted);line-height:1.5;padding-left:16px;text-wrap:pretty;">{{ r.body }}</div>
+              <sc-if value="{{ r.hasLearn }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ r.onLearn }}" style="align-self:flex-start;margin-left:16px;background:none;border:none;padding:0;color:var(--link);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;" style-hover="color:var(--link-hover);"><i class="icon-play-circle" style="font-size:14px;"></i>{{ r.learnLabel }}</button>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </aside>
+
+      <sc-if value="{{ pIsChat }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1.618 1 0;min-width:min(100%,480px);background:var(--bg-card);border:1px solid var(--accent-line);border-radius:var(--radius-lg);display:flex;flex-direction:column;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border-subtle);gap:12px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:10px;"><i class="icon-bot" style="font-size:20px;color:var(--accent);"></i><span style="font-weight:600;">Mock interviewer</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);letter-spacing:0.08em;text-transform:uppercase;">{{ pMode }}</span></div>
+            <button onClick="{{ pRestart }}" style="background:none;border:1px solid var(--border-subtle);color:var(--fg-muted);padding:6px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="icon-rotate-ccw" style="font-size:14px;"></i>Restart</button>
+          </div>
+          <div style="padding:20px;display:flex;flex-direction:column;gap:14px;min-height:320px;">
+            <sc-for list="{{ pMsgs }}" as="msg" hint-placeholder-count="2">
+              <sc-if value="{{ msg.isAi }}" hint-placeholder-val="{{ true }}">
+                <div style="align-self:flex-start;max-width:85%;background:var(--bg-raised);border:1px solid var(--border-subtle);border-radius:4px 16px 16px 16px;padding:12px 16px;font-size:15px;line-height:1.6;color:var(--fg);text-wrap:pretty;">{{ msg.text }}</div>
+              </sc-if>
+              <sc-if value="{{ msg.isUser }}" hint-placeholder-val="{{ false }}">
+                <div style="align-self:flex-end;max-width:85%;background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:16px 4px 16px 16px;padding:12px 16px;font-size:15px;line-height:1.6;color:var(--fg);">{{ msg.text }}</div>
+              </sc-if>
+              <sc-if value="{{ msg.isFb }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;display:flex;flex-direction:column;gap:12px;">
+                  <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Feedback</div>
+                  <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                    <sc-for list="{{ msg.scores }}" as="sc" hint-placeholder-count="3">
+                      <div style="display:flex;flex-direction:column;gap:2px;border-left:2px solid {{ sc.color }};padding-left:10px;">
+                        <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">{{ sc.label }}</span>
+                        <span style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--fg);">{{ sc.value }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;gap:8px;font-size:14px;color:var(--fg);"><i class="icon-check" style="font-size:16px;color:var(--attsis-green);flex-shrink:0;"></i>{{ msg.good }}</div>
+                  <div style="display:flex;gap:8px;font-size:14px;color:var(--fg);"><i class="icon-arrow-up-right" style="font-size:16px;color:var(--warning);flex-shrink:0;"></i>{{ msg.fix }}</div>
+                </div>
+              </sc-if>
+            </sc-for>
+            <sc-if value="{{ pDone }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--fg-subtle);letter-spacing:0.08em;text-transform:uppercase;padding:8px;">Round complete · restart or switch mode</div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ pCanAnswer }}" hint-placeholder-val="{{ true }}">
+            <div style="border-top:1px solid var(--border-subtle);padding:14px 20px;display:flex;flex-direction:column;gap:10px;">
+              <textarea value="{{ pDraft }}" onInput="{{ onPDraft }}" placeholder="Type your answer the way you'd say it…" style="width:100%;box-sizing:border-box;min-height:80px;background:var(--bg);border:1px solid var(--border);color:var(--fg);border-radius:var(--radius-md);padding:12px;font-family:var(--font-body);font-size:14px;line-height:1.5;resize:vertical;outline:none;"></textarea>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                <button onClick="{{ pSample }}" style="background:none;border:none;padding:0;color:var(--link);font-size:13px;cursor:pointer;">Use a sample answer</button>
+                <button onClick="{{ pSubmit }}" style="display:flex;align-items:center;gap:8px;background:var(--accent);color:var(--fg-inverse);border:none;padding:10px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;opacity:{{ pSubmitOpacity }};"><i class="icon-send" style="font-size:14px;"></i>Answer</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ pIsCompany }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1.618 1 0;min-width:min(100%,480px);display:flex;flex-direction:column;gap:16px;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;">
+            <div style="aspect-ratio:2.618/1;background:var(--bg-raised);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;border-bottom:1px solid var(--border-subtle);">
+              <i class="icon-play-circle" style="font-size:32px;color:var(--fg-subtle);"></i>
+              <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Teardown video · 14:20</span>
+            </div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:8px;">
+              <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Know their product</div>
+              <div style="font-weight:600;font-size:17px;">Inside a clinical EEG amplifier: front-end, isolation and power</div>
+              <div style="font-size:14px;color:var(--fg-muted);">By @scope_and_solder · community teardown · covers two of your gaps</div>
+            </div>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:12px;">
+            <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Questions to ask them</div>
+            <sc-for list="{{ askThem }}" as="q" hint-placeholder-count="3">
+              <div style="display:flex;gap:10px;font-size:14px;color:var(--fg);line-height:1.5;"><span style="color:var(--accent);font-family:var(--font-mono);">›</span>{{ q }}</div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isQueue }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1280px;margin:0 auto;padding:40px 24px 64px;display:flex;flex-direction:column;gap:24px;">
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:760px;">
+      <div style="font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:var(--ls-mono);text-transform:uppercase;color:var(--attsis-purple);display:flex;align-items:center;gap:8px;"><i class="icon-sparkles" style="font-size:14px;"></i>Apply queue · {{ qUsed }} of {{ qMax }} sent this week</div>
+      <h2 style="font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-0.02em;margin:0;text-wrap:balance;">Applications, prepared for you</h2>
+      <p style="font-size:var(--fs-md);color:var(--fg-muted);margin:0;text-wrap:pretty;">Each one is tailored, filled in and checked against your rules. When you approve, the employer's form opens in your browser already filled — you press submit.</p>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+      <div style="flex:1.618 1 0;min-width:min(100%,560px);display:flex;flex-direction:column;gap:24px;">
+        <sc-for list="{{ qGroups }}" as="g" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg);"><span style="width:8px;height:8px;border-radius:50%;background:{{ g.color }};"></span>{{ g.label }} · {{ g.count }}</div>
+            <sc-if value="{{ g.empty }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:var(--fg-subtle);padding:4px 16px;">{{ g.emptyText }}</div></sc-if>
+            <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+              <div style="background:var(--bg-card);border:1px solid {{ it.border }};border-radius:var(--radius-lg);">
+                <div onClick="{{ it.toggle }}" style="display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px;cursor:pointer;">
+                  <div style="width:44px;height:44px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;background:{{ it.tierBg }};border:1px solid {{ it.tierBorder }};color:{{ it.tierFg }};font-family:var(--font-mono);font-weight:700;font-size:18px;">{{ it.score }}</div>
+                  <div style="display:flex;flex-direction:column;gap:3px;min-width:0;">
+                    <div style="font-weight:600;font-size:15px;color:var(--fg);">{{ it.title }}</div>
+                    <div style="font-size:13px;color:var(--fg-muted);">{{ it.company }} · {{ it.city }}</div>
+                    <div style="font-family:var(--font-mono);font-size:11px;color:{{ it.noteColor }};letter-spacing:0.04em;">{{ it.note }}</div>
+                  </div>
+                  <i class="{{ it.chevron }}" style="font-size:20px;color:var(--fg-subtle);"></i>
+                </div>
+                <sc-if value="{{ it.open }}" hint-placeholder-val="{{ false }}">
+                  <div style="border-top:1px solid var(--border-subtle);padding:16px;display:flex;flex-direction:column;gap:14px;">
+                    <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Form preview · {{ it.formName }}</div>
+                    <div style="display:flex;flex-direction:column;">
+                      <sc-for list="{{ it.fields }}" as="f" hint-placeholder-count="6">
+                        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.618fr) 112px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border-subtle);">
+                          <span style="font-size:13px;color:var(--fg-muted);">{{ f.label }}</span>
+                          <span style="font-size:13px;color:{{ f.valueColor }};">{{ f.value }}</span>
+                          <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:var(--radius-pill);border:1px solid {{ f.srcBorder }};color:{{ f.srcFg }};background:{{ f.srcBg }};white-space:nowrap;justify-self:start;">{{ f.src }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                      <sc-for list="{{ it.actions }}" as="a" hint-placeholder-count="2">
+                        <button onClick="{{ a.onClick }}" style="display:flex;align-items:center;gap:6px;background:{{ a.bg }};color:{{ a.fg }};border:1px solid {{ a.border }};padding:9px 16px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.04em;cursor:pointer;"><i class="{{ a.icon }}" style="font-size:14px;"></i>{{ a.label }}</button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+
+      <aside style="flex:1 1 0;min-width:min(100%,300px);max-width:100%;display:flex;flex-direction:column;gap:16px;position:sticky;top:88px;">
+        <div style="background:var(--bg-card);border:1px solid var(--badge-locked-border);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:16px;">
+          <div style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;">Your rules</div>
+          <sc-for list="{{ qRuleSeg }}" as="r" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">{{ r.label }}</span>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="3">
+                  <button onClick="{{ o.onClick }}" style="background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.border }};padding:6px 12px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">{{ o.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+          <div style="display:flex;flex-direction:column;">
+            <sc-for list="{{ qToggles }}" as="t" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border-subtle);">
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:14px;color:var(--fg);">{{ t.label }}</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);">{{ t.note }}</span></div>
+                <button onClick="{{ t.onToggle }}" style="width:40px;height:22px;border-radius:var(--radius-pill);background:{{ t.trackBg }};border:1px solid {{ t.trackBorder }};padding:2px;cursor:pointer;display:flex;justify-content:{{ t.justify }};"><span style="width:16px;height:16px;border-radius:50%;background:{{ t.knob }};"></span></button>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ qUnattended }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:10px;padding:12px;border-radius:var(--radius-md);background:rgba(255,77,109,0.10);border:1px solid rgba(255,77,109,0.35);font-size:13px;color:var(--fg);line-height:1.5;"><i class="icon-triangle-alert" style="font-size:16px;color:var(--attsis-red);flex-shrink:0;"></i>Unattended mode: ready items open for submit after 24 hours if you don't respond, capped at 3 a week. Questions only you can answer still pause.</div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--border-subtle);">
+            <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Never answered for you</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <sc-for list="{{ qNever }}" as="n" hint-placeholder-count="4"><span style="font-family:var(--font-mono);font-size:12px;padding:3px 10px;border-radius:var(--radius-pill);background:var(--badge-pending-bg);border:1px solid var(--badge-pending-border);color:var(--badge-pending-fg);">{{ n }}</span></sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Why this doesn't spam employers</div>
+          <sc-for list="{{ qWhy }}" as="w" hint-placeholder-count="4">
+            <div style="display:flex;gap:10px;font-size:13px;line-height:1.5;color:var(--fg-muted);"><i class="{{ w.icon }}" style="font-size:16px;color:var(--attsis-green);flex-shrink:0;"></i>{{ w.text }}</div>
+          </sc-for>
+        </div>
+      </aside>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isLearn }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1280px;margin:0 auto;padding:40px 24px 64px;display:flex;flex-direction:column;gap:24px;">
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:720px;">
+      <div style="font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:var(--ls-mono);text-transform:uppercase;color:var(--fg-subtle);">Learn · picked for your gaps</div>
+      <h2 style="font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-0.02em;margin:0;text-wrap:balance;">Teardowns, circuit sims and shorts from engineers</h2>
+      <p style="font-size:var(--fs-md);color:var(--fg-muted);margin:0;text-wrap:pretty;">Made by people on Attsis. Creators link the parts and tools they used and earn from every sale — we share that revenue.</p>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <sc-for list="{{ learnOpts }}" as="o" hint-placeholder-count="4">
+        <button onClick="{{ o.onClick }}" style="background:{{ o.bg }};color:{{ o.fg }};border:1px solid {{ o.border }};padding:6px 14px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;cursor:pointer;">{{ o.label }}</button>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px;">
+      <sc-for list="{{ learnItems }}" as="c" hint-placeholder-count="6">
+        <article style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;" style-hover="border-color:var(--border-strong);">
+          <div style="aspect-ratio:{{ c.ratio }};max-height:220px;background:var(--bg-raised);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;border-bottom:1px solid var(--border-subtle);">
+            <i class="{{ c.icon }}" style="font-size:32px;color:var(--fg-subtle);"></i>
+            <span style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">{{ c.kindLabel }} · {{ c.len }}</span>
+          </div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:10px;flex:1;">
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <span style="font-family:var(--font-mono);font-size:11px;padding:2px 8px;border-radius:var(--radius-pill);background:var(--badge-pending-bg);border:1px solid var(--badge-pending-border);color:var(--badge-pending-fg);">Your gap: {{ c.gap }}</span>
+              <sc-if value="{{ c.sponsored }}" hint-placeholder-val="{{ false }}"><span style="font-family:var(--font-mono);font-size:11px;padding:2px 8px;border-radius:var(--radius-pill);border:1px solid var(--border-strong);color:var(--fg-muted);">Sponsored</span></sc-if>
+            </div>
+            <div style="font-weight:600;font-size:16px;line-height:1.35;color:var(--fg);text-wrap:pretty;">{{ c.title }}</div>
+            <div style="font-size:13px;color:var(--fg-muted);">{{ c.creator }}</div>
+            <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--border-subtle);flex-wrap:wrap;">
+              <span style="display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);"><i class="icon-shopping-cart" style="font-size:14px;"></i>{{ c.parts }}</span>
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--fg-subtle);">{{ c.platforms }}</span>
+            </div>
+          </div>
+        </article>
+      </sc-for>
+      <div style="background:var(--bg-card);border:1px dashed var(--accent-line);border-radius:var(--radius-lg);padding:24px;display:flex;flex-direction:column;gap:12px;justify-content:center;">
+        <i class="icon-video" style="font-size:24px;color:var(--accent);"></i>
+        <div style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;">Make teardowns or sims?</div>
+        <div style="font-size:14px;color:var(--fg-muted);line-height:1.6;">Post here, link the parts you used, and earn on every sale. Cross-post to YouTube and TikTok — the best ones go in the daily digest.</div>
+        <button style="align-self:flex-start;display:flex;align-items:center;gap:8px;background:var(--accent);color:var(--fg-inverse);border:none;padding:10px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;">Become a creator<i class="icon-arrow-right" style="font-size:14px;"></i></button>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--fg-subtle);">Parts links are affiliate links. Sponsored posts are labelled. Neither changes how roles are ranked.</div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ hasModal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:1000;background:var(--bg-scrim);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:24px;">
+      <div onClick="{{ stop }}" style="width:100%;max-width:520px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-xl);padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow-lg);">
+        <sc-if value="{{ mChoose }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Apply to {{ mj.company }}</div>
+            <div style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;">How do you want to apply?</div>
+          </div>
+          <sc-for list="{{ applyModes }}" as="am" hint-placeholder-count="3">
+            <button onClick="{{ am.onClick }}" style="text-align:left;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:12px;align-items:center;padding:14px;border-radius:var(--radius-lg);background:var(--bg-card);border:1px solid var(--border-subtle);cursor:pointer;color:var(--fg);font-family:var(--font-body);" style-hover="border-color:var(--border-strong);">
+              <i class="{{ am.icon }}" style="font-size:20px;color:{{ am.color }};"></i>
+              <span style="display:flex;flex-direction:column;gap:3px;"><span style="font-weight:600;font-size:15px;">{{ am.title }}</span><span style="font-size:13px;color:var(--fg-muted);line-height:1.5;">{{ am.body }}</span></span>
+              <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:2px 8px;border-radius:var(--radius-pill);border:1px solid {{ am.tagBorder }};color:{{ am.tagFg }};">{{ am.tag }}</span>
+            </button>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ mLog }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">Posting opened in a new tab</div>
+          <div style="font-family:var(--font-display);font-size:var(--fs-lg);font-weight:700;">Did you apply to {{ mj.company }}?</div>
+          <div style="font-size:14px;color:var(--fg-muted);">Log it and we'll ask how it went in 7 days.</div>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-subtle);">CV you sent
+          <select value="{{ mCv }}" onChange="{{ onMCv }}" style="background:var(--bg);border:1px solid var(--border);color:var(--fg);padding:10px 12px;border-radius:var(--radius-md);font-family:var(--font-body);font-size:14px;text-transform:none;letter-spacing:0;">
+            <option value="Master CV">Master CV</option><option value="Tailored CV">Tailored for this role</option>
+          </select>
+        </label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button onClick="{{ logApplied }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--fg-inverse);border:none;padding:11px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;box-shadow:var(--glow-cyan);"><i class="icon-check" style="font-size:14px;"></i>Yes, log it</button>
+          <button onClick="{{ closeModal }}" style="flex:1;background:var(--bg-raised);color:var(--fg);border:1px solid var(--border-subtle);padding:11px 18px;border-radius:var(--radius-pill);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;">Not yet</button>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2000;max-width:calc(100% - 48px);background:var(--bg-elevated);border:1px solid var(--badge-live-border);border-radius:var(--radius-pill);padding:12px 20px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-md);font-size:14px;color:var(--fg);">
+      <i class="icon-check-circle" style="font-size:16px;color:var(--attsis-green);"></i>{{ toast }}
+    </div>
+  </sc-if>
+
+  <footer style="max-width:1280px;margin:0 auto;padding:32px 24px 40px;border-top:1px solid var(--border-subtle);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;color:var(--fg-subtle);text-transform:uppercase;">
+    <span>Attsis Jobs · a Global Attsis product</span>
+    <span>Pulled from employer ATS · scored in your browser</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startWithCV&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showRail&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const JOBS=[
+["ZTR Control Systems","Senior Embedded Software Developer","London, ON",0,"2026-09-08",10,"","onsite","rail/industrial","unknown","bamboohr",["arm cortex","ble","cortex-m","embedded c","embedded software","firmware"],["title match: embedded software","skills x9","senior/lead (+1)","commutable/remote (+1)"],"Firmware for rail telematics. Embedded C, RTOS, Zephyr, BLE, cellular. ARM Cortex-M. OTA updates. Low-power design. SPI, I2C, UART.","https://ztr.bamboohr.com/careers/288"],
+["BinSentry","Electronics Engineer","Kitchener, ON",80,"2026-09-11",9,"","onsite","agtech","unknown","bamboohr",["altium","analog","bring-up","digital","electronics engineer","firmware"],["title match: electronics engineer","skills x10","commutable/remote (+1)"],"Design digital, analog and power circuits in Altium: schematic capture, PCB layout, footprint creation. Prove systems through bring-up with firmware, test fixtures, EMC pre-compliance.","https://binsentry.bamboohr.com/careers/296"],
+["Natus Medical","Senior Electrical Engineer","Oakville, ON",137,"2026-09-05",9,"","hybrid","medical","unknown","greenhouse",["altium","analog","arm cortex","battery","cortex-m","electrical engineer"],["title match: electrical engineer","skills x8","senior/lead (+1)","commutable/remote (+1)"],"Mixed-signal PCB design for EEG and neurodiagnostic devices. Analog front-end, low-noise signal chain, battery-powered design. ISO 13485 design controls, IEC 60601.","https://example.com/natus"],
+["Tenstorrent","Senior Embedded Engineer, AI IP","Toronto, ON",168,"2026-09-09",9,"","onsite","semiconductor","unknown","greenhouse",["bring-up","digital","embedded engineer","firmware","fpga","low-power"],["title match: embedded engineer","skills x7","senior/lead (+1)","commutable/remote (+1)"],"Embedded firmware, ARM, RTOS, PCB bring-up for AI silicon boards. C, low-power, SPI, I2C. Digital design, FPGA, Linux drivers.","https://boards.greenhouse.io/tenstorrent"],
+["VueReal","Hardware Engineer, Micro-LED","Waterloo, ON",79,"2026-09-13",8,"","onsite","display/micro-LED","unknown","bamboohr",["altium","bring-up","embedded c","hardware engineer","mixed-signal","schematic"],["title match: hardware engineer","skills x5","commutable/remote (+1)"],"Mixed-signal PCB design, schematic capture, Altium, driver electronics for micro-LED displays, bring-up, signal integrity, embedded C.","https://vuereal.bamboohr.com/careers"],
+["Miovision","Firmware Developer","Kitchener, ON",80,"2026-09-12",8,"","hybrid","transportation/IoT","unknown","greenhouse",["arm cortex","ble","cortex-m","firmware","firmware developer","low-power"],["title match: firmware developer","skills x7","commutable/remote (+1)"],"Embedded firmware C, ARM Cortex-M, RTOS, BLE, low-power, traffic IoT hardware, SPI, I2C, UART, Yocto.","https://miovision.com/careers"],
+["Canada Rocket Company","Avionics Hardware Engineer","Toronto, ON",168,"2026-09-11",8,"","onsite","aerospace/space","unknown","rippling",["altium","avionics","bring-up","hardware engineer","mixed-signal","schematic"],["title match: hardware engineer, avionics","skills x4","commutable/remote (+1)"],"Design avionics PCBs, mixed-signal, power supply, schematic capture, Altium, bring-up, sensor interfaces for launch vehicles, DO-254 awareness.","https://ats.rippling.com/canada-rocket-company/jobs"],
+["e-Zinc","Embedded Software Engineer","Mississauga, ON",146,"2026-09-08",8,"","onsite","energy/power","unknown","rippling",["arm cortex","battery","cortex-m","embedded software","firmware","low-power"],["title match: embedded software","skills x6","commutable/remote (+1)"],"Firmware in C for battery energy storage, ARM Cortex-M, RTOS, CAN, MODBUS, low-power, sensor interfaces.","https://ats.rippling.com/e-zinc/jobs"],
+["Kepler Communications","Embedded Software Designer","Toronto, ON",168,"2026-09-05",8,"CAD 156,100-181,100","onsite","aerospace/space","unknown","greenhouse",["bring-up","embedded c","embedded software","firmware","rtos","spi"],["title match: embedded software","skills x5","commutable/remote (+1)"],"Embedded C, firmware, ARM, RTOS, satellite payload, SPI, I2C, test automation, Python, bring-up.","https://kepler.space/careers"],
+["Geotab","Lead Developer, Embedded Engineering","Oakville, ON",137,"2026-09-10",8,"CAD 116,200-155,000","hybrid","transportation/IoT","unknown","greenhouse",["embedded engineering","firmware","low-power","rtos"],["title match: embedded engineering","skills x3","senior/lead (+1)","commutable/remote (+1)"],"Embedded firmware, telematics, reads schematics, hardware-informed, C, RTOS, Linux, test, low-power, team leadership.","https://www.geotab.com/careers"],
+["Synaptive Medical","Electronics Design Engineer","Toronto, ON",168,"2026-09-06",8,"","onsite","medical","unknown","greenhouse",["altium","analog","bring-up","design engineer","digital","electronics design engineer"],["title match: electronics design engineer","skills x5","commutable/remote (+1)"],"Analog and digital PCB design, schematic capture, Altium, medical imaging electronics, ISO 13485, bring-up, signal integrity.","https://www.synaptivemedical.com/careers"],
+["LMI Technologies","FPGA Design & Verification Engineer","Remote, Canada",null,"2026-09-10",7,"","remote","machine vision","yes","greenhouse",["digital","fpga","verification engineer","vivado","xilinx"],["title match: fpga, verification engineer","skills x4","commutable/remote (+1)"],"FPGA RTL design in Verilog and VHDL, Vivado and Xilinx. Design verification, SystemVerilog. High-speed digital design, DSP. 3D vision hardware.","https://example.com/lmi"],
+["Voltera","Product Engineer","Kitchener, ON",80,"2026-09-12",7,"","onsite","hardware/PCB","unknown","ashby",["component selection","dfm","firmware","product engineer","schematic"],["title match: product engineer","skills x4","commutable/remote (+1)"],"Product engineering for PCB-printing hardware. Some schematic and component selection, DFM. Cross-functional with firmware and mechanical.","https://example.com/voltera"],
+["Profound Medical","Senior Electrical Developer","Mississauga, ON",146,"2026-09-07",7,"","hybrid","medical","unknown","greenhouse",["altium","electrical developer","embedded c","mixed-signal"],["title match: electrical developer","skills x3","senior/lead (+1)","commutable/remote (+1)"],"Full-lifecycle electrical design, mixed-signal Altium, ultrasound drive, ISO 13485, IEC 60601, V&V, requirements, embedded C.","https://profoundmedical.com/careers"],
+["Ross Video","PCB Designer / Electronics","Ottawa, ON",518,"2026-09-04",7,"","onsite","broadcast","unknown","greenhouse",["component selection","dfm","pcb","pcb layout","schematic"],["title match: pcb","skills x4"],"High-speed PCB layout, schematic capture, signal integrity, broadcast electronics, component selection, DFM, library management.","https://www.rossvideo.com/careers"],
+["StarFish Medical","Electrical Engineer, Medical Devices","Victoria, BC",3283,"2026-09-09",6,"","onsite","medical","unknown","greenhouse",["altium","analog","electrical engineer","mixed-signal","schematic"],["title match: electrical engineer","skills x4"],"Mixed-signal PCB, analog, ISO 13485, IEC 60601, schematic, Altium, V&V, embedded, sensor front-end.","https://starfishmedical.com/careers"],
+["Kraken Robotics","Embedded Hardware Engineer","Dartmouth, NS",1427,"2026-09-03",6,"","onsite","subsea/marine","unknown","greenhouse",["bring-up","embedded c","hardware engineer"],["title match: hardware engineer","skills x2"],"Subsea electronics, PCB design, power supply, embedded C, ARM, sensor interfaces, bring-up, harsh environment.","https://krakenrobotics.com/careers"],
+["Decisive Technologies","Senior Embedded Firmware Lead","Ottawa, ON",518,"2026-08-24",5,"","onsite","GNSS/positioning","unknown","lever",["arm cortex","cortex-m","firmware","low-power","rtos","spi"],["keyword-only match","skills x6","senior/lead (+1)"],"GNSS positioning embedded systems. Firmware in C, ARM Cortex-M, RTOS, low-power design. SPI, I2C, UART. Satellite and payload adjacent.","https://example.com/decisive"],
+["Decisive Technologies","Systems Architect, Embedded","Ottawa, ON",518,"2026-08-24",4,"CAD 120,000-160,000","onsite","GNSS/positioning","unknown","lever",["embedded c","low-power","rtos","spi"],["keyword-only match","skills x4"],"GNSS positioning, embedded C, ARM, RTOS, low-power, SPI, sensor interfaces, requirements, V&V.","https://www.decisive-technologies.com/careers"],
+["Some Utility Co","Electrical Engineer","London, ON",0,"2026-09-09",3,"","onsite","energy/power","unknown","greenhouse",["electrical engineer"],["title match: electrical engineer","power/building-services (−2)","commutable/remote (+1)"],"Substation protection and control. Power distribution, switchgear, transformer design, high-voltage grid. Building services and HVAC coordination.","https://example.com/util"]
+].map((r,i)=>({id:i,company:r[0],title:r[1],city:r[2],km:r[3],posted:r[4],score:r[5],salary:r[6],arrangement:r[7],industry:r[8],sponsorship:r[9],source:r[10],matched:r[11],reasons:r[12],snippet:r[13],url:r[14]}));
+const COORDS=[[42.9849,-81.2453],[43.4516,-80.4925],[43.4675,-79.6877],[43.6532,-79.3832],[43.4643,-80.5204],[43.4516,-80.4925],[43.6532,-79.3832],[43.589,-79.6441],[43.6532,-79.3832],[43.4675,-79.6877],[43.6532,-79.3832],[null,null],[43.4516,-80.4925],[43.589,-79.6441],[45.4215,-75.6972],[48.4284,-123.3656],[44.671,-63.5772],[45.4215,-75.6972],[45.4215,-75.6972],[42.9849,-81.2453]];
+JOBS.forEach((j,i)=>{j.lat=COORDS[i][0];j.lng=COORDS[i][1];});
+// Placeholder incorporation dates (demo only — live data comes from the corporate registry)
+const FOUNDED=['1987-06-15','2016-03-22','2009-11-29','2016-09-13','2012-05-30','2005-02-24','2020-08-19','2014-10-07','2015-06-25','2000-04-11','2012-01-17','2002-12-09','2013-03-28','2014-07-16','1974-09-26','1998-04-14','1985-10-30','2009-05-18','2009-05-18','1961-01-12'];
+const FROM_USER=new Set([2,8,13]);
+JOBS.forEach((j,i)=>{j.founded=FOUNDED[i];j.foundedSrc=FROM_USER.has(i)?'date you provided':'demo date';});
+const ANIMALS=['Rat','Ox','Tiger','Rabbit','Dragon','Snake','Horse','Goat','Monkey','Rooster','Dog','Pig'];
+const redN=n=>{while(n>9&&n!==11&&n!==22&&n!==33)n=String(n).split('').reduce((a,c)=>a+ +c,0);return n;};
+const digitSum=s=>String(s).replace(/\D/g,'').split('').reduce((a,c)=>a+ +c,0);
+const lifePath=d=>{const [y,m,dd]=d.split('-');return redN(redN(+m)+redN(+dd)+redN(digitSum(y)));};
+const baseN=n=>n===11?2:n===22?4:n===33?6:n;
+const TRINES=[[1,4,7],[2,5,8],[3,6,9]];
+const trineOf=n=>TRINES.find(t=>t.includes(baseN(n)));
+const animalOf=d=>{const [y,m,dd]=d.split('-').map(Number);const early=m===1||(m===2&&dd<4);const yy=early?y-1:y;return {i:((yy-4)%12+12)%12,border:(m===1&&dd>=21)||(m===2&&dd<=20)};};
+const HARM=[[0,1],[2,11],[3,10],[4,9],[5,8],[6,7]];
+const numCompat=(a,b)=>baseN(a)===baseN(b)?['Mirror',3,'Same number — you’ll recognise how they work, and so will they.']:trineOf(a)===trineOf(b)?['Harmonious',3,'Same trine ('+trineOf(a).join('·')+') — a natural working rhythm.']:['Growth',1,'Different trines ('+trineOf(a).join('·')+' and '+trineOf(b).join('·')+') — expect to stretch. Strong if the role itself fits.'];
+const zCompat=(a,b)=>a===b?['Same sign',1,'Familiar pace and values.']:a%4===b%4?['Best match',2,'Same zodiac trine — support comes easily.']:HARM.some(([x,y])=>(x===a&&y===b)||(x===b&&y===a))?['Secret friends',2,'One of the six harmonies — quiet, lasting support.']:Math.abs(a-b)===6?['Clash',0,'Opposite signs — clear roles and expectations help.']:['Neutral',1,'Neither pull nor push.'];
+const univDay=dt=>redN(digitSum(dt.getFullYear())+digitSum(dt.getMonth()+1)+digitSum(dt.getDate()));
+const OFFMKT=[["General Dynamics Land Systems Canada","London",42.9849,-81.2453],["StarTech.com","London",42.9849,-81.2453],["Amphenol Borisch Technologies","London",42.9849,-81.2453],["OES Inc.","London",42.9849,-81.2453],["BOS Innovations","Stratford",43.3701,-80.982],["Safran Electrical Components Canada","London",42.9849,-81.2453],["Trojan Technologies","London",42.9849,-81.2453],["Nicoya Lifesciences","Kitchener",43.4516,-80.4925],["Palitronica","Waterloo",43.4643,-80.5204],["KA Imaging","Waterloo",43.4643,-80.5204],["eleven-x","Waterloo",43.4643,-80.5204],["WOLF Advanced Technology","Aurora",44.0065,-79.4504],["Vital Biosciences","Mississauga",43.589,-79.6441],["ecobee","Toronto",43.6532,-79.3832],["Zebra Technologies","Mississauga",43.589,-79.6441],["Generac","Toronto",43.6532,-79.3832],["Ultra Maritime","Dartmouth",44.671,-63.5772],["Nokia","Ottawa",45.4215,-75.6972],["Hitachi Energy","Toronto",43.6532,-79.3832],["ASSA ABLOY","Mississauga",43.589,-79.6441],["Pipetel Technologies","Toronto",43.6532,-79.3832],["Corvita Biomedical","Toronto",43.6532,-79.3832]];
+const HOME=[42.9849,-81.2453];
+const geoKey=(a,b)=>a.toFixed(3)+','+b.toFixed(3);
+const TODAY=new Date('2026-09-23T12:00:00');
+const KW=["embedded c","firmware","arm cortex","rtos","altium","mixed-signal","bring-up","low-power","ble","spi","fpga","iso 13485"];
+const SRC=[
+{id:'cv',name:'CV / résumé',short:'CV',icon:'icon-file-text',color:'var(--attsis-cyan)',tag:'Start here',kind:'file',uploadLabel:'Upload .docx / .pdf / .txt',desc:'Your work history — titles, tools, domains.',file:'BT_CV_2026.pdf',titles:['embedded engineer','electronics engineer','hardware engineer','firmware developer'],skills:['embedded c','firmware','arm cortex','rtos','altium','mixed-signal','bring-up','low-power','schematic','pcb layout','iso 13485','iec 60601']},
+{id:'cl',name:'Cover letter',short:'Cover letter',icon:'icon-mail',color:'var(--attsis-blue)',tag:'Optional',kind:'file',uploadLabel:'Upload a cover letter',desc:'Adds what you want next, not only what you have done.',file:'Cover_letter_2026.docx',titles:['embedded software'],skills:['medical devices','battery','low-power','iso 13485']},
+{id:'li',name:'LinkedIn',short:'LinkedIn',icon:'icon-id-card',color:'var(--attsis-indigo)',tag:'Optional',kind:'file',uploadLabel:'Upload LinkedIn PDF',desc:'On LinkedIn: your profile → Resources → Save to PDF, then upload it here. Profiles can’t be read from a link.',file:'Profile.pdf',titles:['electrical engineer','hardware engineer'],skills:['altium','signal integrity','dfm','component selection','team leadership']},
+{id:'gh',name:'GitHub',short:'GitHub',icon:'icon-git-branch',color:'var(--attsis-purple)',tag:'Optional',kind:'gh',desc:'Public repos — languages, topics, READMEs, plus KiCad and Altium design files. Skills found here get a proof badge.',titles:[],skills:['firmware','zephyr','kicad','ble','python','test automation'],proof:{firmware:'3 repos',zephyr:'2 repos',kicad:'1 board',ble:'1 repo',python:'4 repos'}},
+{id:'links',name:'Portfolio and other links',short:'Portfolio',icon:'icon-link',color:'var(--attsis-mist)',tag:'Optional',kind:'links',desc:'Personal site, Hackaday.io, GitLab, papers. Saved with your profile and added to tailored CVs. Page text isn’t scored — add its key skills under “Add your own”.'}
+];
+const YOU={label:'You',color:'var(--attsis-green)'};
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function ago(d){const n=Math.round((TODAY-new Date(d+'T12:00:00'))/864e5);return n<=0?'today':n===1?'1 day ago':n<14?n+' days ago':Math.floor(n/7)+' weeks ago';}
+function salVal(s){const n=(s.match(/\d[\d,]*/g)||[]).map(x=>+x.replace(/,/g,''));return n.length?Math.max(...n):-1;}
+function salShort(s){const n=(s.match(/\d[\d,]*/g)||[]).map(x=>Math.round(+x.replace(/,/g,'')/1000));return n.length>1?`$${n[0]}k–${n[1]}k`:n.length?`$${n[0]}k`:'';}
+function gaps(j){const have=new Set(j.matched.map(x=>x.toLowerCase()));const terms=j.snippet.split(/[,.:;]| and /).map(x=>x.trim()).filter(x=>x&&x.length<28&&x.split(' ').length<=3);const miss=[];terms.forEach(t=>{const l=t.toLowerCase();if(![...have].some(h=>l.includes(h)||h.includes(l))&&!miss.some(m=>m.toLowerCase()===l))miss.push(t);});return miss.slice(0,5);}
+const ON={bg:'var(--accent-soft)',fg:'var(--accent)',border:'var(--accent-line)'};
+const OFF={bg:'transparent',fg:'var(--fg-muted)',border:'var(--border-subtle)'};
+
+const STAGES={saved:'Saved',applied:'Applied',interview:'Interviewing',offer:'Offer',closed:'Closed'};
+const STAGE_COLOR={saved:'var(--attsis-fog)',applied:'var(--attsis-blue)',interview:'var(--attsis-cyan)',offer:'var(--attsis-green)',closed:'var(--attsis-rim)'};
+const SUGS=[
+{before:'Led firmware development for sensor products; reduced sleep current by 40%.',after:'Led embedded C firmware on ARM Cortex-M (RTOS, BLE) for battery-powered sensor products; cut sleep current 40%.',why:'Uses the posting’s terms — embedded C, RTOS, low-power — and keeps your number up front.'},
+{before:'Mentored two junior engineers.',after:'Mentored two junior firmware engineers through code review, bring-up and first production release.',why:'This is a lead role — moves leadership from the bottom of your CV to the top third.'},
+{before:'Wrote Python test scripts for production.',after:'Built Python test automation for production firmware and hardware validation.',why:'“Test automation” appears twice in the posting.'},
+{before:'Worked with mechanical and manufacturing teams.',after:'Partnered with mechanical and manufacturing to hand over DFM-ready hardware.',why:'Shows you can take a design all the way to production.'}];
+const Q={technical:['Walk me through designing a low-noise analog front-end for one EEG channel. Where does the noise come from, and how would you measure it?','A new board fails radiated emissions at 150 MHz a week before the test lab. What do you check first?','How would you show ISO 13485 design-control traceability for a late hardware change?'],
+behavioural:['Tell me about a time a board bring-up went wrong late in the schedule. What did you do?','Describe a disagreement with a firmware or mechanical lead. How did it end?'],
+negotiation:['We’d like to offer $118,000 base. How does that sound?','Our budget is fixed this year. What else would make this work for you?']};
+const FB={technical:[
+{scores:[['Structure','4/5'],['Depth','3/5'],['Specifics','2/5']],good:'You named the noise sources in a sensible order: electrode, amplifier, then mains pickup.',fix:'Give a target and a method: input-referred noise under 1 µV rms, measured with shorted inputs and an FFT.'},
+{scores:[['Structure','4/5'],['Depth','4/5'],['Specifics','3/5']],good:'Starting with return paths and clock harmonics is what a lead would do.',fix:'Say how you’d find it fast — near-field probe first, then a ferrite or spread-spectrum as a stopgap.'},
+{scores:[['Structure','5/5'],['Depth','3/5'],['Specifics','3/5']],good:'You tied the change to the design history file.',fix:'Name the steps: change request, risk review (ISO 14971), re-verification, sign-off.'}],
+behavioural:[
+{scores:[['Situation','✓'],['Action','✓'],['Result','—']],good:'Clear setup and a specific action you took yourself.',fix:'End with the result and a number — days recovered, or the demo that shipped on time.'},
+{scores:[['Situation','✓'],['Action','✓'],['Result','✓']],good:'You showed you listened before pushing back.',fix:'Cut the setup to two sentences and spend the time on what you did.'}],
+negotiation:[
+{scores:[['Anchor','—'],['Tone','✓'],['Evidence','✓']],good:'Thanking them first keeps it warm, and you cited market ranges.',fix:'Name one reason tied to the role — ISO 13485 experience — and hold at $155k.'},
+{scores:[['Anchor','✓'],['Tone','✓'],['Evidence','✓']],good:'You moved to non-salary terms without dropping your number.',fix:'Ask for it in writing: “a salary review at six months, in the offer letter.”'}]};
+const SAMPLE={technical:['Main sources are the electrode–skin interface, the amplifier’s voltage and current noise, and mains pickup. I’d use a low-noise instrumentation amp with a driven right leg, keep input impedance high, and filter before the ADC.','I’d check cable and connector returns first, then clock harmonics — 150 MHz could be a multiple of a 25 or 50 MHz clock.','I’d raise a change request, update the risk file, re-run the affected verification and record it all in the design history file.'],
+behavioural:['On a telematics board, a power rail oscillated at bring-up two weeks before a customer demo. I traced it to buck converter compensation, changed two passives and re-ran the load tests.','The mechanical lead wanted to move a connector that broke my layout. I asked what problem it solved, we found a middle position, and both signed off in one meeting.'],
+negotiation:['Thank you — I’m keen on the role. Based on ranges I’ve seen for similar senior roles in Ontario, I was expecting closer to $155,000.','If base is fixed, I’d look at a signing bonus, an extra week of vacation, and a salary review at six months.']};
+const LEARN=[
+{kind:'teardown',title:'Inside a fleet telematics tracker: power path, GNSS and LTE',creator:'@scope_and_solder · 38k views',gap:'cellular',len:'14:20',parts:'Parts list · 6 links',platforms:'YouTube',sponsored:false},
+{kind:'sim',title:'EEG front-end noise: an LTspice model you can tweak',creator:'@analog_anna · interactive',gap:'low-noise signal chain',len:'Interactive',parts:'Tools · 2 links',platforms:'On Attsis',sponsored:false},
+{kind:'short',title:'Why your ground plane fails EMC — in 60 seconds',creator:'@emc_minute · 112k views',gap:'EMC pre-compliance',len:'0:60',parts:'Parts list · 3 links',platforms:'TikTok · Shorts',sponsored:true},
+{kind:'teardown',title:'Micro-LED driver board, layer by layer',creator:'@layerstack · 21k views',gap:'signal integrity',len:'22:05',parts:'Parts list · 9 links',platforms:'YouTube',sponsored:false},
+{kind:'sim',title:'Buck converter loop compensation, step by step',creator:'@powerpath · interactive',gap:'power supply',len:'Interactive',parts:'Tools · 1 link',platforms:'On Attsis',sponsored:true},
+{kind:'short',title:'Zephyr devicetree in 90 seconds',creator:'@rtos_ray · 54k views',gap:'zephyr',len:'1:30',parts:'Dev boards · 2 links',platforms:'TikTok · Shorts',sponsored:false}];
+const KIND={teardown:['Teardown','icon-play-circle'],sim:['Circuit sim','icon-activity'],short:['Short','icon-smartphone']};
+const shortCo=c=>c.replace(/\b(Inc\.?|Company|Technologies|Systems|Communications|Control)\b/g,'').replace(/\s+/g,' ').trim().split(' ').slice(0,2).join(' ');
+const daysSince=d=>Math.round((TODAY-new Date(d+'T12:00:00'))/864e5);
+const fmtD=d=>{const x=new Date(d+'T12:00:00');return MON[x.getMonth()]+' '+x.getDate();};
+const pill=(on,label,onClick,extra)=>({label,onClick,...(on?ON:OFF),...(extra||{})});
+
+class Component extends DCLogic {
+  numFor(j,s){
+    const b=s.birth;if(!b||!s.showNum)return {showNum:false,numScore:0};
+    const u=lifePath(b),c=lifePath(j.founded),ua=animalOf(b),ca=animalOf(j.founded);
+    const [nl,ns,nt]=numCompat(u,c),[zl,zs,zt]=zCompat(ua.i,ca.i);const score=ns+zs;
+    let best='';for(let k=1;k<=21;k++){const dt=new Date(TODAY.getTime()+k*864e5);const ud=univDay(dt);if(baseN(ud)===baseN(c)){best='Best day to apply: '+MON[dt.getMonth()]+' '+dt.getDate()+' — Universal Day '+ud+', the company’s number.';break;}}
+    if(!best)best='Any day this month works — no Universal Day matches the company’s number.';
+    const fd=new Date(j.founded+'T12:00:00');
+    return {showNum:true,numScore:score,numChip:'LP '+c+' · '+nl+' · '+score+'/5',numLevel:nl,numText:nt,zLevel:zl,zText:ANIMALS[ua.i]+' × '+ANIMALS[ca.i]+': '+zt,bestDay:best,
+      numSides:[{who:'You',lp:u,animal:ANIMALS[ua.i],dateNote:'Born '+MON[+b.slice(5,7)-1]+' '+(+b.slice(8))+', '+b.slice(0,4)+(ua.border?' · near Lunar New Year, check sign':'')},{who:j.company,lp:c,animal:ANIMALS[ca.i],dateNote:'Incorporated '+MON[fd.getMonth()]+' '+fd.getDate()+', '+fd.getFullYear()+' · '+j.foundedSrc+(ca.border?' · near Lunar New Year':'')}]};
+  }
+  prefChecks(j,s){
+    const p=s.prefs,out=[],ok=l=>({label:l,icon:'icon-check',color:'var(--attsis-green)'}),bad=l=>({label:l,icon:'icon-x',color:'var(--attsis-coral)'}),unk=l=>({label:l,icon:'icon-circle-help',color:'var(--fg-subtle)'});
+    const floor=+p.salary;
+    if(floor){if(!j.salary)out.push(unk('Salary unknown'));else out.push(salVal(j.salary)/1000>=floor?ok('Salary ≥ $'+floor+'k'):bad('Below $'+floor+'k'));}
+    const km=+p.km;
+    if(km){out.push(j.km==null||j.km<=km?ok(j.km==null?'Remote':'Within '+km+' km'):bad(j.km+' km — past your limit'));}
+    const al={onsite:'On-site',hybrid:'Hybrid',remote:'Remote'}[j.arrangement];
+    out.push(p.arr[j.arrangement]?ok(al):bad(al+' — not in your list'));
+    return out;
+  }
+  openApply(j){this.setState({modal:j.id,mCv:'Master CV',modalStep:'choose'});}
+  qFields(j,st){
+    const d=this.deco(j.id),needs=st==='needs',nv=(l)=>[l,'—','Needs you'];
+    return [['Name','Bharanidharan T.','Profile'],['Email','b•••@gmail.com','Profile'],['Résumé','Tailored for '+shortCo(j.company)+' · '+Math.min(d.keyN,d.haveN+1)+'/'+d.keyN+' posting terms','Tailored CV'],
+      ['Cover letter','Draft · 214 words, from your CV only','AI draft'],['Legally able to work in Canada','Yes','Profile'],
+      needs?nv('Salary expectation'):['Salary expectation','$150,000 — you answered Sep 20','You'],
+      ['“Describe your '+(d.matched[0]||'relevant')+' experience”','3 sentences drafted from your CV','AI draft'],
+      needs?nv('Willing to travel 20%?'):['Willing to travel 20%?','Yes — you answered Sep 20','You']];
+  }
+  parseAsk(text){
+    const t=' '+text.toLowerCase()+' ',ch={},chips=[];
+    const km=t.match(/(\d+)\s*km/);if(km){const n=+km[1],b=n<=50?'50':n<=100?'100':n<=200?'200':'any';ch.dist=b;if(b!=='any')chips.push({key:'dist',label:'Within '+b+' km'});}
+    const ar=t.match(/remote|hybrid|on-site|onsite/);if(ar){const v=ar[0].replace('-','');ch.arr=v;chips.push({key:'arr',label:{remote:'Remote',hybrid:'Hybrid',onsite:'On-site'}[v]});}
+    const sal=t.match(/\$\s?(\d{2,3})\s?k/)||t.match(/(\d{2,3})\s?k\b/);if(sal){ch.aiSalary=+sal[1];chips.push({key:'aiSalary',label:'Salary ≥ $'+sal[1]+'k · unlisted kept'});}
+    const cos=[...new Set(JOBS.map(j=>j.company))],ex=[];cos.forEach(c=>{const k=c.split(' ')[0].toLowerCase();if(new RegExp('(not|except|excluding|exclude|no)\\s+'+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).test(t)){ex.push(k);chips.push({key:'aiExcl',label:'Not '+c});}});if(ex.length)ch.aiExcl=ex;
+    const role=['firmware','embedded','hardware','fpga','pcb','electrical','avionics','electronics'].find(w=>t.includes(w));if(role){ch.q=role;chips.push({key:'q',label:'Role: '+role});}
+    if(/senior|lead|principal/.test(t)){ch.aiSenior=true;chips.push({key:'aiSenior',label:'Senior or lead'});}
+    if(/\bstrong|\bbest|\btop /.test(t)){ch.strong=true;chips.push({key:'strong',label:'Strong fits only'});}
+    return {ch,chips};
+  }
+  runAsk(text){
+    const q=(text??this.state.askText).trim();if(!q)return;
+    const {ch,chips}=this.parseAsk(q);
+    if(!chips.length){this.say('Couldn’t pick out filters — try a distance, pay, work type or role.');return;}
+    this.setState({askText:q,dist:'any',arr:'',q:'',aiSalary:0,aiExcl:[],aiSenior:false,strong:false,cityKey:null,...ch,aiParsed:chips});
+  }
+  say(msg){this.setState({toast:msg});clearTimeout(this._t);this._t=setTimeout(()=>this.setState({toast:null}),3200);}
+  deco(id){const j=JOBS[id];const miss=gaps(j);return {...j,have:j.matched,missing:miss,haveN:j.matched.length,keyN:j.matched.length+miss.length,topThree:j.matched.slice(0,3).join(', ')};}
+  aiVals(s){
+    const go=v=>{this.setState({view:v});try{window.scrollTo(0,0);}catch(_){}};
+    const Qd=s.queue, byId=id=>Qd.find(q=>q.id===id);
+    const setQ=(id,patch)=>this.setState(st=>({queue:st.queue.some(q=>q.id===id)?st.queue.map(q=>q.id===id?{...q,...patch}:q):[...st.queue,{id,...patch}]}));
+    const removeQ=id=>this.setState(st=>({queue:st.queue.filter(q=>q.id!==id)}));
+    const readyN=Qd.filter(q=>q.status==='ready').length, needsN=Qd.filter(q=>q.status==='needs').length;
+    const strongNew=JOBS.filter(j=>j.score>=8&&daysSince(j.posted)<=12).length;
+    const primary={bg:'var(--accent)',fg:'var(--fg-inverse)',border:'var(--accent)'},ghost={bg:'transparent',fg:'var(--fg)',border:'var(--border-subtle)'};
+    const tierOf=sc=>sc>=8?{tierBg:'var(--badge-live-bg)',tierBorder:'var(--badge-live-border)',tierFg:'var(--attsis-green)'}:sc>=7?{tierBg:'var(--accent-soft)',tierBorder:'var(--accent-line)',tierFg:'var(--accent)'}:{tierBg:'var(--bg-raised)',tierBorder:'var(--border-subtle)',tierFg:'var(--fg-subtle)'};
+    const SRCC={'Profile':['var(--accent-line)','var(--accent)','transparent'],'Tailored CV':['var(--badge-locked-border)','var(--attsis-purple)','transparent'],'AI draft':['var(--badge-locked-border)','var(--attsis-purple)','var(--badge-locked-bg)'],'You':['var(--badge-live-border)','var(--attsis-green)','transparent'],'Needs you':['var(--badge-pending-border)','var(--attsis-amber)','var(--badge-pending-bg)']};
+    const G=[['needs','Needs your answer','var(--attsis-amber)','Nothing waiting on you.'],['ready','Ready to review','var(--attsis-cyan)','Nothing ready — new matches are prepared each morning.'],['paused','Held by your rules','var(--attsis-fog)','Nothing held.'],['submitted','Sent this week','var(--attsis-green)','Nothing sent yet this week.']];
+    const qGroups=G.map(([st,label,color,emptyText])=>{const items=Qd.filter(q=>q.status===st).map(q=>{const j=JOBS[q.id],open=s.qOpen===q.id;
+      const note=st==='needs'?'2 questions only you can answer':st==='ready'?'All 8 fields filled · tailored CV · cover letter':st==='paused'?q.why:'Sent '+fmtD(q.date)+' · logged in your tracker';
+      const acts=st==='needs'?[{label:'Answer 2 questions',icon:'icon-message-square',...primary,onClick:()=>{setQ(q.id,{status:'ready'});this.say('Answered — '+j.company+' is ready to review.');}},{label:'Skip',icon:'icon-x',...ghost,onClick:()=>removeQ(q.id)}]
+        :st==='ready'?[{label:'Approve — open filled form',icon:'icon-external-link',...primary,onClick:()=>{try{window.open(j.url,'_blank','noopener');}catch(e){}setQ(q.id,{status:'submitted',date:'2026-09-23'});this.setState(x=>({track:{...x.track,[q.id]:{stage:'applied',date:'2026-09-23',cv:'Tailored CV'}}}));this.say(j.company+'’s form is open and filled. Press Submit there — it’s logged.');}},{label:'Edit answers',icon:'icon-pencil',...ghost,onClick:()=>this.say('Editing opens each field — demo only.')},{label:'Skip',icon:'icon-x',...ghost,onClick:()=>removeQ(q.id)}]
+        :st==='paused'?[{label:'Queue anyway',icon:'icon-play',...ghost,onClick:()=>setQ(q.id,{status:'ready'})},{label:'Remove',icon:'icon-trash-2',...ghost,onClick:()=>removeQ(q.id)}]:[];
+      return {company:j.company,title:j.title,city:j.city,score:j.score,...tierOf(j.score),note,noteColor:st==='needs'?'var(--attsis-amber)':st==='paused'?'var(--fg-subtle)':st==='submitted'?'var(--attsis-green)':'var(--fg-muted)',
+        border:open?'var(--badge-locked-border)':'var(--border-subtle)',open,chevron:open?'icon-chevron-up':'icon-chevron-down',toggle:()=>this.set({qOpen:open?null:q.id}),
+        formName:j.source+' application',fields:this.qFields(j,st).map(([label,value,src])=>{const c=SRCC[src];return {label,value,src,valueColor:value==='—'?'var(--fg-subtle)':'var(--fg)',srcBorder:c[0],srcFg:c[1],srcBg:c[2]};}),actions:acts};});
+      return {label,color,items,count:items.length,empty:!items.length,emptyText};});
+    const tog=(label,note,on,fn)=>({label,note,onToggle:fn,trackBg:on?'var(--accent-soft)':'var(--bg-raised)',trackBorder:on?'var(--accent-line)':'var(--border-subtle)',justify:on?'flex-end':'flex-start',knob:on?'var(--accent)':'var(--attsis-fog)'});
+    const near=[{id:17,why:'“Firmware lead” is your embedded-engineer and firmware-developer work at lead level. The keyword scorer saw no title match; 6 of your skills are in the posting.',add:'firmware lead'},{id:18,why:'“Systems architect” is a step up from your lead work. 4 of your skills appear, and salary ($120k–160k) clears your floor.',add:'systems architect'}];
+    const nearOk=near.filter(n=>{const j=JOBS[n.id];if(s.arr&&j.arrangement!==s.arr)return false;if(s.dist==='remote'&&j.arrangement!=='remote')return false;if(s.dist!=='any'&&s.dist!=='remote'&&(j.km==null||j.km>+s.dist))return false;if(s.aiExcl.some(x=>j.company.toLowerCase().includes(x)))return false;return true;});
+    const mode=(k,icon,color,title,body,tag,fn)=>({icon,color,title,body,tag,tagBorder:tag==='Free'?'var(--border-subtle)':'var(--badge-locked-border)',tagFg:tag==='Free'?'var(--fg-subtle)':'var(--attsis-purple)',onClick:fn});
+    const mid=s.modal;
+    return {
+      isQueue:s.view==='queue',
+      briefItems:[{icon:'icon-sparkles',color:'var(--attsis-green)',text:strongNew+' strong fits posted this fortnight',onClick:()=>this.setState({strong:true,sort:'newest',view:'all'})},{icon:'icon-mail-question',color:'var(--attsis-amber)',text:'Follow-up due: Geotab, 8 days',onClick:()=>go('tracker')},{icon:'icon-calendar-clock',color:'var(--accent)',text:'Natus interview Fri — prep ready',onClick:()=>this.setState({view:'prep',prepId:2})},{icon:'icon-send',color:'var(--attsis-purple)',text:(readyN+needsN)+' applications prepared',onClick:()=>go('queue')}],
+      askText:s.askText,onAsk:e=>this.set({askText:e.target.value}),onAskKey:e=>{if(e.key==='Enter'){e.preventDefault();this.runAsk();}},runAsk:()=>this.runAsk(),
+      hasParsed:s.aiParsed.length>0,noParsed:!s.aiParsed.length,
+      aiChips:s.aiParsed.map(c=>({label:c.label,onRemove:()=>{const reset={dist:'any',arr:'',q:'',aiSalary:0,aiExcl:[],aiSenior:false,strong:false}[c.key];this.setState(st=>({[c.key]:reset,aiParsed:st.aiParsed.filter(x=>x.key!==c.key)}));}})),
+      clearAsk:()=>this.setState({askText:'',aiParsed:[],dist:'any',arr:'',q:'',aiSalary:0,aiExcl:[],aiSenior:false,strong:false}),
+      askSuggest:['Hybrid firmware roles within 100 km','Senior hardware roles paying $130k+','Embedded roles within 200 km, not Tenstorrent'].map(text=>({text,onClick:()=>{this.set({askText:text});this.runAsk(text);}})),
+      showNear:!s.nearHidden&&s.layout!=='map'&&nearOk.length>0,nearCount:nearOk.length,nearOpen:s.nearOpen,nearBtn:s.nearOpen?'Hide':'Show them',toggleNear:()=>this.set({nearOpen:!s.nearOpen}),
+      nearItems:nearOk.map(n=>{const j=JOBS[n.id];return {...n,addLabel:'Add “'+n.add+'” to my titles',score:j.score,title:j.title,company:j.company,city:j.city,
+        onShow:()=>this.setState({q:j.title.toLowerCase(),dist:'any',arr:'',strong:false,aiParsed:[],aiSalary:0,aiExcl:[],aiSenior:false,cityKey:null,open:n.id,layout:'list'}),
+        onAdd:()=>{this.setState(st=>({mT:st.mT.includes(n.add)?st.mT:[...st.mT,n.add]}));this.say('Added “'+n.add+'” to your titles — roles like this now count as a title match.');}};}),
+      mChoose:s.modalStep==='choose',mLog:s.modalStep==='log',
+      applyModes:mid==null?[]:[
+        mode('self','icon-mouse-pointer-click','var(--fg-muted)','Apply myself','Open the posting. When you’re back, we log it and remind you in 7 days.','Free',()=>{try{window.open(JOBS[mid].url,'_blank','noopener');}catch(e){}this.set({modalStep:'log'});}),
+        mode('assist','icon-wand-sparkles','var(--attsis-purple)','Assisted apply','AI tailors your CV, drafts answers and fills the form. You review every field, then submit in your browser.','Pro',()=>{setQ(mid,{status:'ready'});this.setState({modal:null,qOpen:mid,view:'queue'});try{window.scrollTo(0,0);}catch(_){}}),
+        mode('queue','icon-list-checks','var(--accent)','Add to apply queue','Prepared in the background with your rules — score floor, weekly limit, one per employer. You approve in batches.','Pro',()=>{const j=JOBS[mid];const low=j.score<+s.qMin;setQ(mid,low?{status:'paused',why:'Score '+j.score+' — below your minimum of '+s.qMin}:{status:'ready'});this.set({modal:null});this.say(low?'Added, but held — score is below your queue minimum.':'Added — ready to review in your apply queue.');})],
+      qUsed:Qd.filter(q=>q.status==='submitted').length,qMax:s.qMax,qGroups,
+      qRuleSeg:[{label:'Minimum fit score',opts:['7','8','9'].map(v=>pill(s.qMin===v,v+'+',()=>this.set({qMin:v})))},{label:'Most applications a week',opts:['3','5','10'].map(v=>pill(s.qMax===v,v,()=>this.set({qMax:v})))}],
+      qToggles:[tog('One per employer','Every 30 days',true,()=>this.say('This limit is always on.')),tog('Always tailor the CV','Never sends your master CV',true,()=>this.say('This limit is always on.')),tog('Ask me before each one','Recommended',s.qApproval,()=>this.set({qApproval:!s.qApproval}))],
+      qUnattended:!s.qApproval,
+      qNever:['Salary','Work eligibility','Security clearance','Relocation','Anything not in your CV'],
+      qWhy:[{icon:'icon-gauge',text:'A handful a week, not hundreds — each one scores '+s.qMin+'+ against your CV.'},{icon:'icon-file-check',text:'Every application is tailored. Nothing is invented; unknowns come back to you.'},{icon:'icon-monitor-check',text:'It submits from your own browser, on the employer’s real form. No bots on their site, no captcha tricks.'},{icon:'icon-shield-check',text:'Everything is logged in your tracker, so follow-ups are honest and on time.'}]
+    };
+  }
+  extraVals(s){
+    const T=s.track, ids=Object.keys(T).map(Number);
+    const setStage=(id,stage,extra)=>this.setState(st=>({track:{...st.track,[id]:{...st.track[id],stage,...(extra||{})}}}));
+    const tier=sc=>sc>=8?{tierBg:'var(--badge-live-bg)',tierBorder:'var(--badge-live-border)',tierFg:'var(--attsis-green)'}:sc>=7?{tierBg:'var(--accent-soft)',tierBorder:'var(--accent-line)',tierFg:'var(--accent)'}:{tierBg:'var(--bg-raised)',tierBorder:'var(--border-subtle)',tierFg:'var(--fg-subtle)'};
+    const columns=Object.keys(STAGES).map(stage=>{const items=ids.filter(id=>T[id].stage===stage).map(id=>{const j=JOBS[id],t=T[id],d=daysSince(t.date);
+      const meta=stage==='saved'?`Saved ${fmtD(t.date)} · posted ${ago(j.posted)}`:stage==='closed'?(t.note||'Closed'):`Applied ${fmtD(t.date)} · ${d} days · ${t.cv||'Master CV'}`;
+      return {company:j.company,title:j.title,score:j.score,...tier(j.score),meta,stage,hasNext:!!t.next,next:t.next||'',
+        canPrep:stage==='interview'||stage==='offer',canTailor:stage==='saved',
+        onStage:e=>setStage(id,e.target.value),onPrep:()=>{this.setState({prepId:id,view:'prep'});try{window.scrollTo(0,0);}catch(_){}},onTailor:()=>{this.setState({tailorId:id,acc:[],tTab:'cv',view:'tailor'});try{window.scrollTo(0,0);}catch(_){}}};});
+      return {label:STAGES[stage],color:STAGE_COLOR[stage],items,count:items.length,empty:!items.length,emptyText:stage==='offer'?'Offers land here.':'Nothing here yet.'};});
+    const primary={bg:'var(--accent)',fg:'var(--fg-inverse)',border:'var(--accent)'},ghost={bg:'transparent',fg:'var(--fg)',border:'var(--border-subtle)'};
+    const done=id=>this.setState(st=>({nudgesDone:[...st.nudgesDone,id]}));
+    const nudges=[];
+    ids.forEach(id=>{const j=JOBS[id],t=T[id],d=daysSince(t.date),key=id+':'+t.stage;if(s.nudgesDone.includes(key))return;
+      if(t.stage==='applied'&&d>=7)nudges.push({icon:'icon-mail-question',text:`You applied to ${j.company} — ${j.title} — ${d} days ago. Heard back?`,meta:'Also sent to Telegram · 8:00 am',actions:[
+        {label:'Interview booked',...primary,onClick:()=>{setStage(id,'interview',{next:'Interview · date to confirm'});this.say('Moved to Interviewing. Prep is ready when you are.');}},
+        {label:'No reply yet',...ghost,onClick:()=>{done(key);this.say('We’ll ask again on Sep 30. A short follow-up email now is normal.');}},
+        {label:'Rejected',...ghost,onClick:()=>{setStage(id,'closed',{note:'Rejected Sep 23'});this.say('Closed. It still counts toward your response rate.');}}]});
+      if(t.stage==='interview'&&t.next)nudges.push({icon:'icon-calendar-clock',text:`${t.next.split(' · ')[0]} with ${j.company} in 3 days.`,meta:'Reminder · also 1 day before',actions:[{label:'Start prep',...primary,onClick:()=>{this.setState({prepId:id,view:'prep'});try{window.scrollTo(0,0);}catch(_){}}}]});
+      if(t.stage==='saved'&&daysSince(j.posted)>=10)nudges.push({icon:'icon-hourglass',text:`${j.company}’s posting is ${daysSince(j.posted)} days old. Roles like this often close within a month — apply or drop?`,meta:'Saved roles · weekly check',actions:[
+        {label:'Tailor and apply',...primary,onClick:()=>{this.setState({tailorId:id,acc:[],tTab:'cv',view:'tailor'});try{window.scrollTo(0,0);}catch(_){}}},
+        {label:'Drop',...ghost,onClick:()=>this.setState(st=>{const tr={...st.track};delete tr[id];return {track:tr};})}]});});
+    const appliedN=ids.filter(id=>T[id].stage!=='saved').length, resp=ids.filter(id=>['interview','offer','closed'].includes(T[id].stage)).length;
+    const CH=[['app','In-app','icon-layout-dashboard','Always on'],['tg','Telegram','icon-send','Connected · @arvint89'],['wa','WhatsApp','icon-message-circle','Pro · paid messaging'],['email','Email','icon-mail','b•••@gmail.com · daily digest'],['push','Phone push','icon-smartphone','Install the app to enable']];
+    const channels=CH.map(([k,label,icon,note])=>{const on=!!s.ch[k];return {label,icon,note,trackBg:on?'var(--accent-soft)':'var(--bg-raised)',trackBorder:on?'var(--accent-line)':'var(--border-subtle)',justify:on?'flex-end':'flex-start',knob:on?'var(--accent)':'var(--attsis-fog)',onToggle:()=>{if(k==='app')return;this.setState(st=>({ch:{...st.ch,[k]:!st.ch[k]}}));}};});
+    // tailor
+    const tj=this.deco(s.tailorId), nS=s.pro?SUGS.length:2;
+    const tSugs=SUGS.slice(0,nS).map((g,i)=>{const a=s.acc.includes(i);return {...g,border:a?'var(--badge-live-border)':'var(--border-subtle)',accLabel:a?'Accepted':'Accept',accBg:a?'var(--badge-live-bg)':'transparent',accFg:a?'var(--attsis-green)':'var(--fg)',accBorder:a?'var(--badge-live-border)':'var(--border-subtle)',onAccept:()=>this.setState(st=>({acc:st.acc.includes(i)?st.acc.filter(x=>x!==i):[...st.acc,i]}))};});
+    const before=Math.max(1,tj.haveN-2), after=Math.min(tj.keyN,before+Math.min(2,s.acc.length)+(s.pro&&s.acc.length>2?1:0));
+    // prep
+    const pj=this.deco(s.prepId), pt=s.pTab, isChat=pt!=='company';
+    const chat=(isChat&&s.chat[pt])||{step:0,msgs:isChat?[{type:'ai',text:Q[pt][0]}]:[]};
+    const pDone=isChat&&chat.step>=Q[pt].length;
+    const goLearn=()=>{this.setState({view:'learn'});try{window.scrollTo(0,0);}catch(_){}};
+    const floor=+s.prefs.salary||120;
+    const SIDE={technical:['Prep plan from your gaps',[...pj.missing.slice(0,3).map(m=>({color:'var(--attsis-amber)',title:m,body:'In the posting, not in your CV. Expect a question on it.',hasLearn:true,learnLabel:'Watch a related teardown',onLearn:goLearn})),{color:'var(--attsis-green)',title:'Lead with: '+pj.matched.slice(0,3).join(', '),body:'Your strongest overlap with this role — open answers with these.',hasLearn:false}]],
+      behavioural:['Stories from your CV',[{color:'var(--attsis-cyan)',title:'Cut sleep current 40%',body:'Result-heavy. Use it for “a time you improved a design”.'},{color:'var(--attsis-cyan)',title:'Late bring-up failure',body:'Use it for “a time something went wrong”. Say what you changed afterwards.'},{color:'var(--attsis-cyan)',title:'Mentored two juniors',body:'Use it for leadership and conflict questions.'}]],
+      negotiation:['Salary data',[{color:'var(--attsis-gold)',title:'$116k – $181k',body:'Range across 3 similar Ontario postings that list pay: Kepler, Geotab, Decisive.'},{color:'var(--attsis-gold)',title:'Your floor: $'+floor+'k',body:'From your preferences. Never say it first.'},{color:'var(--attsis-gold)',title:'Target: $150k – $160k',body:'Upper-middle of the range, backed by 11 years and ISO 13485 work.'}]],
+      company:['Company brief',[{color:'var(--attsis-purple)',title:pj.company,body:pj.industry+' · '+pj.city},{color:'var(--attsis-purple)',title:'What they build',body:pj.snippet.split('. ')[0]+'.'},{color:'var(--attsis-purple)',title:'Why you fit',body:'Direct overlap on '+pj.topThree+'.'}]]};
+    const PT=[['technical','Technical','icon-cpu'],['behavioural','Behavioural','icon-users'],['negotiation','Negotiation','icon-wallet'],['company','Company','icon-building-2']];
+    const submit=()=>{const txt=s.pDraft.trim();if(!txt||pDone)return;const m=[...chat.msgs,{type:'user',text:txt},{type:'fb',...FB[pt][chat.step]}];const nx=chat.step+1;if(nx<Q[pt].length)m.push({type:'ai',text:Q[pt][nx]});this.setState(st=>({pDraft:'',chat:{...st.chat,[pt]:{step:nx,msgs:m}}}));};
+    const prefArrOpts=[['onsite','On-site'],['hybrid','Hybrid'],['remote','Remote']].map(([k,l])=>{const on=!!s.prefs.arr[k];return pill(on,l,()=>this.setState(st=>({prefs:{...st.prefs,arr:{...st.prefs.arr,[k]:!st.prefs.arr[k]}}})),{icon:on?'icon-check':'icon-plus'});});
+    const setPref=k=>e=>{const v=e.target.value;this.setState(st=>({prefs:{...st.prefs,[k]:v}}));};
+    const arrOn=['onsite','hybrid','remote'].filter(k=>s.prefs.arr[k]).map(k=>({onsite:'On-site',hybrid:'Hybrid',remote:'Remote'}[k]));
+    const mj=s.modal!=null?JOBS[s.modal]:{company:''};
+    return {
+      isTracker:s.view==='tracker',isTailor:s.view==='tailor',isPrep:s.view==='prep',isLearn:s.view==='learn',
+      backRoles:()=>this.go('all'),
+      prefChips:[{icon:'icon-wallet',label:+s.prefs.salary?'≥ $'+s.prefs.salary+'k':'Any salary'},{icon:'icon-map-pin',label:+s.prefs.km?'≤ '+s.prefs.km+' km of London':'Anywhere'},{icon:'icon-building-2',label:arrOn.join(' · ')||'No arrangement'},{icon:'icon-bell',label:'Alerts at '+s.prefs.alert+'+'}],
+      prefSalary:s.prefs.salary,prefKm:s.prefs.km,prefAlert:s.prefs.alert,onPrefSalary:setPref('salary'),onPrefKm:setPref('km'),onPrefAlert:setPref('alert'),prefArrOpts,
+      trackCount:ids.length,columns,nudges,nudgeCount:nudges.length,hasNudges:nudges.length>0,
+      trackStats:[{label:'Active',value:ids.filter(id=>['applied','interview'].includes(T[id].stage)).length,color:'var(--attsis-blue)'},{label:'Interviews',value:ids.filter(id=>['interview','offer'].includes(T[id].stage)).length,color:'var(--attsis-cyan)'},{label:'Response rate',value:appliedN?Math.round(resp/appliedN*100)+'%':'—',color:'var(--attsis-green)'}],
+      channels,freqOpts:[['instant','Instant'],['daily','Daily 8:00'],['weekly','Weekly']].map(([k,l])=>pill(s.freq===k,l,()=>this.set({freq:k}))),
+      tj,tCovBefore:before+'/'+tj.keyN,tCovAfter:after+'/'+tj.keyN,
+      tTabs:[['cv','CV'],['cl','Cover letter']].map(([k,l])=>pill(s.tTab===k,l,()=>this.set({tTab:k}))),
+      tIsCv:s.tTab==='cv',tIsCl:s.tTab==='cl',tSugs,tLocked:!s.pro,tUnlocked:s.pro,tLockedPreview:SUGS[2].after,tLockedCount:SUGS.length-3,tAccepted:s.acc.length,
+      unlock:()=>{this.setState({pro:true});this.say('Unlocked for '+tj.company+' — demo, no charge.');},tApply:()=>{this.openApply(JOBS[s.tailorId]);this.setState({mCv:'Tailored CV'});},
+      pj,pNext:(T[s.prepId]&&T[s.prepId].next)||'Interview date not set',pTabs:PT.map(([k,l,i])=>pill(pt===k,l,()=>this.setState({pTab:k,pDraft:''}),{icon:i})),
+      pSideTitle:SIDE[pt][0],pSide:SIDE[pt][1].map(r=>({hasLearn:false,learnLabel:'',onLearn:null,...r})),
+      pIsChat:isChat,pIsCompany:!isChat,pMode:(PT.find(x=>x[0]===pt)||['','Technical'])[1]+' round',
+      pMsgs:chat.msgs.map(m=>({...m,isAi:m.type==='ai',isUser:m.type==='user',isFb:m.type==='fb',scores:(m.scores||[]).map(([label,value],i)=>({label,value,color:['var(--attsis-cyan)','var(--attsis-blue)','var(--attsis-purple)'][i]}))})),
+      pDone,pCanAnswer:isChat&&!pDone,pDraft:s.pDraft,onPDraft:e=>this.set({pDraft:e.target.value}),pSubmitOpacity:s.pDraft.trim()?'1':'0.5',
+      pSample:()=>{if(isChat&&!pDone)this.set({pDraft:SAMPLE[pt][chat.step]});},pSubmit:submit,
+      pRestart:()=>this.setState(st=>{const c={...st.chat};delete c[pt];return {chat:c,pDraft:''};}),
+      askThem:['How do hardware and firmware split ownership of bring-up here?','How many board spins is normal before a design is released?','What would make someone great in this role after six months?'],
+      learnOpts:[['all','All'],['teardown','Teardowns'],['sim','Circuit sims'],['short','Shorts']].map(([k,l])=>pill(s.learnF===k,l,()=>this.set({learnF:k}))),
+      learnItems:LEARN.filter(c=>s.learnF==='all'||c.kind===s.learnF).map(c=>({...c,kindLabel:KIND[c.kind][0],icon:KIND[c.kind][1],ratio:'1.618/1'})),
+      hasModal:s.modal!=null,mj,mCv:s.mCv,onMCv:e=>this.set({mCv:e.target.value}),closeModal:()=>this.set({modal:null}),stop:e=>e.stopPropagation(),
+      logApplied:()=>{const id=s.modal;this.setState(st=>({modal:null,track:{...st.track,[id]:{stage:'applied',date:'2026-09-23',cv:st.mCv}}}));this.say('Logged. We’ll check in on Sep 30.');},
+      hasToast:!!s.toast,toast:s.toast||''
+    };
+  }
+  state={q:'',dist:'any',arr:'',strong:false,sort:'score',industry:'',perCo:'0',showMore:false,open:0,saved:[1,8],view:'all',cv:null,alert:false,src:null,ghUser:null,links:null,draftLink:'',mT:[],mS:[],mX:[],dT:'',dS:'',dX:'',removed:[],
+    track:{1:{stage:'saved',date:'2026-09-14'},4:{stage:'saved',date:'2026-09-18'},9:{stage:'applied',date:'2026-09-15',cv:'Tailored CV'},5:{stage:'applied',date:'2026-09-19',cv:'Master CV'},2:{stage:'interview',date:'2026-09-12',cv:'Master CV',next:'Technical interview · Sep 26, 10:00'},14:{stage:'closed',date:'2026-09-04',cv:'Master CV',note:'Rejected Sep 17'}},
+    nudgesDone:[],modal:null,mCv:'Master CV',toast:null,tailorId:9,tTab:'cv',acc:[],pro:false,prepId:2,pTab:'technical',chat:{},pDraft:'',learnF:'all',
+    prefs:{salary:'120',km:'200',alert:'7',arr:{onsite:true,hybrid:true,remote:true}},ch:{app:true,tg:true,wa:false,email:true,push:false},freq:'daily',
+    queue:[{id:10,status:'needs'},{id:6,status:'ready'},{id:7,status:'ready'},{id:16,status:'paused',why:'Score 6 — below your minimum of 8'},{id:3,status:'paused',why:'Employer limit — one application per company every 30 days'},{id:0,status:'submitted',date:'2026-09-22'}],
+    qOpen:6,qMin:'8',qMax:'5',qApproval:true,modalStep:'choose',askText:'',aiParsed:[],aiSalary:0,aiExcl:[],aiSenior:false,nearOpen:false,nearHidden:false,
+    birth:'1989-04-09',showNum:true,
+    layout:'split',pinMode:'score',offMarket:true,moveFilter:false,bounds:null,cityKey:null,cityLabel:'',hoverId:null};
+  mapRef=el=>{
+    if(el===this._mapEl)return;
+    if(this._map){try{this._map.remove();}catch(e){}this._map=null;}
+    this._mapEl=el;
+    if(el)this.initMap(el);
+  };
+  initMap(el,tries){
+    const L=window.L;
+    if(!L){if((tries||0)<50)setTimeout(()=>{if(this._mapEl===el)this.initMap(el,(tries||0)+1);},100);return;}
+    const m=L.map(el,{zoomControl:true,attributionControl:true,scrollWheelZoom:true}).setView([43.45,-80.3],8);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Tiles © Esri'}).addTo(m);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:16}).addTo(m);
+    [50,100,200].forEach(km=>{
+      L.circle(HOME,{radius:km*1000,color:'#00D4FF',weight:1,opacity:0.45,dashArray:'4 6',fill:false,interactive:false}).addTo(m);
+      L.marker([HOME[0]+km/111,HOME[1]],{interactive:false,icon:L.divIcon({className:'',iconSize:[0,0],html:'<div style="transform:translate(-50%,-50%);font:600 10px JetBrains Mono,monospace;letter-spacing:.08em;color:#00D4FF;background:#0A0E1A;padding:1px 5px;border-radius:4px;white-space:nowrap;">'+km+' KM</div>'})}).addTo(m);
+    });
+    L.marker(HOME,{zIndexOffset:2000,icon:L.divIcon({className:'',iconSize:[0,0],html:'<div style="transform:translate(-50%,-50%);display:flex;align-items:center;gap:6px;white-space:nowrap;padding:4px 10px 4px 6px;border-radius:999px;background:#E8F0FF;color:#0A0E1A;font:700 12px Inter,sans-serif;box-shadow:0 0 0 4px rgba(0,212,255,.25);"><span style="width:10px;height:10px;border-radius:50%;background:#0A0E1A;"></span>Home</div>'})}).bindTooltip('London, ON — your home').addTo(m);
+    this._layer=L.layerGroup().addTo(m);
+    m.on('moveend',()=>{if(!this.state.moveFilter)return;const b=m.getBounds();this.setState({bounds:{s:b.getSouth(),n:b.getNorth(),w:b.getWest(),e:b.getEast()},cityKey:null});});
+    this._map=m;
+    m.whenReady(()=>setTimeout(()=>{try{m.invalidateSize();}catch(e){}this.drawMap();},120));
+  }
+  componentDidUpdate(){this.drawMap();}
+  componentWillUnmount(){if(this._map){try{this._map.remove();}catch(e){}this._map=null;}}
+  drawMap(){try{this._drawMap();}catch(e){console.warn('map draw',e);}}
+  _drawMap(){
+    const L=window.L,m=this._map;if(!L||!m||!this._layer)return;
+    const s=this.state;this._layer.clearLayers();
+    const groups={};
+    (this._list||[]).forEach(j=>{if(j.lat==null)return;const k=geoKey(j.lat,j.lng);(groups[k]=groups[k]||{k,lat:j.lat,lng:j.lng,city:j.city,jobs:[]}).jobs.push(j);});
+    if(s.offMarket){const off={};OFFMKT.forEach(([n,c,la,ln])=>{const k=geoKey(la,ln);(off[k]=off[k]||{la,ln,c,names:[]}).names.push(n);});
+      Object.values(off).forEach(o=>{const has=!!groups[geoKey(o.la,o.ln)];const d=has?0.045:0;
+        L.marker([o.la-d,o.ln+d],{zIndexOffset:-100,icon:L.divIcon({className:'',iconSize:[0,0],html:'<div style="transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;border:1.5px dashed #7A8BB0;background:#0A0E1A;cursor:default;"></div>'})}).bindTooltip('<b>Not tracked yet · '+o.c+'</b><br>'+o.names.join('<br>'),{direction:'top'}).addTo(this._layer);});}
+    Object.values(groups).forEach(g=>{
+      g.jobs.sort((a,b)=>b.score-a.score);const best=g.jobs[0],n=g.jobs.length;
+      const sal=g.jobs.map(j=>j.salary).filter(Boolean).sort((a,b)=>salVal(b)-salVal(a))[0];
+      const label=s.pinMode==='salary'?(sal?salShort(sal).replace('–','–'):'—'):String(best.score);
+      const hl=g.jobs.some(j=>j.id===s.hoverId)||s.cityKey===g.k;
+      const t=best.score>=8?['#00E87A','#0A0E1A','#00E87A']:best.score>=7?['#00D4FF','#0A0E1A','#00D4FF']:['#1A2540','#A8B8D8','#2A3A5C'];
+      const html='<div style="transform:translate(-50%,-100%)'+(hl?' scale(1.18)':'')+';transform-origin:50% 100%;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:4px 10px;border-radius:999px;background:'+t[0]+';color:'+t[1]+';border:1px solid '+t[2]+';font:700 12px JetBrains Mono,monospace;box-shadow:'+(hl?'0 0 0 3px #E8F0FF, 0 0 20px '+t[2]:'0 2px 8px rgba(0,0,0,.55)')+';cursor:pointer;">'+label+(n>1?'<span style="font-weight:500;opacity:.75;">+'+(n-1)+'</span>':'')+'</div>';
+      const tip='<b>'+g.city+' · '+n+' role'+(n>1?'s':'')+'</b><br>'+g.jobs.slice(0,4).map(j=>j.score+' · '+j.company+' — '+j.title).join('<br>')+(n>4?'<br>+'+(n-4)+' more':'');
+      L.marker([g.lat,g.lng],{zIndexOffset:hl?1000:best.score*10,icon:L.divIcon({className:'',iconSize:[0,0],html})})
+        .bindTooltip(tip,{direction:'top',offset:[0,-28]})
+        .on('click',()=>this.setState(st=>({cityKey:g.k,cityLabel:g.city,layout:st.layout==='map'?'split':st.layout,moveFilter:false,bounds:null})))
+        .addTo(this._layer);
+    });
+  }
+  go(view){this.set({view});try{window.scrollTo(0,0);}catch(e){}}
+  profileVals(s){
+    const sample=!!this.props.startWithCV;
+    const src=s.src??(sample?{cv:1,cl:1,li:1,gh:1}:{});
+    const ghUser=s.ghUser??(sample?'arvint89':'');
+    const links=s.links??(sample?['hackaday.io/arvint89']:[]);
+    const map={};
+    const add=(label,type,dot,proof)=>{const k=type+':'+label;const e=map[k]||(map[k]={label,type,dots:[],proof:false});if(!e.dots.some(d=>d.label===dot.label))e.dots.push(dot);if(proof)e.proof=true;};
+    SRC.forEach(x=>{if(!src[x.id])return;(x.titles||[]).forEach(t=>add(t,'t',{label:x.short,color:x.color}));(x.skills||[]).forEach(k=>add(k,'s',{label:x.short,color:x.color},x.proof&&x.proof[k]));});
+    s.mT.forEach(t=>add(t,'t',YOU));s.mS.forEach(t=>add(t,'s',YOU));
+    const all=Object.entries(map).filter(([k])=>!s.removed.includes(k));
+    const rm=k=>()=>this.setState(st=>({removed:[...st.removed,k],mT:st.mT.filter(x=>'t:'+x!==k),mS:st.mS.filter(x=>'s:'+x!==k)}));
+    const item=(k,e,sty)=>({label:e.label,proof:e.proof,dots:e.dots,...sty,onRemove:rm(k)});
+    const titles=all.filter(([,e])=>e.type==='t').map(([k,e])=>item(k,e,{bg:'var(--accent-soft)',border:'var(--accent-line)',fg:'var(--fg)'}));
+    const skills=all.filter(([,e])=>e.type==='s').sort((a,b)=>b[1].dots.length-a[1].dots.length).map(([k,e])=>item(k,e,{bg:'var(--bg-raised)',border:'var(--border-subtle)',fg:'var(--fg)'}));
+    const excl=s.mX.map(x=>({label:x,proof:false,dots:[],bg:'rgba(255,77,109,0.10)',border:'rgba(255,77,109,0.35)',fg:'var(--attsis-red)',onRemove:()=>this.setState(st=>({mX:st.mX.filter(y=>y!==x)}))}));
+    const setSrc=(id,v)=>this.setState(st=>{const cur=st.src??src;return {src:{...cur,[id]:v?1:0},...(id==='gh'&&v&&!(st.ghUser??ghUser)?{ghUser:'arvint89'}:{})};});
+    const sources=SRC.map(x=>{const on=!!src[x.id];const n=(x.titles||[]).length+(x.skills||[]).length;
+      return {...x,added:on&&x.kind!=='links',showFileAdd:!on&&x.kind==='file',showGhAdd:!on&&x.kind==='gh',showLinks:x.kind==='links',
+        border:on?'var(--badge-live-border)':'var(--border-subtle)',
+        tagBorder:x.id==='cv'?'var(--accent-line)':'var(--border-subtle)',tagFg:x.id==='cv'?'var(--accent)':'var(--fg-subtle)',tagBg:x.id==='cv'?'var(--accent-soft)':'transparent',
+        addedLabel:x.kind==='gh'?`@${ghUser||'arvint89'} · 12 public repos`:x.file,kwLabel:n+' keywords',
+        hasProof:on&&!!x.proof,proof:x.proof?Object.entries(x.proof).map(([k,v])=>k+' · '+v):[],
+        onAdd:()=>setSrc(x.id,true),onRemove:()=>setSrc(x.id,false)};});
+    const addTo=(key,dkey)=>()=>this.setState(st=>{const v=(st[dkey]||'').trim().toLowerCase();if(!v||st[key].includes(v))return {[dkey]:''};return {[key]:[...st[key],v],[dkey]:'',removed:st.removed.filter(r=>r!==(key==='mT'?'t:':'s:')+v)};});
+    const field=(label,key,dkey,placeholder)=>{const a=addTo(key,dkey);return {label,placeholder,value:s[dkey],onInput:e=>this.set({[dkey]:e.target.value}),onKey:e=>{if(e.key==='Enter'){e.preventDefault();a();}},onAdd:a};};
+    const addLink=()=>this.setState(st=>{const v=st.draftLink.trim();const cur=st.links??links;return v?{links:[...cur,v],draftLink:''}:{};});
+    const kwCount=titles.length+skills.length;
+    const addedSrc=SRC.filter(x=>src[x.id]||(x.kind==='links'&&links.length)).map(x=>({icon:x.icon,short:x.short,color:x.color}));
+    if(s.mT.length||s.mS.length)addedSrc.push({icon:'icon-pencil-line',short:'Your keywords',color:YOU.color});
+    return {
+      sources,ghUser,onGhUser:e=>this.set({ghUser:e.target.value}),
+      links:links.map((url,i)=>({url,onRemove:()=>this.setState(st=>({links:(st.links??links).filter((_,j)=>j!==i)}))})),
+      draftLink:s.draftLink,onDraftLink:e=>this.set({draftLink:e.target.value}),onLinkKey:e=>{if(e.key==='Enter'){e.preventDefault();addLink();}},addLink,
+      manualFields:[field('Job titles you want','mT','dT','e.g. hardware lead, test engineer'),field('Skills and tools','mS','dS','e.g. kicad, emc testing, yocto'),field('Exclude — roles with these words drop out','mX','dX','e.g. substation, c++, security clearance')],
+      legend:[...SRC.filter(x=>x.kind!=='links').map(x=>({label:x.short,color:x.color})),YOU],
+      groups:[{label:'Job titles · '+titles.length,items:titles,empty:!titles.length,emptyText:'Add a CV or type a title.'},{label:'Skills · '+skills.length,items:skills,empty:!skills.length,emptyText:'Skills from your sources appear here.'},{label:'Excluded · '+excl.length,items:excl,empty:!excl.length,emptyText:'Nothing excluded.'}],
+      hasRemoved:s.removed.length>0,removedLabel:`${s.removed.length} removed · restore`,restoreAll:()=>this.set({removed:[]}),
+      kwCount,srcCount:addedSrc.length,addedSrc,saveOpacity:kwCount?'1':'0.5',
+      srcMini:SRC.map(x=>({icon:x.icon,short:x.short})),
+      saveProfile:()=>{if(!kwCount)return;this.setState({cv:true,view:'all',src,ghUser,links});try{window.scrollTo(0,0);}catch(e){}},
+      sampleProfile:()=>{this.setState({src:{cv:1,cl:1,li:1,gh:1},ghUser:'arvint89',links:['hackaday.io/arvint89'],view:'profile'});try{window.scrollTo(0,0);}catch(e){}}
+    };
+  }
+  set(p){this.setState(p);}
+  renderVals(){
+    const s=this.state, cv=s.cv==null?!!this.props.startWithCV:s.cv;
+    const q=s.q.toLowerCase();
+    let list=JOBS.filter(j=>{
+      if(s.view==='saved'&&!s.saved.includes(j.id))return false;
+      if(q&&!(j.company+' '+j.title+' '+j.matched.join(' ')).toLowerCase().includes(q))return false;
+      if(s.dist==='remote'&&j.arrangement!=='remote')return false;
+      if(s.dist!=='any'&&s.dist!=='remote'&&(j.km==null||j.km>+s.dist))return false;
+      if(s.arr&&j.arrangement!==s.arr)return false;
+      if(s.strong&&j.score<7)return false;
+      if(s.industry&&j.industry!==s.industry)return false;
+      if(s.mX.length&&s.mX.some(x=>(j.title+' '+j.snippet).toLowerCase().includes(x)))return false;
+      if(s.aiSalary&&j.salary&&salVal(j.salary)/1000<s.aiSalary)return false;
+      if(s.aiExcl.length&&s.aiExcl.some(x=>j.company.toLowerCase().includes(x)))return false;
+      if(s.aiSenior&&!/senior|lead|principal|staff|architect/i.test(j.title))return false;
+      if(s.cityKey&&(j.lat==null||geoKey(j.lat,j.lng)!==s.cityKey))return false;
+      if(s.moveFilter&&s.bounds&&(j.lat==null||j.lat<s.bounds.s||j.lat>s.bounds.n||j.lng<s.bounds.w||j.lng>s.bounds.e))return false;
+      return true;});
+    const sorters={score:(a,b)=>b.score-a.score||(a.km??9e9)-(b.km??9e9),distance:(a,b)=>(a.km??9e9)-(b.km??9e9)||b.score-a.score,newest:(a,b)=>b.posted.localeCompare(a.posted)||b.score-a.score,salary:(a,b)=>salVal(b.salary)-salVal(a.salary)||b.score-a.score,attsis:(a,b)=>(this.numFor(b,s).numScore||0)-(this.numFor(a,s).numScore||0)||b.score-a.score};
+    list.sort(sorters[s.sort]);
+    if(+s.perCo>0){const c={};list=list.filter(j=>(c[j.company]=(c[j.company]||0)+1)<=+s.perCo);}
+    const jobs=list.map(j=>{
+      const open=s.open===j.id, tr=s.track[j.id], saved=!!tr;
+      const tier=j.score>=8?{bg:'var(--badge-live-bg)',bd:'var(--badge-live-border)',fg:'var(--attsis-green)'}:j.score>=7?{bg:'var(--accent-soft)',bd:'var(--accent-line)',fg:'var(--accent)'}:{bg:'var(--bg-raised)',bd:'var(--border-subtle)',fg:'var(--fg-subtle)'};
+      const miss=gaps(j), d=new Date(j.posted+'T12:00:00');
+      return {...j,open,
+        tierBg:tier.bg,tierBorder:tier.bd,tierFg:tier.fg,
+        cardBorder:open?'var(--accent-line)':'var(--border-subtle)',
+        distLabel:j.km==null?'remote':j.km===0?'in your city':j.km+' km',
+        ago:ago(j.posted),postedLong:`${MON[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`,
+        salLabel:j.salary?salShort(j.salary):'Salary not listed',
+        salBg:j.salary?'rgba(255,209,102,0.12)':'transparent',salBorder:j.salary?'rgba(255,209,102,0.35)':'var(--border-subtle)',salFg:j.salary?'var(--wealth)':'var(--fg-subtle)',salWeight:j.salary?'700':'400',
+        arrLabel:{onsite:'On-site',hybrid:'Hybrid',remote:'Remote'}[j.arrangement],
+        sponsors:j.sponsorship==='yes',
+        whyShort:j.reasons.filter(r=>!r.includes('(+1)')).join(' · ')+(j.matched.length?' — '+j.matched.slice(0,3).join(', '):''),
+        have:j.matched,missing:miss,haveN:j.matched.length,keyN:j.matched.length+miss.length,
+        companyShort:shortCo(j.company),
+        chevron:open?'icon-chevron-up':'icon-chevron-down',
+        saveIcon:saved?'icon-bookmark-check':'icon-bookmark',saveLabel:saved?(tr.stage==='saved'?'Saved':STAGES[tr.stage]):'Save',prefChecks:this.prefChecks(j,s),...this.numFor(j,s),
+        aiSummary:(()=>{const sen=/senior|lead|principal|staff|architect/i.test(j.title)?'senior':'intermediate';return 'Reads as a hands-on '+sen+' role in '+j.industry+'. Closest to your '+(j.matched.slice(0,2).join(' and ')||'background')+' work; '+miss.length+' of the asks aren’t in your CV yet.';})(),
+        aiFacts:[{label:'Seniority',value:/lead|principal|architect/i.test(j.title)?'Lead':/senior|staff/i.test(j.title)?'Senior':'Intermediate'},{label:'Domain',value:j.industry},{label:'Clearance',value:'None mentioned'},{label:'Salary',value:j.salary?salShort(j.salary):'Not in posting'},{label:'Work',value:{onsite:'On-site',hybrid:'Hybrid',remote:'Remote'}[j.arrangement]}],
+        onApply:e=>{e&&e.stopPropagation&&e.stopPropagation();this.openApply(j);},onTailor:e=>{e&&e.stopPropagation&&e.stopPropagation();this.setState({tailorId:j.id,acc:[],tTab:'cv',view:'tailor'});try{window.scrollTo(0,0);}catch(_){}},
+        saveBg:saved?'var(--accent-soft)':'transparent',saveBorder:saved?'var(--accent-line)':'var(--border-subtle)',saveFg:saved?'var(--accent)':'var(--fg-subtle)',
+        toggle:()=>this.set({open:open?null:j.id}),onEnter:()=>{if(s.layout==='split'&&this.state.hoverId!==j.id)this.setState({hoverId:j.id});},onLeave:()=>{if(this.state.hoverId!=null)this.setState({hoverId:null});},
+        toggleSave:e=>{e&&e.stopPropagation&&e.stopPropagation();this.setState(st=>{const t={...st.track};if(!t[j.id])t[j.id]={stage:'saved',date:'2026-09-23'};else if(t[j.id].stage==='saved')delete t[j.id];return {track:t};});}
+      };});
+    const opt=(val,cur,label,key)=>({label,...(cur===val?ON:OFF),onClick:()=>this.set({[key]:cur===val&&key==='arr'?'':val})});
+    const tab=(id,label,icon)=>({label,icon,...((s.view===id||(id==='all'&&s.view==='tailor'))?{bg:'var(--bg-raised)',fg:'var(--fg)',border:'var(--border-strong)'}:{bg:'transparent',fg:'var(--fg-muted)',border:'transparent'}),onClick:()=>this.go(id)});
+    return {
+      ...this.profileVals(s),
+      ...this.extraVals(s),
+      ...this.aiVals(s),
+      birth:s.birth,onBirth:e=>this.set({birth:e.target.value}),toggleNum:()=>this.set({showNum:!s.showNum}),
+      numTog:s.showNum?{trackBg:'var(--accent-soft)',trackBorder:'var(--accent-line)',justify:'flex-end',knob:'var(--accent)'}:{trackBg:'var(--bg-raised)',trackBorder:'var(--border-subtle)',justify:'flex-start',knob:'var(--attsis-fog)'},
+      myNums:s.birth?[{label:'Life Path',value:lifePath(s.birth)},{label:'Personal Year 2026',value:redN(redN(digitSum(s.birth.slice(5,7)))+redN(digitSum(s.birth.slice(8)))+redN(digitSum('2026')))},{label:'Zodiac',value:ANIMALS[animalOf(s.birth).i]}]:[{label:'Life Path',value:'—'}],
+      ...(()=>{this._list=list;const lay=s.layout;const remote=list.filter(j=>j.lat==null).length;
+        return {isSplit:s.view==='all'&&lay==='split',isMapMode:lay==='map',showCards:lay!=='map',showEmpty:lay!=='map'&&!list.length,mapRef:this.mapRef,
+          layoutOpts:[['list','List','icon-list'],['split','List + map','icon-columns-2'],['map','Map','icon-map']].map(([k,l,i])=>pill(lay===k,l,()=>this.setState({layout:k,hoverId:null}),{icon:i})),
+          pinOpts:[['score','Fit score'],['salary','Salary']].map(([k,l])=>pill(s.pinMode===k,l,()=>this.set({pinMode:k}))),
+          offBtn:s.offMarket?ON:OFF,toggleOff:()=>this.set({offMarket:!s.offMarket}),offCount:OFFMKT.length,
+          moveBtn:s.moveFilter?{...ON,icon:'icon-check-square'}:{...OFF,icon:'icon-square'},
+          toggleMove:()=>{if(s.moveFilter){this.setState({moveFilter:false,bounds:null});return;}let b=null;try{const mb=this._map.getBounds();b={s:mb.getSouth(),n:mb.getNorth(),w:mb.getWest(),e:mb.getEast()};}catch(e){}this.setState({moveFilter:true,bounds:b,cityKey:null});},
+          areaChips:[...(s.cityKey?[{label:'Near '+s.cityLabel,onClear:()=>this.setState({cityKey:null})}]:[]),...(s.moveFilter?[{label:'In map area',onClear:()=>this.setState({moveFilter:false,bounds:null})}]:[])],
+          remoteNote:remote?remote+' remote role'+(remote>1?'s':'')+' not on the map':''};})(),
+      isBoard:s.view==='all',isProfile:s.view==='profile',
+      openProfile:()=>this.go('profile'),openProfileLink:e=>{e.preventDefault();this.go('profile');},
+      cv,noCv:!cv,showRail:(this.props.showRail??true)&&s.layout==='list',
+      tabs:[tab('all','Roles','icon-list'),tab('tracker',`Tracker · ${Object.keys(s.track).length}`,'icon-kanban'),tab('queue',`Queue · ${s.queue.filter(q=>q.status==='ready'||q.status==='needs').length}`,'icon-send'),tab('prep','Prep','icon-messages-square'),tab('learn','Learn','icon-play-circle'),tab('profile','Profile','icon-user-round')],
+      totalRoles:JOBS.length,totalCos:new Set(JOBS.map(j=>j.company)).size,
+      profileKw:KW,
+      loadCv:()=>this.set({cv:true}),loadCvLink:e=>{e.preventDefault();this.set({cv:true});},clearCv:()=>this.set({cv:false}),
+      q:s.q,onQ:e=>this.set({q:e.target.value}),
+      sort:s.sort,onSort:e=>this.set({sort:e.target.value}),
+      distOpts:[['any','Any'],['50','50 km'],['100','100 km'],['200','200 km'],['remote','Remote']].map(([v,l])=>opt(v,s.dist,l,'dist')),
+      arrOpts:[['onsite','On-site'],['hybrid','Hybrid'],['remote','Remote']].map(([v,l])=>opt(v,s.arr,l,'arr')),
+      strongBtn:s.strong?{...ON,icon:'icon-check-square'}:{...OFF,icon:'icon-square'},
+      toggleStrong:()=>this.set({strong:!s.strong}),
+      showMore:s.showMore,toggleMore:()=>this.set({showMore:!s.showMore}),moreLabel:s.showMore?'Fewer filters':'More filters',
+      industry:s.industry,industries:[...new Set(JOBS.map(j=>j.industry))].sort(),onIndustry:e=>this.set({industry:e.target.value}),
+      perCo:s.perCo,onPerCo:e=>this.set({perCo:e.target.value}),
+      reset:()=>this.set({q:'',dist:'any',arr:'',strong:false,industry:'',perCo:'0',sort:'score'}),
+      jobs,shownCount:jobs.length,rolesWord:jobs.length===1?'role':'roles',strongCount:jobs.filter(j=>j.score>=7).length,
+      isEmpty:!jobs.length,
+      emptyIcon:s.view==='saved'?'icon-bookmark':'icon-search-x',
+      emptyText:s.view==='saved'?'No saved roles match these filters. Tap the bookmark on any role to keep it here.':'No roles match. Widen the distance or turn off strong fits only.',
+      alertOff:!s.alert,alertOn:s.alert,subscribe:()=>this.set({alert:true})
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<script src="./doc-page.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{margin:0;}
+a{color:#4F46E5;text-decoration:none;}
+a:hover{color:#0A0E1A;}
+</style>
+</helmet>
+
+<doc-page margin="0.75in">
+  <div style="font-family:'JetBrains Mono',monospace;font-size:10pt;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#2A3A5C;margin-bottom:10px;">Product plan · September 23, 2026 · Stage 0</div>
+  <h1 style="font-family:'Syne',sans-serif;font-size:30pt;font-weight:800;letter-spacing:-0.02em;line-height:1.1;color:#0A0E1A;margin:0 0 14px;">Attsis Jobs — from job board to job-search tool</h1>
+  <p style="font-family:'Inter',sans-serif;font-size:11.5pt;line-height:1.65;color:#1A2540;margin:0 0 10px;">Nine capabilities, in the order they should ship, with the architecture decision they force and how each one makes money. The clickable prototype is <a href="Attsis Job Board v3.dc.html">Attsis Job Board v3</a>: Roles, Tracker, Tailor, Prep, Learn and Profile.</p>
+  <div style="border:1.5px solid #4F8EF7;border-radius:10px;padding:14px 18px;margin:18px 0 8px;break-inside:avoid;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:9pt;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#4F46E5;margin-bottom:6px;">The one rule</div>
+    <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.6;color:#0A0E1A;margin:0;">Ranking is never for sale. Ads, affiliate links and sponsors live in Learn, Prep and the digest — never in the role list, the apply flow, tailoring or the tracker.</p>
+  </div>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">1. The nine steps — where each one stands</h2>
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Step</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Today</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">What it needs</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">1 · Find roles from CV, cover letter, LinkedIn, GitHub</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">CV and cover letter live</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">LinkedIn PDF as a CV format; GitHub reader in the browser; keywords tagged by source</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">2 · Score and gap-check against preferences</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Score + short gap live</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Salary floor, distance, arrangement checks; salary parsed from posting text</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">3 · Apply manually and log it</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Apply link only</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">"Did you apply?" prompt; tracker entry with the CV version sent</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">4 · Tailor CV and cover letter</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">LLM (ADR-002); "nothing invented" guard; .docx export; payments</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">5 · Application tracker</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Kanban (local first); accounts to sync across devices</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">6 · Interview prep and mock interviews</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">LLM chat; question banks per domain; salary data for negotiation</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">7 · Prompt the user to update the tracker</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Scheduler (the daily Action works); one-tap replies</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">8 · Updates on the user's channels and schedule</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">In-app, Telegram, email, push, WhatsApp; quiet hours; CASL consent log</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">9 · Monetization</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Prices set, nothing to buy</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Payments, affiliate accounts, creator payouts — see §4</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">2. The decision this forces</h2>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;">Steps 1–3 run on today's architecture: a static site, a free daily GitHub Action, and scoring in the browser. The rest does not.</p>
+  <ul style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;padding-left:20px;">
+    <li><b>Steps 5, 7, 8 need accounts and a small backend.</b> Store keywords, preferences, tracker rows and channel IDs — never the CV file. "Nothing uploads" becomes "your CV file never leaves your device".</li>
+    <li><b>Steps 4 and 6 need an LLM.</b> Keep them paid-only so token cost tracks revenue. Accept ADR-002 (the model router) before building either.</li>
+  </ul>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0;">Decide both before Phase 3. Everything before then works without them.</p>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">3. Phases — October 2026 to March 2027</h2>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 12px;">One phase a month at 3–5 hours a week. A phase ends when its exit test passes, not when the month does.</p>
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:17%;">Phase</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Ship</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:28%;">Exit test</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>1 · Oct</b><br>Coverage + profile</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">JB-43 resolver, JB-44 seeds; GitHub and LinkedIn PDF sources; manual keywords and exclusions; preferences; salary extraction</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Sweep recall ≥ 70% (from 30%)</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>2 · Nov</b><br>Apply + track, local</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Apply-and-log prompt; kanban in localStorage; in-app nudges; brand reskin; public soft launch</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">50 users with at least one logged application</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>3 · Dec</b><br>Accounts + prompts</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Sign-in; Telegram prompts and alerts; email digest; phone push; consent log</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">30% of "heard back?" prompts answered</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>4 · Jan</b><br>First dollar</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Tailored CV + cover letter; Pro subscription; day pass; payments</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">10 paying users</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>5 · Feb</b><br>Interview prep</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Mock interviewer — technical, behavioural, negotiation; company brief; gap-driven affiliate links</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Users who run a mock report more interviews than those who don't</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>6 · Mar</b><br>Learn + creators</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Teardowns, circuit sims, shorts; creator program; first sponsored teardown; WhatsApp for Pro</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">10 creators publishing; first sponsor paid</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>7 · Apr +</b><br>Employer beta</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">"Open to intros" for seekers; employer posting + matched-candidate view; search API replaces the static file (§11)</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">1,000 opted-in seekers in one hub; 5 employers paying</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">4. Monetization</h2>
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:22%;">Stream</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">How it works</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:18%;">Price</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:10%;">Phase</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Pro subscription</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Unlimited tailoring and prep, WhatsApp alerts, full tracker history</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">$8.99/mo<br>$62.99/yr</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">4</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">One-time packs</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Tailored CV + cover letter for one role; interview-prep pack for one role</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">$17.99<br>$26.99</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">4–5</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Attsis deep reading</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Free compatibility chip; the paid report adds company compatibility, a timing calendar for interviews and negotiation, and a link to the Attsis Daily Oracle</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">$8.99 once, or in Pro</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">5</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Day pass</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">24 hours of Pro before an interview</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">$1.79</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">4</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Gap-driven affiliate</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">A gap ("EMC pre-compliance") links to a course, certification, dev board or tool</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Commission</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">5</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Creator program</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Users post teardowns, circuit sims and shorts with affiliate parts lists and cross-post to YouTube and TikTok. We share the commission and feature the best in the digest</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Revenue share</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">6</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Sponsored teardowns</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">A hardware brand pays for a teardown or sim of its new product, placed in Learn and the digest</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Per post</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">6</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Employer referral fees</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Employer pays when a user is hired. Highest value, biggest conflict with being on the seeker's side</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Per hire</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Later</td></tr>
+    </tbody>
+  </table>
+  <p style="font-family:'Inter',sans-serif;font-size:10pt;line-height:1.6;color:#2A3A5C;margin:8px 0 0;">All prices keep the digit-sum-8 rule.</p>
+
+  <h3 style="font-family:'Syne',sans-serif;font-size:13pt;font-weight:700;color:#0A0E1A;margin:22px 0 8px;">Teardown content — four options</h3>
+  <ol style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;padding-left:20px;">
+    <li><b>Employer-product teardowns as interview prep.</b> "Know their product" in the Prep tab. Most relevant, and it ties content to the board.</li>
+    <li><b>In-house teardowns (Attsis Media).</b> One a month with P.Eng credibility, each cut into 3–4 shorts for TikTok and YouTube.</li>
+    <li><b>Community teardowns.</b> The creator program. Cheapest to scale; needs a review step before anything goes live.</li>
+    <li><b>Sponsored product teardowns.</b> A brand sends a new product; the teardown is labelled "Sponsored" and the brand gets no edit rights over findings.</li>
+  </ol>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0;">Start with 1 and 2 in Phase 5, open 3 in Phase 6, and sell 4 once the digest reaches about 5,000 readers.</p>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">5. Compliance to plan for early</h2>
+  <ul style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0;padding-left:20px;">
+    <li><b>CASL</b> — express opt-in per channel, sender identified, one-tap unsubscribe, and a record of when and how consent was given.</li>
+    <li><b>PIPEDA</b> — store keywords and tracker data only, delete on request, say where it is hosted.</li>
+    <li><b>Disclosure</b> — label affiliate links and sponsored posts, including creators' own posts (Competition Bureau guidance on material connections).</li>
+    <li><b>AI</b> — say where AI is used in tailoring and prep; never add skills the CV doesn't have.</li>
+    <li><b>WhatsApp</b> — business verification and pre-approved message templates before launch.</li>
+  </ul>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">6. What to measure</h2>
+  <ul style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0;padding-left:20px;">
+    <li>Sweep recall — share of known strong roles the board finds</li>
+    <li>Strong fits per user per week</li>
+    <li>Applications logged, and "heard back?" prompts answered</li>
+    <li>Interview rate: tailored vs master CV</li>
+    <li>Free-to-paid conversion, and revenue by stream</li>
+  </ul>
+
+  <div style="break-before:page;"></div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:10pt;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#2A3A5C;margin:36px 0 10px;">Part 2 · Employer side, sources and scale</div>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:0 0 10px;">7. Employer side — opt-in matching, never selling profiles</h2>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;">Seekers pay for a few months and leave when hired. Employers pay every time they hire. The employer side is where durable revenue sits — but only with consent. Selling profiles would breach PIPEDA and the product's promise.</p>
+  <ol style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 12px;padding-left:20px;">
+    <li><b>Seeker opts in</b> to "Open to intros", per role type. Off by default.</li>
+    <li><b>Employer posts a role</b> for free. It feeds the board, and a salary range is required.</li>
+    <li><b>Employer sees ranked, anonymous matches:</b> fit score, matched skills, gaps, salary expectation, availability, clearance level. No name, no CV.</li>
+    <li><b>Employer sends an intro request.</b> The seeker accepts or declines. Identity and CV are shared only on accept.</li>
+  </ol>
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:28%;">Employer offer</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">What they get</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:22%;">Proposed price</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Post a role</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Listed on the board, map and alerts; structured job-posting markup so Google lists it too</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">Free</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Matches</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Ranked opted-in candidates for each active role, with gap view</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">$53.99/mo per role</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Accepted intro</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Pay only when a candidate says yes</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">$89.99 each</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-weight:600;">Hire fee</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Flat fee instead of an agency's percentage of salary</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">$1,799.99</td></tr>
+    </tbody>
+  </table>
+  <ul style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:12px 0 0;padding-left:20px;">
+    <li><b>Liquidity first.</b> Employers won't pay for an empty pool. Open a hub only once about 1,000 active seekers there have opted in.</li>
+    <li><b>Guardrails.</b> Consent is per employer and can be withdrawn. Employer money never changes the seeker's ranking. Seekers are never charged for placement.</li>
+    <li><b>Legal check before launch.</b> Ontario now licenses recruiters. Confirm with a lawyer whether a paid matching service counts.</li>
+  </ul>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">8. Sources — city by city across Canada</h2>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;">Most innovation-hub boards run on Getro, so one adapter covers many cities. Each new city is a data line, not code. The status column comes from the September 17 probe.</p>
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:22%;">City</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Board</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:18%;">How</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:22%;">Status</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">London, ON</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">LEDC — London Tech Jobs, London Mfg Jobs</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">HTML scrape</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Live</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Kitchener–Waterloo</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Communitech</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Getro 8936</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Live</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Toronto</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">MaRS Discovery District; DMZ</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Getro 383; Getro</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">MaRS live; DMZ to probe</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Ottawa</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Invest Ottawa</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Getro</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Find live board ID</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Halifax</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Volta</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Getro 21693</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">API returns 400 — needs variant</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Calgary · Edmonton</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Platform Calgary · Edmonton Unlimited</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Getro (likely)</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">To probe</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Vancouver</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">New Ventures BC / Foresight</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Getro (likely)</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">To probe</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Saskatoon · Winnipeg</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Co.Labs · North Forge</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Getro (likely)</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">To probe</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Montréal · Québec · Hamilton · Windsor</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Local innovation hubs</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Unknown</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Find board</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">National</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Getro economic-development aggregate; Adzuna API; Job Bank open data</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">API · open data</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Spikes JB-32, JB-33</td></tr>
+    </tbody>
+  </table>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:10px 0 0;">Every source feeds one pool. Filtering by profile is the same everywhere: keywords from all sources (CV, cover letter, LinkedIn, GitHub, typed), minus exclusions, then preference checks. Apply links found on these boards feed the resolver, so each company's own system gets picked up once, automatically.</p>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">9. Security-clearance roles</h2>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;"><b>Yes, it's needed.</b> The registry already holds defence employers in the region (General Dynamics Land Systems in London, Safran, Amphenol, WOLF, Ultra Maritime). Clearance is a hard gate: showing a Secret role to someone who can't get cleared wastes an application. For cleared engineers it's the opposite — they're scarce, and highlighting these roles is a reason to use the board.</p>
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:32%;">Posting says</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:26%;">Your profile</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Board shows</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Active Secret required</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Secret or Top Secret</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>"Clearance match"</b> chip, ranked up</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Ability to obtain Reliability or Secret</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">None yet, eligible</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">"Employer sponsors clearance" — shown normally</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Active clearance required</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">None</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">"Needs active Secret" — moved down, dimmed</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Controlled Goods, ITAR, or citizens only</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Not eligible</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Hidden by default; "Show roles I may not qualify for" brings them back</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Any clearance term</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Not answered</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Neutral chip naming the level, e.g. "Secret clearance"</td></tr>
+    </tbody>
+  </table>
+  <ul style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:12px 0 0;padding-left:20px;">
+    <li><b>Detection is rule-based</b> and runs in the same pass as salary and arrangement: Reliability Status, Secret, Top Secret, Controlled Goods Program, ITAR/EAR, "citizens only", and "active" vs "ability to obtain".</li>
+    <li><b>Profile field is optional:</b> clearance held, Controlled Goods registration, eligibility. It's self-declared, stays in the browser, and is never guessed from a name or CV.</li>
+    <li><b>Wording:</b> repeat only what the posting requires. Never imply the board decides who is eligible.</li>
+  </ul>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">10. Where AI fits — and why this isn't just a wrapper</h2>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;">Today there is no AI in the product: fetching, scoring and gap checks are plain code. AI should be added only where rules can't do the job, and the expensive parts should sit behind the paywall.</p>
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:34%;">Task</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Method</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:16%;">Cost</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:10%;">Tier</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Fetch, dedupe, score, short gap, clearance</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Deterministic Python + browser JS</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">$0</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Free</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Synonyms ("firmware" ≈ "embedded software")</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Small embedding model, once per posting, cached</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Fractions of a cent</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Free</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Pulling salary, clearance and arrangement from messy postings</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Rules first; small model only when rules miss; cached per posting</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Fractions of a cent</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Free</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Tailored CV and cover letter</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Large model, plus a check that no new facts were added</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Cents per role</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Paid</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Mock interviews, feedback, negotiation</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Large model chat, grounded in the posting, gaps and salary data</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Cents per session</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Paid</td></tr>
+    </tbody>
+  </table>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:10px 0 0;">A prompt over someone else's model can be copied in a weekend. The moat is everything around it:</p>
+  <ul style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:6px 0 0;padding-left:20px;">
+    <li>source coverage and the company registry</li>
+    <li>explainable scoring</li>
+    <li>tracker outcome data — what actually gets interviews</li>
+    <li>creator content</li>
+    <li>employer liquidity</li>
+  </ul>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:10px 0 0;">The ADR-002 router keeps model choice swappable.</p>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">11. How much data — and the architecture to scale</h2>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;">These are rough estimates. Today's numbers come from the September 21 run; the rest assume about 5 KB of stored text per posting.</p>
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:34%;">Measure</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Today</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">All of Canada (tech + engineering)</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Global hardware hubs</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Postings examined per run</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">~5,500</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">50k – 100k</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">1M – 2M</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Active roles kept</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">165</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">20k – 50k</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">0.5M – 1M</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Stored posting text</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">&lt; 1 MB</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">100 – 250 MB</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">2.5 – 5 GB</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">One year of history</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">—</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">1 – 3 GB</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">20 – 50 GB</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">Embeddings (~1.5 KB per posting)</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">—</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">30 – 75 MB</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">~1.5 GB</td></tr>
+      <tr><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;">10,000 users (keywords, preferences, tracker)</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">—</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">&lt; 500 MB</td><td style="padding:6px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">—</td></tr>
+    </tbody>
+  </table>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:10px 0 0;"><b>This is small data.</b> One managed Postgres database handles all of Canada for years. The first thing to break isn't storage. It's the single <code style="font-family:'JetBrains Mono',monospace;font-size:10pt;">jobs.json</code> file the browser downloads. Past roughly 2,000–5,000 roles it gets too heavy, so the board needs a search API that returns only the roles in view.</p>
+
+  <h3 style="font-family:'Syne',sans-serif;font-size:13pt;font-weight:700;color:#0A0E1A;margin:22px 0 10px;">Target architecture (Canada scale)</h3>
+  <div style="display:flex;flex-direction:column;gap:6px;break-inside:avoid;font-family:'Inter',sans-serif;font-size:9.5pt;line-height:1.4;color:#1A2540;">
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:stretch;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px;border-radius:6px;background:#0A0E1A;color:#E8F0FF;display:flex;align-items:center;">Sources</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">ATS public APIs</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Getro city boards</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Aggregator APIs</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Job Bank data</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Employer posts + feeds</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:8px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px;border-radius:6px;background:#0A0E1A;color:#E8F0FF;display:flex;align-items:center;">Ingest</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Scheduled workers per source (today's adapters)</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Resolver</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Normalize + dedupe</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Funnel stats + breakage alerts</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:8px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px;border-radius:6px;background:#0A0E1A;color:#E8F0FF;display:flex;align-items:center;">Enrich</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Geocode cache</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Salary · clearance · arrangement rules</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Small-model fallback</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Embeddings</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:8px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px;border-radius:6px;background:#0A0E1A;color:#E8F0FF;display:flex;align-items:center;">Store</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Postgres: jobs, companies, history, users, tracker, consent</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Full-text + vector search</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Object storage for raw pages</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:8px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px;border-radius:6px;background:#0A0E1A;color:#E8F0FF;display:flex;align-items:center;">Serve</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Search API: filters, map area, keywords → top 500</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Accounts</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">AI router with per-plan limits</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Alert matcher → Telegram · email · push · WhatsApp</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Payments</span><span style="border:1px solid #B9C4DA;border-radius:6px;padding:6px 10px;">Employer portal</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:8px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5pt;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px;border-radius:6px;background:#4F46E5;color:#FFFFFF;display:flex;align-items:center;">Browser</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;"><span style="border:1.5px solid #4F46E5;border-radius:6px;padding:6px 10px;">CV parsed on device</span><span style="border:1.5px solid #4F46E5;border-radius:6px;padding:6px 10px;">Final ranking of the top 500 against the full CV</span><span style="border:1.5px solid #4F46E5;border-radius:6px;padding:6px 10px;">List + map</span></div>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.06em;color:#2A3A5C;margin-top:4px;">Figure 1 — Layers top to bottom. The server stores keywords only; the CV file never leaves the device.</div>
+  </div>
+
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;margin-top:16px;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:20%;">Stage</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Setup</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:24%;">Move on when</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>A · Now</b></td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">GitHub Action → <code style="font-family:'JetBrains Mono',monospace;font-size:9pt;">jobs.json</code> → GitHub Pages; scoring in the browser. Costs nothing.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">More than ~2,000 roles, or accounts needed (Phase 3)</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>B · Canada</b></td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">One managed Postgres (full-text + vector), one small API server, one worker, managed sign-in and payments, hosted in a Canadian region. Static front end stays on a CDN. Likely tens to low hundreds of dollars a month.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">A second country, or ingest runs longer than an hour</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>C · Global hubs</b></td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Ingest split by region and run in parallel; a search index per region; read replicas; queue between ingest and enrich; region-aware privacy (GDPR for EU/UK users).</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td></tr>
+    </tbody>
+  </table>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:10px 0 0;">The same Python adapters, scorer and tests carry through all three stages. Only where they run and where results are stored changes.</p>
+
+  <h2 style="font-family:'Syne',sans-serif;font-size:17pt;font-weight:700;letter-spacing:-0.01em;color:#0A0E1A;margin:28px 0 10px;">12. Build timeline — from today's repo to the v6 prototype</h2>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;"><b>Starting point (v0.10, Sep 21):</b></p>
+  <ul style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;padding-left:20px;">
+    <li>Live board with about 165 roles, CV setup and scoring in the browser.</li>
+    <li>Filters, salary, map, mobile layout, and continuous testing on every change.</li>
+    <li>Resolver (JB-43) in progress.</li>
+    <li>No accounts, no backend, no AI.</li>
+  </ul>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0 0 10px;">Assumes AI coding assistants write the code, with 3–5 review hours a week from BT. Weeks are calendar time at that pace, and BT's review is the bottleneck.</p>
+  <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:10pt;line-height:1.45;color:#1A2540;">
+    <thead><tr>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:17%;">Release</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;">Builds (prototype screen)</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:11%;">Weeks</th>
+      <th style="text-align:left;padding:7px 8px;border-bottom:1.5px solid #0A0E1A;font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:0.08em;text-transform:uppercase;width:17%;">Revenue on</th>
+    </tr></thead>
+    <tbody>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>v0.11</b><br>Oct</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Coverage: finish JB-43 resolver, JB-44 seeds, 3 more Getro city boards, Adzuna spike. No UI change.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">3</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>v0.12</b><br>Oct–Nov</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Profile (v2): LinkedIn PDF, GitHub reader, typed keywords and exclusions, preferences and ✓/✗ checks. Clearance detection.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">3</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>v0.13</b><br>Nov</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Roles (v1 + v4): brand reskin, board-first landing, expandable cards, list + map with score pins, rings and search-by-area (ported from the current Leaflet map). Public soft launch.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">3</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>v0.14</b><br>Dec</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Tracker (v3), stored on the device: apply-and-log prompt, kanban, in-app nudges. Attsis reading (v6): numerology + zodiac in plain JS; incorporation dates for the top 30 employers.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">3</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Affiliate links in Learn stubs</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>v1.0</b><br>Jan</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Backend (Stage B): Postgres, search API, sign-in, tracker sync, Telegram prompts and alerts, email digest, consent log.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">4</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">—</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>v1.1</b><br>Feb</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Payments; Pro, day pass and packs. Tailor (v3): AI rewrites with a "nothing invented" check, .docx export.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">3</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>Pro, packs, day pass</b></td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>v1.2</b><br>Mar</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Prep (v3): mock interviewer, negotiation, company brief. AI layer (v5): AI reads each posting once, similar-term matching, Ask box, near misses, daily briefing.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">4</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Prep pack, deep reading</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>v1.3</b><br>Apr</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Apply queue (v5): prepared applications, rules, a browser extension that fills the employer's form, phone push. WhatsApp for Pro.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">4</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Pro upgrades</td></tr>
+      <tr><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>v1.4</b><br>May</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;">Learn (v3): creator uploads, review before publishing, affiliate parts lists, creator payouts, sponsored labels.</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;font-family:'JetBrains Mono',monospace;">3</td><td style="padding:7px 8px;border-bottom:1px solid #D5DCEA;"><b>Creator share, sponsors</b></td></tr>
+    </tbody>
+  </table>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:10px 0 0;"><b>About 30 weeks: v6 parity around the end of May 2027 at 3–5 hours a week.</b> At about 10 hours a week, roughly 4–5 months. The two biggest risks are the v1.0 backend and the v1.3 browser extension; each could take 2 weeks longer than planned. The employer side (§7) starts after v1.4, once one area has enough opted-in seekers.</p>
+  <p style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:10px 0 0;"><b>Running costs from v1.0:</b></p>
+  <ul style="font-family:'Inter',sans-serif;font-size:11pt;line-height:1.65;color:#1A2540;margin:0;padding-left:20px;">
+    <li>Hosting: roughly $50–150 a month.</li>
+    <li>AI: charged per paid use, so cost follows revenue.</li>
+    <li>Payment processing fees.</li>
+    <li>WhatsApp: per message.</li>
+    <li>One legal consult: trademarks, recruiter licensing, employment contract.</li>
+  </ul>
+</doc-page>
+</x-dc>
+</body>
+</html>
