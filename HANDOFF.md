@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-09-30** (overnight run: verify-promotions harness proved JB-5 batch 1 11/11 OK; Semtech/Littelfuse workday tenant/site/dc bug fixed both in registry and in resolve_sweep output; probe-getro harness landed + ran (1 confirmed hit, 25 skips due to Getro's custom-domain migration); coverage census templated to any CMA; design prototype landed at docs/design/prototype/; 4 commercialization + ONBIS issues filed). Everything needed to resume is on disk. No chat transcript required._
+_Last updated: **2026-09-30 (evening)** — big UI/UX + registry push: 5-tab shell (roles/tracker/prep/tailor/profile) + 3 new views wired in site/index.html; design tokens (Syne/Inter/JetBrainsMono, cosmic-navy palette) ported from prototype; profile & tracker polish (saved-profile panel, per-card notes, stage timestamps); registry seeded +33 Canadian tech scaleups then CI resolve-sweep promoted 10 of them to real ATS (ashby×4, greenhouse×2, workday, bamboohr, lever, rippling). PRs #140–#144 all merged. Registry now **209 companies**, **172** still on `platform:"resolve"`. Sweep #36771519109 kicked to pick up the 10 promotions on the live board._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -44,14 +44,15 @@ The board is **live and healthy**. The pipeline works end to end.
 
 | Check | Result |
 |---|---|
-| Registry size | **176 companies** |
-| Unit tests | **246 passed** ✅ (+6 for CMA templating) |
+| Registry size | **209 companies** (was 176; +33 Canadian tech scaleups via #143) |
+| Unit tests | **246 passed** ✅ |
 | Smoke checks | **11/11 passed** ✅ |
 | Release tagging | **Auto** — `VERSION` → `v<VERSION>` on push to main (JB-27, #116); idempotent no-op if tag exists |
-| Adapter live-check | **4 CI diagnostic workflows now**: `verify-dayforce.yml`, `resolve-sweep.yml`, `verify-promotions.yml`, `probe-getro.yml` (all workflow_dispatch, read-only) |
-| `platform:"resolve"` entries | **148** (11 promoted in JB-5 batch 1 #125, all 11 verified OK by verify-promotions run) |
-| Sources | **6 boards** in `sources.json` (was 5; +Economic Development Jobs 30254 via #131) |
-| Sweep recall | **7/23 = 30%** (2026-09-28). JB-5 batch 1 lift should show on next sweep — 11 companies now fetch directly. Target 70% |
+| Adapter live-check | **4 CI diagnostic workflows**: `verify-dayforce.yml`, `resolve-sweep.yml`, `verify-promotions.yml`, `probe-getro.yml` (all workflow_dispatch, read-only) |
+| `platform:"resolve"` entries | **172** (JB-60 promoted 10 new hits via #144: 1Password/Wealthsimple/Rewind/KOHO→ashby, Plooto/Flipp→greenhouse, Plusgrade→workday, Tulip Retail→bamboohr, Deep Genomics→lever, Athennian→rippling) |
+| Sources | **6 boards** in `sources.json` |
+| UI shell | **5 tabs live** (roles / tracker / prep / tailor / profile), 7 views total (setup + saved-profile + upload + board + tracker + prep + tailor). Design tokens ported from `docs/design/prototype/` — Syne/Inter/JetBrainsMono, cosmic-navy palette, gradient H1, pill-shaped tab buttons with cyan glow |
+| Sweep recall | **7/23 = 30%** (2026-09-28). JB-5 batch 1 + JB-60 batch 2 (11+10 = 21 companies now fetching directly) lift should show on next sweep. Target 70% |
 
 ### Shipped since 2026-09-21 baseline
 
@@ -80,6 +81,11 @@ The board is **live and healthy**. The pipeline works end to end.
 - **JB-59 Getro probe** — `tools/probe_getro_networks.py` + `.github/workflows/probe-getro.yml` (#129); ran 27 candidates, confirmed **Economic Development Jobs** (network_id 30254) — added via #131. Finding: Getro migrated most boards to custom domains, so `<slug>.getro.com` blind guessing failed (24/25 skips).
 - **JB-55 design prototype** — copied the design-drop zip contents into `docs/design/prototype/` (#133); design reference only, not wired to production.
 - **Commercialization backlog seeded** — filed 4 GitHub issues (#134 Tailor CV button, #135 Intake form, #136 Regional licence config, #137 ONBIS spike) so the design template plan no longer lives only in the prototype markdown.
+- **UI shell — 5-tab nav + 3 new views** (#140) — added `data-tab` header buttons (roles/tracker/prep/tailor/profile) with `showTab()` router; new `#trackerView`, `#prepView`, `#tailorView`; tracker CRUD (`saveToTracker`, `moveTracker`, `deleteTracker`, `renderTracker`, `jobKey`, `isTracked`) persisted to `localStorage.jobboard_tracker`; tailor helpers (`openTailor`, `requestTailor`) with mailto fallback pending `TAILOR_PAY_URL`; `jobCard()` now emits a `.jobactions` bar with Gap-check + Save + Tailor. Delivers #134 (Tailor CV button) + shell for #135 (intake form) UI. Closes #134/#9/#10/#13 as superseded by the shell.
+- **Design tokens ported** (#141) — Google-Fonts import for Syne/Inter/JetBrainsMono; new `:root` custom properties (`--bg`, `--card`, `--hi`, `--wealth`, font families); H1 with linear-gradient text (#00D4FF → #4F8EF7 → #C77DFF); pill-shaped tab buttons with cyan glow on hover; cyan-tinted glow shadow on `.job:hover`; monospace eyebrow labels. Cosmic-navy palette from `docs/design/prototype/colors_and_type.css` — additions only, existing CSS structure preserved.
+- **Profile + tracker polish** (#142) — new `#savedProfilePanel` above `#uploadPanel` with `renderSavedProfile()` showing name/home/years/title+skill tags on load; buttons `#reparseBtn`, `#editKwsBtn`, `#clearProfileBtn`. Tracker cards now have inline `knotes` textarea (persists on blur via `saveTrackerNotes()`), a `kts` timestamp span, and a `fmtDate()` relative-time helper ('today' / '3d ago' / '2w ago'). Panel header shows `#trackerCount` — "N tracked · M in flight".
+- **JB-59 registry seeding v2** (#143) — added 33 Canadian tech scaleups as `platform:"resolve"` with `careers_url` + `city` + `industry`. Cities: Toronto ×14, Vancouver ×8, Montreal ×2, Ottawa ×2, Kitchener ×2, Quebec City ×1, Calgary ×1. Registry grew 176 → 209. Next CI resolve-sweep run 36766233749 auto-classified 11 supported hits (1 known dayforce false positive).
+- **JB-60 batch 2 promotions** (#144) — promoted the 10 real hits from JB-59 sweep to their actual ATS+slug: 1Password/Wealthsimple/Rewind/KOHO → ashby; Plooto/Flipp → greenhouse; Tulip Retail → bamboohr; Deep Genomics → lever; Plusgrade → workday (tenant=plusgrade, site=Plusgrade_External_Site, dc=wd10); Athennian → rippling. All 10 now fetched directly by daily sweep. Sweep run 36771519109 triggered post-merge to lift the live board.
 
 ### Sweep-miss analysis (2026-09-28, 16 misses of 23 known-good roles)
 
@@ -243,7 +249,9 @@ Calgary — grab actual URLs from a browser first, then re-probe.
 
 ## 6. Work in flight
 - Nothing uncommitted on `main`.
-- 2026-09-30 overnight: 7 more PRs merged (#127, #128, #129, #130, #131, #132, #133) + 4 issues filed (#134-137). Ready for the next BL — top picks: **#134/#135 tailor button + intake form** (P1 commercialization, ready to build); **#137 ONBIS spike** (needs BT scope confirmation); **JB-5 batch 2** ttcportals adapter (needs live API discovery); **probe-getro v2** with real custom-domain URLs.
+- 2026-09-30 evening: 5 more PRs merged (#140 5-tab UI shell + 3 views, #141 design tokens, #142 profile+tracker polish, #143 +33 Canadian scaleups, #144 promote 10 sweep hits). Closed superseded issues #134/#9/#10/#13. Registry 176 → 209. `platform:"resolve"` count 148 → 172 (added 33, promoted 10, net +14 seeded pending sweep).
+- **Sweep triggered** post-#144: run 36771519109 on main (workflow_dispatch). When complete, the 10 promoted companies should surface live on https://arvint89.github.io/Attsis-jobboard/ — check `python tools/sweep_recall.py` for the lift.
+- Next BLs: **#137 ONBIS spike** (needs BT scope), **#135 intake form** (P1 commercialization, UI shell ready), **JB-5 batch 3** (`ttcportals`/`ultipro`/`scouterecruit` adapters — needs live API discovery), **probe-getro v2** with real custom-domain URLs, **JB-46 LinkedIn scout at scale** on the 172 remaining `resolve` entries.
 - **Release ops changed** (2026-09-29 with JB-27): to cut a release, edit `VERSION` + `CHANGELOG.md` in the same commit → merge to main → `auto-tag` workflow creates `v<VERSION>` on that commit automatically. No manual `git tag` step. See `VERSIONING.md`.
 - **CI-diagnostic pattern now proven 4 times** (2026-09-29/30): `workflow_dispatch` + read-only script for live-network probes. References: `verify-dayforce.yml` (adapter validation), `resolve-sweep.yml` (bulk resolver sweep), `verify-promotions.yml` (post-promotion live check), `probe-getro.yml` (aggregator discovery). Reuse for any future sandbox-blocked probe.
 
