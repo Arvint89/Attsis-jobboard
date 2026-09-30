@@ -1,0 +1,273 @@
+/* =============================================================================
+ * Global Attsis — Design Tokens
+ * "The intelligence at the center of everything — and the axis the world turns on."
+ *
+ * Numerology-rooted: 8 base scale steps, 3 trine color groups, 9 semantic tones.
+ * Rooted in the Attsis Architecture aesthetic: deep cosmic navy + luminous
+ * accents + monospace annotations + display-weight headlines.
+ * ============================================================================= */
+
+/* ---------- Webfonts (local copies in /fonts, Google fallback in @import) ---------- */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* =========================================================================
+   * CORE PALETTE — Cosmic Foundation
+   * Dark, deep, star-chart navies. The "night sky the numbers move through."
+   * ========================================================================= */
+  --attsis-void:        #05070F;   /* deepest — pure night, system edges */
+  --attsis-night:       #0A0E1A;   /* primary bg — cosmic navy */
+  --attsis-midnight:    #0F1628;   /* elevated bg — panel background */
+  --attsis-dusk:        #141D35;   /* card background */
+  --attsis-slate:       #1A2540;   /* raised card / input fill */
+  --attsis-rim:         #2A3A5C;   /* borders on dark */
+  --attsis-fog:         #7A8BB0;   /* muted text / captions */
+  --attsis-mist:        #A8B8D8;   /* secondary text */
+  --attsis-star:        #E8F0FF;   /* primary text on dark */
+  --attsis-white:       #FFFFFF;
+
+  /* =========================================================================
+   * BRAND ACCENTS — The Three Trines
+   * Each trine channels a family of numerology energies (per oracle_primer.md):
+   *   - Independent/Mental:   1 · 4 · 7  — blue / cyan / purple
+   *   - Relational/Power:     2 · 5 · 8  — green / amber / gold
+   *   - Creative/Wisdom:      3 · 6 · 9  — coral / rose / red
+   * ========================================================================= */
+
+  /* Trine 1 — cool, intellectual, the "axis" */
+  --attsis-cyan:        #00D4FF;   /* primary accent — the axis line */
+  --attsis-blue:        #4F8EF7;   /* secondary accent — structure */
+  --attsis-purple:      #C77DFF;   /* tertiary — insight / master numbers */
+  --attsis-indigo:      #6366F1;   /* links, chart lines */
+
+  /* Trine 2 — warm, abundant, "the 8 energy" */
+  --attsis-gold:        #FFD166;   /* wealth / abundance / the 8 */
+  --attsis-amber:       #FF8C42;   /* alert / action / warm sun */
+  --attsis-green:       #00E87A;   /* live / success / growth */
+
+  /* Trine 3 — human, creative, completion */
+  --attsis-coral:       #FF9A76;   /* soft warning / creation */
+  --attsis-rose:        #FF6B9D;   /* feminine / love / 2 energy */
+  --attsis-red:         #FF4D6D;   /* error / shadow / stop */
+
+  /* =========================================================================
+   * SEMANTIC FOREGROUND / BACKGROUND
+   * Use these in components. Never the raw palette.
+   * ========================================================================= */
+  --bg:                 var(--attsis-night);
+  --bg-elevated:        var(--attsis-midnight);
+  --bg-card:            var(--attsis-dusk);
+  --bg-raised:          var(--attsis-slate);
+  --bg-overlay:         rgba(10,14,26,0.85);
+  --bg-scrim:           rgba(5,7,15,0.70);
+
+  --fg:                 var(--attsis-star);
+  --fg-muted:           var(--attsis-mist);
+  --fg-subtle:          var(--attsis-fog);
+  --fg-inverse:         var(--attsis-night);
+
+  --border:             var(--attsis-rim);
+  --border-subtle:      rgba(122,139,176,0.18);
+  --border-strong:      rgba(232,240,255,0.25);
+
+  --accent:             var(--attsis-cyan);        /* primary brand accent */
+  --accent-soft:        rgba(0,212,255,0.12);
+  --accent-line:        rgba(0,212,255,0.35);
+
+  --link:               var(--attsis-cyan);
+  --link-hover:         var(--attsis-star);
+
+  --success:            var(--attsis-green);
+  --warning:            var(--attsis-amber);
+  --danger:             var(--attsis-red);
+  --info:               var(--attsis-blue);
+  --wealth:             var(--attsis-gold);        /* for 8-energy / pricing / abundance */
+
+  /* Status badge fills + borders (Telegram-style inline chips) */
+  --badge-live-bg:      rgba(0,232,122,0.15);
+  --badge-live-fg:      var(--attsis-green);
+  --badge-live-border:  rgba(0,232,122,0.30);
+  --badge-pending-bg:   rgba(255,140,66,0.15);
+  --badge-pending-fg:   var(--attsis-amber);
+  --badge-pending-border: rgba(255,140,66,0.30);
+  --badge-locked-bg:    rgba(199,125,255,0.15);
+  --badge-locked-fg:    var(--attsis-purple);
+  --badge-locked-border: rgba(199,125,255,0.30);
+
+  /* =========================================================================
+   * TYPOGRAPHY — Three voices
+   *   DISPLAY: Syne  (numerology headlines, the "8" energy, hero type)
+   *   BODY:    Inter (long-form, readable, neutral)
+   *   MONO:    JetBrains Mono (numbers, codes, system annotations, badges)
+   * Note: Telegram HTML only uses <b>/<i>/<code> — not CSS; see CONTENT FUNDAMENTALS.
+   * ========================================================================= */
+  --font-display:  'Syne', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body:     'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:     'JetBrains Mono', ui-monospace, 'Menlo', 'Consolas', monospace;
+
+  /* Type scale — 8-step modular (digit-sum 8 homage) */
+  --fs-xs:    12px;   /* 0.75rem — badges, footnotes */
+  --fs-sm:    14px;   /* 0.875rem — captions, mono labels */
+  --fs-base:  16px;   /* 1rem — body */
+  --fs-md:    18px;   /* 1.125rem — emphasised body */
+  --fs-lg:    22px;   /* 1.375rem — small headers */
+  --fs-xl:    28px;   /* 1.75rem — h3 */
+  --fs-2xl:   40px;   /* 2.5rem — h2 */
+  --fs-3xl:   56px;   /* 3.5rem — h1 / hero */
+
+  --lh-tight:   1.1;
+  --lh-snug:    1.25;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.7;
+
+  --ls-tight:   -0.02em;
+  --ls-normal:  0;
+  --ls-wide:    0.08em;
+  --ls-mono:    0.12em;   /* all-caps mono labels */
+
+  /* =========================================================================
+   * SPACING — 8-step scale (numerology root: 8)
+   * ========================================================================= */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+
+  /* =========================================================================
+   * RADIUS — minimal, architectural. Round for pills, soft-rect for cards.
+   * ========================================================================= */
+  --radius-sm:    4px;
+  --radius-md:    8px;
+  --radius-lg:    12px;   /* default card */
+  --radius-xl:    20px;   /* hero surfaces */
+  --radius-pill:  999px;
+
+  /* =========================================================================
+   * ELEVATION — glow-based, not soft-drop.
+   * Shadows on dark surfaces behave as coloured halos ("star glow").
+   * ========================================================================= */
+  --glow-cyan:    0 0 24px rgba(0,212,255,0.35);
+  --glow-blue:    0 0 20px rgba(79,142,247,0.40);
+  --glow-green:   0 0 20px rgba(0,232,122,0.35);
+  --glow-gold:    0 0 20px rgba(255,209,102,0.35);
+  --glow-amber:   0 0 20px rgba(255,140,66,0.40);
+  --glow-red:     0 0 20px rgba(255,77,109,0.30);
+  --glow-purple:  0 0 22px rgba(199,125,255,0.30);
+
+  --shadow-sm:    0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px var(--border-subtle) inset;
+  --shadow-md:    0 8px 24px rgba(0,0,0,0.45), 0 0 0 1px var(--border-subtle) inset;
+  --shadow-lg:    0 20px 48px rgba(0,0,0,0.55), 0 0 0 1px var(--border-subtle) inset;
+
+  /* Gradient strokes — used on hero chrome, the "axis line" motif */
+  --gradient-axis:    linear-gradient(135deg, var(--attsis-cyan), var(--attsis-blue), var(--attsis-purple));
+  --gradient-wealth:  linear-gradient(135deg, var(--attsis-gold), var(--attsis-amber));
+  --gradient-bg-hero: radial-gradient(ellipse at top, rgba(79,142,247,0.18) 0%, transparent 60%),
+                      radial-gradient(ellipse at bottom right, rgba(199,125,255,0.12) 0%, transparent 60%),
+                      var(--attsis-night);
+
+  /* =========================================================================
+   * MOTION
+   * ========================================================================= */
+  --ease-out:       cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out:    cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-standard:  cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:       120ms;
+  --dur-base:       200ms;
+  --dur-slow:       400ms;
+  --dur-hero:       800ms;
+
+  /* =========================================================================
+   * Z-INDEX
+   * ========================================================================= */
+  --z-base:     0;
+  --z-raised:   10;
+  --z-overlay:  100;
+  --z-modal:    1000;
+  --z-toast:    2000;
+}
+
+/* =============================================================================
+ * SEMANTIC ELEMENT RULES — apply variables to native HTML
+ * ============================================================================= */
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--fg);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  margin: 0;
+}
+h1 { font-size: var(--fs-3xl); font-weight: 800; }
+h2 { font-size: var(--fs-2xl); font-weight: 700; }
+h3 { font-size: var(--fs-xl);  font-weight: 700; }
+h4 { font-size: var(--fs-lg);  font-weight: 600; }
+
+p  { font-size: var(--fs-base); line-height: var(--lh-relaxed); color: var(--fg-muted); margin: 0; }
+
+small, .caption {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--fg-subtle);
+  letter-spacing: var(--ls-wide);
+}
+
+code, pre, kbd {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  color: var(--attsis-cyan);
+  background: rgba(0,212,255,0.08);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent-line);
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+  transition: color var(--dur-base) var(--ease-out);
+}
+a:hover { color: var(--link-hover); }
+
+hr {
+  border: 0;
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--space-5) 0;
+}
+
+/* =============================================================================
+ * UTILITY TOKENS — uppercase mono eyebrow (used everywhere in the system)
+ * ============================================================================= */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--fg-subtle);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+}
+
+.mono { font-family: var(--font-mono); }
+.display { font-family: var(--font-display); }
+
+/* Axis-gradient text — the signature "The intelligence at the center" treatment */
+.axis-text {
+  background: var(--gradient-axis);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
