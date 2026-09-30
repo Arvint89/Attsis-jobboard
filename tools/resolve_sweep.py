@@ -47,8 +47,13 @@ def main() -> int:
             misses.append((name, url))
             print(f"  MISS  {name}: {url}")
         elif det.get("supported"):
-            supported_hits.append((name, det["platform"], det.get("slug", "")))
-            print(f"  HIT+  {name}: {det['platform']} slug={det.get('slug','')!r}")
+            supported_hits.append((name, det))
+            extras = ""
+            if det.get("tenant") or det.get("site") or det.get("dc"):
+                extras = (f"  tenant={det.get('tenant','')!r} "
+                          f"site={det.get('site','')!r} "
+                          f"dc={det.get('dc','')!r}")
+            print(f"  HIT+  {name}: {det['platform']} slug={det.get('slug','')!r}{extras}")
         else:
             unsupported_hits.append((name, det["platform"], det.get("slug", "")))
             print(f"  HIT-  {name}: {det['platform']} (no adapter yet) slug={det.get('slug','')!r}")
@@ -62,7 +67,16 @@ def main() -> int:
 
     if supported_hits:
         print("\n=== SUPPORTED HITS (JSON, paste-ready for the promotion PR)")
-        promo = [{"name": n, "platform": p, "slug": s} for n, p, s in supported_hits]
+        promo = []
+        for n, det in supported_hits:
+            entry = {"name": n, "platform": det["platform"], "slug": det.get("slug", "")}
+            # workday / dayforce_shared expose tenant+site+dc; include them so
+            # the adapter can build correct API URLs without a manual patch
+            # (see #128 for the Semtech/Littelfuse workday-site case).
+            for k in ("tenant", "site", "dc"):
+                if det.get(k):
+                    entry[k] = det[k]
+            promo.append(entry)
         print(json.dumps(promo, indent=2))
 
     if unsupported_hits:
