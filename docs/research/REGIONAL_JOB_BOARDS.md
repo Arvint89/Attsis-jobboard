@@ -41,8 +41,23 @@ variance. **Confirm each board returns jobs through the adapter before adding it
 | BC | Vancouver | New Ventures BC / Foresight (cleantech) | (getro) | Getro (likely) | TBD | 🔎 probe |
 | SK | Saskatoon | Co.Labs | (getro) | Getro (likely) | TBD | 🔎 probe |
 | MB | Winnipeg | North Forge | (getro) | Getro (likely) | TBD | 🔎 probe |
-| — | National | Getro EDO aggregate | economicdevelopmentjobs.getro.com | Getro | TBD | 🔎 broad cross-region |
+| — | National | Getro EDO aggregate | economicdevelopmentjobs.getro.com | Getro | **30254** | ✅ confirmed 2026-09-30 (probe-getro run 36671740109) |
 | — | National | Job Bank (federal) | jobbank.gc.ca | Government feed | — | separate adapter (different API) |
+
+## 2026-09-30 probe results (probe-getro workflow, JB-59)
+
+Ran `tools/probe_getro_networks.py` against 27 candidate hostnames. **Only 1 confirmed hit** (Economic
+Development Jobs, network_id 30254). All 25 speculative `<slug>.getro.com` guesses returned HTTP 404.
+
+**Root cause:** Getro has migrated most boards to custom domains. MaRS is `techjobs.marsdd.com` (not
+`mars.getro.com`); Communitech is `jobs.communitech.ca`. Blind subdomain guessing fails. Next iteration
+needs **real board URLs** (Google "site:getro.com <city>" or browse each board and grab the actual host).
+
+Notable skips worth chasing with real URLs later:
+- Invest Ottawa (jobs.investottawa.ca returned non-Getro HTML — either not on Getro any more or their
+  custom-domain proxy strips `__NEXT_DATA__` before rendering)
+- DMZ Toronto, Volta Halifax, Platform Calgary, New Ventures BC — likely on custom domains
+- Ontario cluster: Innovation Guelph, CDL, Bayview Yards, Innovation Factory Hamilton — need real URLs
 
 ## Recommendation
 

@@ -30,6 +30,8 @@ import geo
 import facets
 import history
 import resolver as _resolver
+import discovered as _discovered
+from company_key import company_key
 
 FLAG_LEGEND = {
     'remote': 'Role is remote-friendly',
@@ -220,6 +222,7 @@ def gather(demo: bool):
         for j in got:
             j["_reg_flags"] = entry.get("flags", [])
             j["_ring"] = entry.get("ring")
+            j["_reg_city"] = entry.get("city")   # JB-56: per-viewer ring fallback (registry.ring is BT-baked)
             j["_industry"] = entry.get("industry", "other")
             j["_sponsors"] = entry.get("sponsors")
         jobs += got
@@ -232,6 +235,7 @@ def gather(demo: bool):
         for j in got:
             j["_reg_flags"] = entry.get("flags", [])
             j["_ring"] = entry.get("ring")
+            j["_reg_city"] = entry.get("city")   # JB-56
             j["_industry"] = entry.get("industry", "other")
             j["_sponsors"] = entry.get("sponsors")
         jobs += got
@@ -253,11 +257,19 @@ def gather(demo: bool):
                                resolver=_r)
     errors += info["errors"]
     LAST_DISCOVERY.update(info)
+    # JB-56: cross-reference discovered jobs against the registry by name so that
+    # shared-tenant Workday postings (e.g. Halma hosts DeepTrekker + siblings; the
+    # ATS returns them all stamped with one name) still fall back to the correct
+    # registered HQ city when the job's own location string is ambiguous.
+    reg_by_name = {e["name"].strip().lower(): e for e in registry}
     for j in got:
-        j["_reg_flags"] = []
+        match = reg_by_name.get((j.get("company") or "").strip().lower())
+        j["_reg_flags"] = match.get("flags", []) if match else []
         j["_ring"] = None                        # geo resolves ring from the real location
-        j["_industry"] = j.get("industry") or "other"
-        j["_sponsors"] = None
+        j["_reg_city"] = match.get("city") if match else None
+        j["_industry"] = (match.get("industry") if match else j.get("industry")) or "other"
+        j["_sponsors"] = match.get("sponsors") if match else None
+        j["_discovered"] = True                  # JB-55: fed to discovered.record()
     jobs += got
     LAST_RESOLVER["stats"] = dict(_r.stats)
     LAST_RESOLVER["cache"] = dict(_r.cache)
@@ -291,9 +303,13 @@ def source_funnel(classified):
 
 
 def dedupe(jobs):
+    """JB-55: dedupe by canonicalized company (so "Fidus Systems Inc." and "Fidus Systems"
+    don't count as two roles) + normalized title/location."""
     seen, out = set(), []
     for j in jobs:
-        key = (j.get("company", "").lower(), j.get("title", "").lower(), j.get("location", "").lower())
+        key = (company_key(j.get("company", "")),
+               j.get("title", "").strip().lower(),
+               j.get("location", "").strip().lower())
         if key in seen:
             continue
         seen.add(key)
@@ -336,11 +352,21 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         near = geo.nearest_location(home, j.get("location", ""))   # JB-34
         ring, km, is_remote = geo.ring_for(home, j.get("location", ""))
         if ring is None:
-            ring = j.get("_ring")   # registry ring only when geo can't resolve (Canadian unknown city)
+            # JB-56: prefer the registered HQ city (per-viewer via home) over the
+            # baked-in registry.ring, which was BT-specific. Ring is now derived
+            # from wherever the viewer is + the registered city — same code path
+            # scales to a multi-user product.
+            reg_city = j.get("_reg_city")
+            if reg_city:
+                ring, km, _ = geo.ring_for(home, reg_city)
+            if ring is None:
+                ring = j.get("_ring")   # last-resort legacy hint (single-user era)
         # JB-3: sources can supply exact coords + arrangement directly; fall back otherwise
         lat, lng = j.get("lat"), j.get("lng")
         if lat is None or lng is None:
             lat, lng = geo.coords_of(near)   # for the map (JB-26); nearest part (JB-34)
+            if (lat is None or lng is None) and j.get("_reg_city"):
+                lat, lng = geo.coords_of(j["_reg_city"])   # JB-56: registered HQ as map fallback
         arrangement = j.get("arrangement") or facets.arrangement(j.get("location", ""), j.get("description", ""))
         country = facets.country(near)
         industry = facets.industry(j.get("_industry", ""), j.get("description", ""))
@@ -395,11 +421,13 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
 
     # JB-3: also place every SOURCE-DISCOVERED company (not in the curated registry)
     # so the map/directory lists *all* companies seen this run -- refreshed every build.
-    reg_names = {e["name"].strip().lower() for e in load_registry()}
-    placed = {c["name"].strip().lower() for c in companies_map}
+    # JB-55: match by canonicalized key so "Fidus Systems Inc." doesn't get re-placed
+    # next to registry entry "Fidus Systems".
+    reg_names = {company_key(e["name"]) for e in load_registry()}
+    placed = {company_key(c["name"]) for c in companies_map}
     for r in (matches + below):
-        key = r["company"].strip().lower()
-        if key in reg_names or key in placed or r.get("lat") is None:
+        key = company_key(r["company"])
+        if not key or key in reg_names or key in placed or r.get("lat") is None:
             continue
         placed.add(key)
         s, a = strong.get(r["company"], 0), anyc.get(r["company"], 0)
@@ -437,10 +465,22 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     }
     # JB-42: compare with the previous live run; alerts ride along in jobs.json + Action log
     payload["alerts"] = history.record(payload, DATA, live=not demo)
+    # JB-55: persist source-discovered companies across sweeps + auto-promote alerts.
+    # Feeds from raw (post-dedupe) so companies whose only role was excluded still count.
+    reg_keys = {company_key(e["name"]) for e in load_registry()}
+    disc_jobs = [j for j in raw if j.get("_discovered")]
+    _, promote_alerts = _discovered.record(disc_jobs, reg_keys, DATA, live=not demo)
+    payload["alerts"] = list(payload["alerts"]) + promote_alerts
     with open(os.path.join(DATA, "jobs.json"), "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:
         json.dump(unresolved, f, indent=2, ensure_ascii=False)
+    # JB-50: publish the skills DB as a static asset so the browser scorer can
+    # fetch it. Source of truth is <root>/data/skills.json.
+    _skills_src = os.path.join(ROOT, "data", "skills.json")
+    if os.path.exists(_skills_src):
+        import shutil as _shutil
+        _shutil.copyfile(_skills_src, os.path.join(DATA, "skills.json"))
     # JB-43: publish the resolver cache next to jobs.json so the next run can prime it
     # (like history.json — gitignored, refreshed each build).
     if LAST_RESOLVER["cache"] is not None:
@@ -451,10 +491,19 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     if os.path.exists(tpl_path):
         import re as _re
         tpl = open(tpl_path, encoding="utf-8").read()
-        inline = "<script>window.__EMBED__ = " + json.dumps(payload, ensure_ascii=False) + ";</script>\n"
-        # replace the whole fetch(...) bootstrap (any form) with a direct init() call
+        # JB-50: embed the skills DB so the standalone works fully offline
+        skills_payload = {}
+        if os.path.exists(_skills_src):
+            with open(_skills_src, encoding="utf-8") as _sf:
+                skills_payload = json.load(_sf)
+        inline = (
+            "<script>window.__EMBED__ = " + json.dumps(payload, ensure_ascii=False)
+            + "; window.__EMBED_SKILLS__ = " + json.dumps(skills_payload, ensure_ascii=False)
+            + ";</script>\n"
+        )
+        # replace both fetch bootstraps with the embedded-boot variant
         std = _re.sub(r"fetch\('\./data/jobs\.json.*?\}\);",
-                      "init(window.__EMBED__);", tpl, flags=_re.S)
+                      "bootWithSkills(window.__EMBED__);", tpl, flags=_re.S)
         std = std.replace("<script>", inline + "<script>", 1)
         with open(os.path.join(ROOT, "site", "board_standalone.html"), "w", encoding="utf-8") as f:
             f.write(std)

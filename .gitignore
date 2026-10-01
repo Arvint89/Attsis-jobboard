@@ -22,3 +22,21 @@ memory/
 site/data/history.json
 site/data/resolve.json
 site/data/resolver_cache.json
+site/data/discovered_companies.json
+site/data/skills.json
+
+# JB-46: linkedin_scout cache -- one HTTP GET per URL, then forever cached
+data/linkedin_scout_cache.json
+
+# JB-45 v2: LEDC directory CSV cache (2.3 MB, refetch with tools/seed_ledc.py --fetch)
+data/ledc_directory.csv
+
+# JB-57: StatsCan CBC table 33-10-1176 cache (~17 MB per period, refetch with tools/statcan_cbc_download.py)
+data/statcan/*.csv
+
+# BT's local sandbox / feedback drops -- not part of the repo
+Claude Design/
+
+# per-user Claude Code overrides (project-scoped rules in .claude/settings.json ARE checked in)
+.claude/settings.local.json
+.claude/*.local.json

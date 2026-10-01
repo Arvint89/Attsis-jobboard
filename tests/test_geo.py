@@ -77,3 +77,30 @@ def test_unplaceable_parts_fall_back_to_first():
 
 def test_single_location_unchanged():
     assert geo.ring_for("London", "Toronto, Ontario, Canada") == geo._ring_single("London", "Toronto, Ontario, Canada")
+
+
+# ---- JB-56: bare "London" is ambiguous (DeepTrekker via Halma-Workday sibling) ----
+
+def test_bare_london_is_ambiguous():
+    # Halma-tenant Workday postings say just "London" -- usually means London UK
+    # (Halma HQ) but was matching London ON by default and giving ring 0 to jobs
+    # that weren't in Ontario at all. Bare "London" must now return unresolved.
+    lat, lng, precision = geo.locate("London")
+    assert (lat, lng, precision) == (None, None, None)
+
+
+def test_london_with_qualifier_still_resolves():
+    ring_on, _, _ = geo.ring_for(HOME, "London, ON, Canada")
+    assert ring_on == 0                        # same city as HOME
+    ring_uk, km_uk, _ = geo.ring_for(HOME, "London, UK")
+    assert ring_uk == 4 and km_uk > 4000       # UK, not the home city next door
+    lat, _ = geo.coords_of("London, Ontario")
+    assert lat and 42 < lat < 44               # London ON coords
+
+
+def test_bare_london_home_still_works_for_backwards_compat():
+    # profile.json has home="London" bare (BT); _ring_single falls back through
+    # _city_in() when locate() returns None, so distances from bare "London" home
+    # continue to work exactly as before.
+    ring, km, _ = geo.ring_for("London", "Kitchener, ON, Canada")
+    assert ring == 1 and km < 120

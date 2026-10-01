@@ -1,0 +1,27 @@
+name: probe-getro-v2
+
+# JB-59 v2 -- custom-domain aware Getro discovery.
+# v1 probed <slug>.getro.com only (1 hit / 27). v2 also tries jobs.<domain>,
+# careers.<domain>, techjobs.<domain>, and explicit known hosts for MaRS +
+# Communitech. Read-only; prints paste-ready JSON for engine/sources.json.
+#
+# Same sandbox-safe pattern as verify-dayforce / resolve-sweep / verify-promotions
+# / probe-getro (v1).
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r engine/requirements.txt
+      - name: Probe candidate Getro boards (v2)
+        run: python tools/probe_getro_v2.py

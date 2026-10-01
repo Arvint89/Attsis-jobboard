@@ -127,6 +127,133 @@ def test_breezy_empty_list_is_safe():
     assert ats.fetch_breezy("Acme", "acme") == []
 
 
+def test_dayforce_normalizes_string_location():
+    # JB-47: {client}.dayforcehcm.com/CandidatePortal/{lang}/{client}/Posting/List
+    # returns {"Postings": [...]} in the common Ceridian shape.
+    patch({"Postings": [{
+        "Title": "Network Engineer",
+        "Location": "Toronto, ON, Canada",
+        "ParentId": 12345,
+        "PostingStartDate": "2026-09-15",
+        "Description": "&lt;p&gt;Cisco, BGP, MPLS&lt;/p&gt;",
+    }]})
+    j = ats.fetch_dayforce("Rogers", "rogers", site="RogersDefault")[0]
+    assert REQUIRED <= set(j)
+    assert j["title"] == "Network Engineer"
+    assert j["location"] == "Toronto, ON, Canada"
+    # URL synthesized when the payload doesn't provide one
+    assert "rogers.dayforcehcm.com" in j["url"]
+    assert "RogersDefault" in j["url"] and "12345" in j["url"]
+    assert "Cisco" in j["description"] and "<" not in j["description"]
+    assert j["source"] == "dayforce"
+
+
+def test_dayforce_normalizes_dict_location_and_bare_list():
+    # Some tenants return a bare list rather than {"Postings": [...]} and use
+    # a dict for Location. Both variants must yield the same normalized shape.
+    patch([{
+        "title": "Cashier",
+        "location": {"City": "Brampton", "State": "ON", "Country": "Canada"},
+        "PostingId": 999,
+        "url": "https://loblaw.dayforcehcm.com/CandidatePortal/en-CA/loblaw/Site/Retail/Posting/View/999",
+        "PostedDate": "2026-09-10",
+    }])
+    j = ats.fetch_dayforce("Loblaw", "loblaw", site="Retail")[0]
+    assert j["title"] == "Cashier"
+    assert j["location"] == "Brampton, ON, Canada"
+    assert j["url"].endswith("/View/999")   # explicit URL wins over synthesis
+    assert j["posted"] == "2026-09-10"
+
+
+def test_dayforce_empty_results_is_safe():
+    patch({"Postings": []})
+    assert ats.fetch_dayforce("Acme", "acme", site="Default") == []
+
+
+def test_dayforce_missing_slug_returns_empty_without_network():
+    # Guard against a resolve-in-flight entry (no slug filled yet). Must not
+    # even try to fetch -- prevents a stray request to '..dayforcehcm.com/...'.
+    called = {"n": 0}
+    def sentinel(*a, **kw):
+        called["n"] += 1
+        raise AssertionError("should not fetch when slug is empty")
+    ats._get = sentinel
+    assert ats.fetch_dayforce("Acme", "", site="X") == []
+    assert called["n"] == 0
+
+
+def test_dayforce_registered_in_fetchers_and_recognized():
+    assert "dayforce" in ats.FETCHERS
+    # fetch_company must recognise platform:'dayforce' as a supported adapter
+    # (returns [], None on happy fetch; here we short-circuit via missing slug).
+    jobs, err = ats.fetch_company({"name": "X", "platform": "dayforce", "slug": ""})
+    assert jobs == []
+    assert err is None
+
+
+def test_dayforce_shared_hits_jobs_host_and_normalizes():
+    # JB-47b: jobs.dayforcehcm.com/CandidatePortal/{lang}/{tenant}/Posting/List?siteid={site}
+    captured = {}
+    def fake(url, method="GET", **kw):
+        captured["url"] = url
+        captured["params"] = kw.get("params")
+        return FakeResp({"Postings": [{
+            "Title": "Regulatory Affairs Specialist",
+            "Location": "London, ON, Canada",
+            "PostingId": 55,
+            "PostingStartDate": "2026-09-20",
+            "Description": "&lt;p&gt;medical devices&lt;/p&gt;",
+        }]})
+    ats._get = fake
+    j = ats.fetch_dayforce_shared("Trudell", "tml", site="TMICANDIDATEPORTAL")[0]
+    assert captured["url"].startswith("https://jobs.dayforcehcm.com/CandidatePortal/en-US/tml/")
+    assert captured["url"].endswith("/Posting/List")
+    assert captured["params"]["siteid"] == "TMICANDIDATEPORTAL"
+    assert REQUIRED <= set(j)
+    assert j["title"] == "Regulatory Affairs Specialist"
+    # Synthesized view URL uses the shared host + tenant + site path
+    assert j["url"].startswith("https://jobs.dayforcehcm.com/CandidatePortal/en-US/tml/Site/TMICANDIDATEPORTAL/")
+    assert j["url"].endswith("/Posting/View/55")
+    assert "medical" in j["description"] and "<" not in j["description"]
+    # Source stays "dayforce" -- same ATS platform, different portal shape.
+    assert j["source"] == "dayforce"
+
+
+def test_dayforce_shared_handles_bare_list_and_dict_location():
+    patch([{
+        "title": "Design Engineer",
+        "location": {"City": "London", "State": "ON", "Country": "Canada"},
+        "PostingId": 7,
+        "url": "https://jobs.dayforcehcm.com/en-US/tml/TMICANDIDATEPORTAL/Posting/View/7",
+        "PostedDate": "2026-09-18",
+    }])
+    j = ats.fetch_dayforce_shared("Trudell", "tml", site="TMICANDIDATEPORTAL")[0]
+    assert j["title"] == "Design Engineer"
+    assert j["location"] == "London, ON, Canada"
+    # Explicit URL wins over synthesis
+    assert j["url"].endswith("/View/7")
+
+
+def test_dayforce_shared_requires_both_tenant_and_site():
+    # Both identifiers are mandatory -- without either, no request is made.
+    called = {"n": 0}
+    def sentinel(*a, **kw):
+        called["n"] += 1
+        raise AssertionError("should not fetch when tenant or site is empty")
+    ats._get = sentinel
+    assert ats.fetch_dayforce_shared("X", "", site="Y") == []
+    assert ats.fetch_dayforce_shared("X", "tenant", site="") == []
+    assert ats.fetch_dayforce_shared("X", "tenant") == []   # site default None
+    assert called["n"] == 0
+
+
+def test_dayforce_shared_registered_in_fetchers_and_recognized():
+    assert "dayforce_shared" in ats.FETCHERS
+    jobs, err = ats.fetch_company({"name": "X", "platform": "dayforce_shared", "slug": ""})
+    assert jobs == []
+    assert err is None
+
+
 def patch_urls(router):
     """Route _get by URL substring -> payload (for adapters that make >1 call)."""
     def fake(url, method="GET", **kw):

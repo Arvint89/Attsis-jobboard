@@ -4,27 +4,48 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Job Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#0f1419;--card:#1a2230;--edge:#2a3547;--ink:#e6edf3;--dim:#8b98a9;
-        --hi:#4da3ff;--good:#39d98a;--warn:#ffb454;--chip:#243044;}
+  /* Design tokens — cosmic navy palette, ported from docs/design/prototype/colors_and_type.css */
+  :root{
+    --bg:#0A0E1A; --bg-elev:#0F1628; --card:#141D35; --raised:#1A2540;
+    --edge:#2A3A5C; --edge-soft:rgba(122,139,176,0.18);
+    --ink:#E8F0FF; --dim:#A8B8D8; --subtle:#7A8BB0;
+    --hi:#00D4FF; --hi-soft:rgba(0,212,255,0.12); --hi-line:rgba(0,212,255,0.35);
+    --info:#4F8EF7; --good:#00E87A; --warn:#FF8C42; --wealth:#FFD166;
+    --chip:#1A2540;
+    --font-display:'Syne','Inter',system-ui,sans-serif;
+    --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
   *{box-sizing:border-box}
-  body{margin:0;font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-  header{padding:16px 24px;border-bottom:1px solid var(--edge);position:sticky;top:0;background:#0f1419f2;backdrop-filter:blur(6px);z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-  h1{margin:0;font-size:19px}h1 b{color:var(--hi)}
-  .meta{color:var(--dim);font-size:12.5px;margin-top:3px}
+  body{margin:0;font:15px/1.55 var(--font-body);background:var(--bg);color:var(--ink);
+       background-image:radial-gradient(ellipse at top,rgba(79,142,247,0.09) 0%,transparent 55%),
+                        radial-gradient(ellipse at bottom right,rgba(199,125,255,0.06) 0%,transparent 55%);
+       background-attachment:fixed}
+  header{padding:14px 24px;border-bottom:1px solid var(--edge);position:sticky;top:0;background:rgba(10,14,26,0.92);backdrop-filter:blur(8px);z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  h1{margin:0;font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.02em}
+  h1 b{background:linear-gradient(135deg,#00D4FF,#4F8EF7,#C77DFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800}
+  .meta{color:var(--dim);font-size:12px;margin-top:3px;font-family:var(--font-mono);letter-spacing:0.04em}
   .navbtn{background:var(--card);border:1px solid var(--edge);color:var(--ink);padding:7px 12px;border-radius:8px;font-size:13px;cursor:pointer}
   .navbtn:hover{border-color:var(--hi)}
   .wrap{max-width:1020px;margin:0 auto;padding:18px 24px 60px}
   .card,.bar,.panel{background:var(--card);border:1px solid var(--edge);border-radius:12px}
-  .panel{padding:18px 20px;margin-bottom:16px}
-  .panel h2{margin:0 0 4px;font-size:16px}.panel p.sub{color:var(--dim);font-size:13px;margin:0 0 12px}
-  label.fldlbl{display:block;font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px;margin:12px 0 5px}
+  .panel{padding:22px 24px;margin-bottom:16px}
+  .panel h2{margin:0 0 6px;font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.02em}
+  .panel p.sub{color:var(--dim);font-size:13.5px;margin:0 0 14px;line-height:1.6}
+  label.fldlbl{display:block;font-family:var(--font-mono);font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.12em;margin:14px 0 6px;font-weight:600}
   textarea{width:100%;min-height:120px;background:var(--bg);border:1px solid var(--edge);color:var(--ink);border-radius:8px;padding:10px;font:13px/1.5 monospace;resize:vertical}
   input[type=file]{font-size:13px;color:var(--dim)}
   input[type=search],select{background:var(--bg);border:1px solid var(--edge);color:var(--ink);padding:8px 11px;border-radius:8px;font-size:14px}
-  .btn{background:var(--hi);color:#04101f;border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer}
+  .btn{background:var(--hi);color:#04101f;border:none;border-radius:8px;padding:10px 18px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:box-shadow 200ms,transform 120ms}
+  .btn:hover{box-shadow:0 0 20px rgba(0,212,255,0.35)}
+  .btn:active{transform:translateY(1px)}
   .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--edge);font-weight:500}
-  .btn:disabled{opacity:.5;cursor:default}
+  .btn.ghost:hover{border-color:var(--hi);box-shadow:none}
+  .btn:disabled{opacity:.5;cursor:default;box-shadow:none}
   .row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
   .fld{display:flex;flex-direction:column;gap:4px}.fld label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
   .fld.grow{flex:1}.fld.grow input{width:100%}
@@ -37,10 +58,13 @@
   .kwadd{display:flex;gap:6px;margin-top:8px}
   .hint{color:var(--dim);font-size:11.5px;margin-top:8px}
   .count{color:var(--dim);font-size:13px;margin:14px 2px 12px}
-  .job{padding:14px 16px;margin-bottom:12px;display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:start;border:1px solid var(--edge);border-radius:12px;background:var(--card)}
-  .score{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px}
-  .s-hi{background:#123a2a;color:var(--good);border:1px solid #1f6b4a}.s-mid{background:#3a2f12;color:var(--warn);border:1px solid #6b551f}.s-lo{background:#2a2230;color:var(--dim)}
-  .title{font-weight:600;font-size:16px}.title a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--dim)}.title a:hover{color:var(--hi)}
+  .job{padding:16px 18px;margin-bottom:12px;display:grid;grid-template-columns:52px 1fr;gap:16px;align-items:start;border:1px solid var(--edge);border-radius:12px;background:var(--card);transition:border-color 200ms,box-shadow 200ms}
+  .job:hover{border-color:var(--hi-line);box-shadow:0 0 0 1px var(--hi-line) inset}
+  .score{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:22px}
+  .s-hi{background:rgba(0,232,122,0.15);color:var(--good);border:1px solid rgba(0,232,122,0.35);box-shadow:0 0 16px rgba(0,232,122,0.25)}
+  .s-mid{background:rgba(255,140,66,0.15);color:var(--warn);border:1px solid rgba(255,140,66,0.35)}
+  .s-lo{background:var(--raised);color:var(--subtle);border:1px solid var(--edge-soft)}
+  .title{font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:-0.01em}.title a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--dim)}.title a:hover{color:var(--hi);border-bottom-color:var(--hi)}
   .subl{color:var(--dim);font-size:13px;margin:3px 0 8px}
   .snip{font-size:13px;color:#c3ccd8;margin:2px 0 8px}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
@@ -57,6 +81,46 @@
   .gapline{font-size:13px;color:var(--ink);margin:2px 0 4px}
   .jdtool{margin-bottom:14px}
   footer{color:var(--dim);font-size:12px;text-align:center;padding:20px}
+  /* Top-level tabs (Roles/Tracker/Prep/Profile/Tailor) */
+  .tabbar{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0}
+  .tabbar button{background:transparent;border:1px solid var(--edge);color:var(--dim);padding:8px 16px;border-radius:999px;font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all 200ms}
+  .tabbar button:hover{border-color:var(--hi);color:var(--ink);background:var(--hi-soft)}
+  .tabbar button.on{background:var(--hi);color:#04101f;border-color:var(--hi);box-shadow:0 0 16px rgba(0,212,255,0.35)}
+  /* Tracker kanban */
+  .kboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
+  .kcol{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:12px;min-height:200px}
+  .kcol h3{margin:0 0 12px;font-family:var(--font-mono);font-size:11px;color:var(--subtle);text-transform:uppercase;letter-spacing:.12em;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+  .kcol h3 .kcnt{background:var(--chip);color:var(--ink);border-radius:999px;padding:1px 8px;font-size:11px;letter-spacing:0}
+  .kcard{background:var(--bg);border:1px solid var(--edge);border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px}
+  .kcard .ktitle{font-weight:600;color:var(--ink);margin-bottom:2px}
+  .kcard .ksub{color:var(--dim);font-size:11.5px;margin-bottom:6px}
+  .kcard a{color:var(--hi);text-decoration:none;font-size:11.5px}
+  .kcard a:hover{text-decoration:underline}
+  .kcard .kactions{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;align-items:center}
+  .kcard .kactions button{background:none;border:1px solid var(--edge);color:var(--dim);padding:3px 8px;border-radius:6px;font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all 200ms}
+  .kcard .kactions button:hover{border-color:var(--hi);color:var(--ink)}
+  .kcard .kactions button.del{color:var(--warn);border-color:rgba(255,140,66,0.35)}
+  .kcard .kactions button.del:hover{background:rgba(255,140,66,0.15)}
+  .kcard .kts{font-family:var(--font-mono);font-size:10px;color:var(--subtle);letter-spacing:.04em;margin-left:auto}
+  .kcard textarea.knotes{width:100%;min-height:44px;background:rgba(0,0,0,0.25);border:1px solid var(--edge-soft);color:var(--ink);border-radius:6px;padding:6px 8px;font:12px/1.4 var(--font-body);resize:vertical;margin-top:6px}
+  .kcard textarea.knotes:focus{outline:none;border-color:var(--hi-line)}
+  /* Tailor panel */
+  .tailoffers{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:14px}
+  .taillcard{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:18px 20px}
+  .taillcard h3{margin:0 0 4px;font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.02em}
+  .taillcard .price{font-family:var(--font-display);font-size:34px;font-weight:800;color:var(--wealth);margin:8px 0;letter-spacing:-0.02em}
+  .taillcard ul{padding-left:18px;margin:8px 0;color:var(--ink);font-size:13.5px;line-height:1.6}
+  .taillcard button{width:100%;margin-top:10px}
+  /* Prep tab */
+  .prepgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}
+  .prepcard{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:14px 16px}
+  .prepcard h3{margin:0 0 6px;font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-0.01em}
+  .prepcard p{color:var(--dim);font-size:13px;margin:4px 0;line-height:1.6}
+  /* Save + Tailor buttons on job cards */
+  .jobactions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .jobactions button, .jobactions a.btnlink{background:none;border:1px solid var(--edge);color:var(--dim);padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer;text-decoration:none;display:inline-block}
+  .jobactions button:hover, .jobactions a.btnlink:hover{border-color:var(--hi);color:var(--ink)}
+  .jobactions .saved{color:var(--good);border-color:#1f6b4a}
   /* JB-18: phones */
   @media (max-width:640px){
     header{padding:10px 12px}
@@ -79,11 +143,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-  #map{height:520px;border-radius:12px;border:1px solid var(--edge)}
+  #map{height:520px;border-radius:12px;border:1px solid var(--edge);box-shadow:0 0 0 1px var(--edge-soft) inset}
   .viewtabs{display:flex;gap:6px;margin-bottom:10px}
-  .viewtabs button{background:var(--card);border:1px solid var(--edge);color:var(--ink);padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer}
-  .viewtabs button.on{background:var(--hi);color:#04101f;border-color:var(--hi);font-weight:600}
-  .maplegend{display:flex;flex-wrap:wrap;gap:14px;margin:8px 2px;font-size:12px;color:var(--dim)}
+  .viewtabs button{background:var(--card);border:1px solid var(--edge);color:var(--dim);padding:8px 16px;border-radius:999px;font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:all 200ms}
+  .viewtabs button:hover{color:var(--ink);border-color:var(--hi)}
+  .viewtabs button.on{background:var(--hi);color:#04101f;border-color:var(--hi);box-shadow:0 0 14px rgba(0,212,255,0.3)}
+  .maplegend{display:flex;flex-wrap:wrap;gap:14px;margin:8px 2px;font-family:var(--font-mono);font-size:11px;color:var(--dim);letter-spacing:.04em}
   .maplegend b{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle}
   .leaflet-popup-content{font:13px -apple-system,Segoe UI,sans-serif}
 </style>
@@ -91,13 +156,45 @@
 <body>
 <header>
   <div><h1 id="h1"><b>Job Board</b></h1><div class="meta" id="meta"></div></div>
-  <div><button class="navbtn" id="toSetup" style="display:none">⚙ Setup</button></div>
+  <div class="tabbar" id="topTabs" style="display:none">
+    <button data-tab="roles" class="on">Roles</button>
+    <button data-tab="tracker">Tracker</button>
+    <button data-tab="prep">Prep</button>
+    <button data-tab="tailor">Tailor</button>
+    <button data-tab="profile">Profile</button>
+  </div>
 </header>
 <div class="wrap">
 
   <!-- SETUP VIEW -->
   <div id="setupView">
-    <div class="panel">
+    <div class="panel" id="quickstartPanel" style="display:none">
+      <h2>Welcome to the Job Board</h2>
+      <p class="sub">Add your name and home city to see roles ranked near you — takes 10 seconds. Your CV stays private, add it later for sharper matches.</p>
+      <div class="row">
+        <div class="fld grow"><label for="qsName">Your name</label><input type="search" id="qsName" placeholder="e.g. Priya Patel"></div>
+        <div class="fld grow"><label for="qsHome">Home city</label><input type="search" id="qsHome" placeholder="e.g. London" value="London"></div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn" id="qsGoBtn">See roles →</button>
+        <button class="btn ghost" id="qsCvBtn">Paste CV for personalized matching</button>
+      </div>
+      <div class="hint" style="margin-top:12px">Only your name + home are stored in this browser. Nothing is uploaded.</div>
+    </div>
+    <div class="panel" id="savedProfilePanel" style="display:none">
+      <h2>Your saved profile</h2>
+      <p class="sub" id="savedProfileMeta"></p>
+      <label class="fldlbl">Title triggers</label>
+      <div class="kw" id="savedTitles"></div>
+      <label class="fldlbl">Skills / keywords</label>
+      <div class="kw" id="savedSkills"></div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn ghost" id="reparseBtn">↻ Re-parse CV</button>
+        <button class="btn ghost" id="editKwsBtn">✎ Edit keywords</button>
+        <button class="btn ghost" id="clearProfileBtn" style="color:var(--warn);border-color:rgba(255,140,66,0.35)">✕ Clear profile</button>
+      </div>
+    </div>
+    <div class="panel" id="uploadPanel" style="display:none">
       <h2>Set up your board</h2>
       <p class="sub">Paste your CV (and optionally a cover letter). We extract keywords in your browser — nothing is uploaded — then rank the loaded roles against them. You can edit the keywords before saving.</p>
       <label class="fldlbl">Your CV — paste text, or upload a file (.docx / .pdf / .txt)</label>
@@ -174,6 +271,81 @@
     </div>
   </div>
 
+  <!-- TRACKER VIEW -->
+  <div id="trackerView" style="display:none">
+    <div class="panel">
+      <h2>Pipeline tracker</h2>
+      <p class="sub">Save roles from the board with <b>+ Save to tracker</b>, then use ◀ ▶ to move through the stages. Add notes per card as you apply, interview, and negotiate. Everything stays in this browser — no server, no account.</p>
+      <div class="hint" id="trackerCount"></div>
+    </div>
+    <div class="kboard" id="kboard"></div>
+  </div>
+
+  <!-- PREP VIEW -->
+  <div id="prepView" style="display:none">
+    <div class="panel">
+      <h2>Interview prep</h2>
+      <p class="sub">A lightweight, deterministic starter kit. Every card is a template — no LLM required. The Tailor tab is where paid, reviewed material lives.</p>
+    </div>
+    <div class="prepgrid">
+      <div class="prepcard">
+        <h3>Company brief template</h3>
+        <p>Before every interview, fill this in from the company's website (5–10 min):</p>
+        <p style="color:var(--ink);font-size:13px;line-height:1.7">• What they build (1 sentence)<br>• Who buys it (customer segment)<br>• Their competitors (2–3)<br>• Latest news/funding round<br>• Something specific to ask about the role</p>
+      </div>
+      <div class="prepcard">
+        <h3>Technical questions</h3>
+        <p>Warm up on the fundamentals for your title. Practice by explaining out loud, not silently in your head.</p>
+        <p style="color:var(--ink);font-size:13px;line-height:1.7">• A recent project — 90-second walkthrough<br>• A hard bug you fixed and how<br>• A trade-off decision and its cost<br>• Something you'd do differently in hindsight</p>
+      </div>
+      <div class="prepcard">
+        <h3>Behavioural questions</h3>
+        <p>Use the <b>STAR</b> pattern: Situation, Task, Action, Result. Have 3–4 rehearsed stories.</p>
+        <p style="color:var(--ink);font-size:13px;line-height:1.7">• Conflict with a colleague — resolved<br>• Missed a deadline — recovery<br>• Led a change others resisted<br>• Failure and what you learned</p>
+      </div>
+      <div class="prepcard">
+        <h3>Salary + negotiation</h3>
+        <p>Know your number before the call. Base salary bands come from levels.fyi, Glassdoor, and Blind.</p>
+        <p style="color:var(--ink);font-size:13px;line-height:1.7">• Your desired base (research-backed)<br>• Your walk-away number<br>• Total comp: base + bonus + equity + benefits<br>• Never disclose current salary first</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAILOR VIEW -->
+  <div id="tailorView" style="display:none">
+    <div class="panel">
+      <h2>Tailor your CV to a specific role</h2>
+      <p class="sub">The board scores each role against your CV for free. When you're about to apply, a human-tailored CV — worded for the specific JD — measurably improves callback rates. We keep the pricing simple.</p>
+    </div>
+    <div class="tailoffers">
+      <div class="taillcard">
+        <h3>Standard tailor</h3>
+        <div class="price">$17.99 <span style="color:var(--dim);font-size:13px;font-weight:400">/ role</span></div>
+        <p class="sub">Reworked CV + one-page cover letter targeting one specific JD. 48-hour turnaround.</p>
+        <ul>
+          <li>CV rewritten to the JD's language</li>
+          <li>Keyword coverage aligned to ATS parsers</li>
+          <li>One-page cover letter</li>
+          <li>Two revision passes included</li>
+        </ul>
+        <button class="btn" id="tailorBasicBtn">Request tailor →</button>
+      </div>
+      <div class="taillcard">
+        <h3>Reviewed tailor</h3>
+        <div class="price">$44.99 <span style="color:var(--dim);font-size:13px;font-weight:400">/ role</span></div>
+        <p class="sub">Everything in Standard, plus a P.Eng-reviewed line-edit and interview-question shortlist for the role.</p>
+        <ul>
+          <li>Everything in Standard</li>
+          <li>Line-edit by a Professional Engineer</li>
+          <li>Shortlist of likely interview questions</li>
+          <li>Company brief pulled together for you</li>
+        </ul>
+        <button class="btn" id="tailorProBtn">Request reviewed tailor →</button>
+      </div>
+    </div>
+    <div class="hint" style="margin-top:12px">Payment link is a placeholder for launch (set <code>TAILOR_PAY_URL</code> in the source). Requests currently open a mailto so BT can process manually while the storefront is being wired up.</div>
+  </div>
+
 </div>
 <footer>Deterministic ATS pull + your CV-derived keywords. No LLM in the loop. · <span id="foot"></span></footer>
 
@@ -228,14 +400,37 @@ const EXCL=["technician","operator","assembler","millwright","welder","machinist
 const GAP=["physical design","asic design","analog ic","ic design","tapeout","tape-out","place and route","standard cell"];
 const POWERCTX=["substation","distribution","high-voltage grid","building services","hvac","protection & control","protection and control","power system","kv ","megawatt","switchgear","transformer design"];
 const VARIANT_SKIP=new Set(["product engineer","systems engineer","design engineer"]);
+/* JB-50: skills DB — populated from data/skills.json at boot (see loadSkillsDb).
+   Tech-scoped title categories mirror engine/jobfilter.py _TECH_TITLE_CATS. */
+const DB_TITLE_CATS=new Set(["software_eng","data","devops_platform","hardware","qa_test","product_pm","design","architect_solutions","other_eng","software_specialized","software_by_lang","software_by_framework","additional_data_ml"]);
+let DB_SKILLS=[], DB_TITLES=[];
+function loadSkillsDb(db){
+  if(!db) return;
+  DB_SKILLS=[];
+  (db.skills||[]).forEach(row=>{
+    const forms=[row.canonical||"",...(row.aliases||[])];
+    forms.forEach(f=>{const lo=(f||"").toLowerCase().trim(); if(lo) DB_SKILLS.push(lo);});
+  });
+  DB_TITLES=[];
+  (db.titles||[]).forEach(row=>{
+    if(!DB_TITLE_CATS.has(row.category)) return;
+    const forms=[row.canonical||"",...(row.aliases||[])];
+    forms.forEach(f=>{const lo=(f||"").toLowerCase().trim(); if(lo) DB_TITLES.push(lo);});
+  });
+  DB_SKILLS=[...new Set(DB_SKILLS)]; DB_TITLES=[...new Set(DB_TITLES)];
+}
 function titleVariants(ts){const out=[...ts];ts.forEach(t=>{if(t.endsWith(" engineer")&&!VARIANT_SKIP.has(t)){const r=t.slice(0,-9);out.push(r+" designer",r+" developer",r+" engineering");}});return [...new Set(out)];}
 function scoreJob(j, p){
   const title=(j.title||"").toLowerCase(), body=(j.text||j.snippet||"").toLowerCase(), loc=(j.location||"").toLowerCase();
   const descLen=Math.max(0, body.length-title.length-2);          // j.text = title + ". " + description
   const has=(t,arr)=>arr.filter(n=>t.includes(n));
   if(has(" "+title+" ",EXCL).length) return {verdict:"excluded"};
-  const titleHit=titleVariants(p.titles).filter(t=>tokp(title,t));
-  const conf=[...new Set(p.skills.filter(s=>tokp(body,s)))];
+  const cvTitleHit=titleVariants(p.titles).filter(t=>tokp(title,t));
+  const dbTitleHit=DB_TITLES.filter(t=>tokp(title,t));
+  const titleHit=[...new Set([...cvTitleHit,...dbTitleHit])];
+  const cvConf=p.skills.filter(s=>tokp(body,s));
+  const dbConf=DB_SKILLS.filter(s=>tokp(body,s));
+  const conf=[...new Set([...cvConf,...dbConf])];
   if(!titleHit.length && conf.length<2) return {verdict:"excluded"};
   let score = titleHit.length?5:2, reasons=[];                    // your CV's own titles count as core
   reasons.push(titleHit.length?("title match: "+titleHit.slice(0,2).join(", ")):"keyword-only match");
@@ -286,13 +481,20 @@ function jobCard(j,bucket,i){
   const ring=j.ring!=null?`Ring ${j.ring}`:'';const km=j.km!=null?` · ${j.km} km`:'';const bySal=($('#sortBy')||{}).value==='salary';const sal=j.salary?`<span class="chip sal">${j.salary}</span>`:(bySal?'<span class="chip nosal">no salary listed</span>':'');
   const posted=j.posted?new Date(j.posted).toLocaleDateString('en-CA'):'';
   const link=j.url?`<a href="${j.url}" target="_blank" rel="noopener">${j.title}</a>`:j.title;
+  const jkey=jobKey(j); const saved=isTracked(jkey);
+  const savedLbl=saved?'✓ In tracker':'+ Save to tracker';
+  const savedCls=saved?' saved':'';
   return `<div class="job"><div class="score ${sc(j.score)}">${j.score}</div><div>
     <div class="title">${link}</div>
     <div class="subl">${j.company} · ${j.location_near||j.location}${j.n_locations>1?` <span title="${(j.location||'').replace(/"/g,'&quot;')}" style="text-decoration:underline dotted;cursor:help">+${j.n_locations-1} more</span>`:''}${ring?' · '+ring:''}${km}${posted?' · '+posted:''}</div>
     ${j.snippet?`<div class="snip">${j.snippet}</div>`:''}
     <div class="chips">${sal}<span class="chip src">${j.source||'ats'}</span>${facet}${skills}</div>
     <div class="why">why: ${(j.reasons||[]).join(' · ')}</div>
-    <button class="navbtn" style="margin-top:8px;font-size:12px;padding:5px 10px" onclick="gap('${bucket}',${i})">▾ Gap check</button>
+    <div class="jobactions">
+      <button onclick="gap('${bucket}',${i})">▾ Gap check</button>
+      <button class="save${savedCls}" onclick="saveToTracker('${bucket}',${i})">${savedLbl}</button>
+      <button onclick="openTailor('${bucket}',${i})">✎ Tailor CV</button>
+    </div>
     <div class="gapbox" id="${bucket}gap${i}" style="display:none;padding:0"></div></div></div>`;
 }
 function rescore(){
@@ -329,8 +531,18 @@ function renderBoard(){
   const strong=m.filter(j=>j.score>=7).length;
   $('#count').textContent=`${m.length} role${m.length!==1?'s':''} shown · ${strong} strong (7+)`+(perCo?` · ≤${perCo}/company`:' · all per company');
 }
+const VIEW_IDS=['boardView','trackerView','prepView','tailorView','setupView'];
+const TAB_TO_VIEW={roles:'boardView',tracker:'trackerView',prep:'prepView',tailor:'tailorView',profile:'setupView'};
+function showTab(name){
+  const viewId=TAB_TO_VIEW[name]||'boardView';
+  VIEW_IDS.forEach(id=>{const el=$('#'+id); if(el) el.style.display=(id===viewId)?'block':'none';});
+  document.querySelectorAll('#topTabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===name));
+  if(name==='tracker') renderTracker();
+  if(name==='roles' && PROFILE){ rescore(); renderBoard(); if($('#mapView').style.display==='block') renderMap(); }
+  window.scrollTo(0,0);
+}
 function showBoard(){
-  $('#setupView').style.display='none';$('#boardView').style.display='block';$('#toSetup').style.display='inline-block';
+  $('#topTabs').style.display='flex';
   const who=(PROFILE&&(PROFILE.initials||PROFILE.person))||'';
   $('#h1').innerHTML=`<b>${who?who+' · ':''}Job Board</b>`;
   $('#meta').innerHTML=PROFILE?`${PROFILE.person?PROFILE.person+' · ':''}home: <b>${PROFILE.home||'?'}</b> · ${PROFILE.skills.length} keywords · scored in your browser`:'';
@@ -340,8 +552,104 @@ function showBoard(){
   restoreFilters();
   if(JOBS.mode==='demo')$('#demoBanner').style.display='block';
   rescore();renderBoard();
+  showTab('roles');
 }
-function showSetup(){$('#boardView').style.display='none';$('#setupView').style.display='block';$('#toSetup').style.display='none';$('#h1').innerHTML='<b>Job Board</b>';$('#meta').textContent='';}
+function showSetup(){
+  const who=(PROFILE&&(PROFILE.initials||PROFILE.person))||'';
+  $('#h1').innerHTML=`<b>${who?who+' · ':''}Job Board</b>`;
+  $('#meta').textContent='';
+  renderSavedProfile();
+  if(PROFILE){ $('#topTabs').style.display='flex'; showTab('roles'); }
+  else{ $('#topTabs').style.display='none'; VIEW_IDS.forEach(id=>{const el=$('#'+id); if(el) el.style.display=(id==='setupView')?'block':'none';}); }
+}
+function renderSavedProfile(){
+  const quick=$('#quickstartPanel'), saved=$('#savedProfilePanel'), upload=$('#uploadPanel'), review=$('#reviewPanel');
+  if(!PROFILE){ quick.style.display='block'; saved.style.display='none'; upload.style.display='none'; review.style.display='none'; return; }
+  quick.style.display='none'; saved.style.display='block'; upload.style.display='none'; review.style.display='none';
+  const who=PROFILE.person||'(unnamed)';
+  $('#savedProfileMeta').innerHTML=`${who} · home <b>${PROFILE.home||'?'}</b>${PROFILE.years?` · ~${PROFILE.years} yrs`:''} · ${PROFILE.titles.length} titles · ${PROFILE.skills.length} skills · scored in your browser`;
+  $('#savedTitles').innerHTML=PROFILE.titles.map(t=>`<span class="tag">${t}</span>`).join('')||'<span class="hint">no titles — add CV for personalized matching</span>';
+  $('#savedSkills').innerHTML=PROFILE.skills.map(s=>`<span class="tag">${s}</span>`).join('')||'<span class="hint">no skills — add CV for personalized matching</span>';
+}
+
+/* ---------- tracker (localStorage kanban) ---------- */
+const TRACKER_STAGES=['saved','applied','interviewing','offer','closed'];
+const TRACKER_LABEL={saved:'Saved',applied:'Applied',interviewing:'Interviewing',offer:'Offer',closed:'Closed'};
+let TRACKER=[];
+function loadTracker(){try{const raw=localStorage.getItem('jobboard_tracker');TRACKER=raw?JSON.parse(raw):[];}catch(e){TRACKER=[];}}
+function saveTracker(){try{localStorage.setItem('jobboard_tracker',JSON.stringify(TRACKER));}catch(e){}}
+function jobKey(j){return (j.url||`${j.company}::${j.title}::${j.location||''}`).slice(0,240);}
+function isTracked(k){return TRACKER.some(t=>t.key===k);}
+function saveToTracker(bucket,i){
+  const j=(window.VIS&&window.VIS[bucket]&&window.VIS[bucket][i]); if(!j) return;
+  const k=jobKey(j);
+  if(isTracked(k)){ alert('Already in tracker.'); return; }
+  const now=Date.now();
+  TRACKER.push({key:k,stage:'saved',company:j.company||'',title:j.title||'',location:j.location_near||j.location||'',url:j.url||'',score:j.score||0,notes:'',added:now,moved:now});
+  saveTracker(); renderBoard();
+}
+function moveTracker(k,dir){
+  const t=TRACKER.find(x=>x.key===k); if(!t) return;
+  const idx=TRACKER_STAGES.indexOf(t.stage);
+  const next=Math.max(0,Math.min(TRACKER_STAGES.length-1,idx+dir));
+  if(next===idx) return;
+  t.stage=TRACKER_STAGES[next]; t.moved=Date.now(); saveTracker(); renderTracker();
+}
+function deleteTracker(k){
+  if(!confirm('Remove from tracker?')) return;
+  TRACKER=TRACKER.filter(x=>x.key!==k); saveTracker(); renderTracker(); renderBoard();
+}
+function saveTrackerNotes(k,val){
+  const t=TRACKER.find(x=>x.key===k); if(!t) return;
+  t.notes=val||''; saveTracker();
+}
+function fmtDate(ts){ if(!ts) return ''; const d=new Date(ts); const now=new Date();
+  const days=Math.round((now-d)/86400000);
+  if(days===0) return 'today'; if(days===1) return '1d ago';
+  if(days<7) return days+'d ago'; if(days<30) return Math.round(days/7)+'w ago';
+  return d.toLocaleDateString('en-CA');}
+function renderTracker(){
+  const board=$('#kboard'); if(!board) return;
+  const by={}; TRACKER_STAGES.forEach(s=>by[s]=[]);
+  TRACKER.forEach(t=>{ if(by[t.stage]) by[t.stage].push(t); else by.saved.push(t); });
+  const total=TRACKER.length;
+  const cn=$('#trackerCount'); if(cn) cn.textContent=total?`${total} role${total!==1?'s':''} tracked · ${by.applied.length+by.interviewing.length+by.offer.length} in flight`:'Tracker is empty — head to Roles and Save a job.';
+  board.innerHTML=TRACKER_STAGES.map(s=>{
+    const items=by[s];
+    const cards=items.length?items.map(t=>{
+      const kesc=encodeURIComponent(t.key);
+      const kesc2=t.key.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      const link=t.url?`<a href="${t.url}" target="_blank" rel="noopener">open ↗</a>`:'';
+      const notes=(t.notes||'').replace(/</g,'&lt;');
+      return `<div class="kcard"><div class="ktitle">${t.title||'(untitled)'}</div>
+        <div class="ksub">${t.company||''}${t.location?' · '+t.location:''}${t.score?' · score '+t.score:''}</div>
+        ${link}
+        <textarea class="knotes" placeholder="notes — call log, contact, next step…"
+                  onblur="saveTrackerNotes(decodeURIComponent('${kesc}'),this.value)">${notes}</textarea>
+        <div class="kactions">
+          <button onclick="moveTracker(decodeURIComponent('${kesc}'),-1)" title="Move left">◀</button>
+          <button onclick="moveTracker(decodeURIComponent('${kesc}'),1)" title="Move right">▶</button>
+          <button class="del" onclick="deleteTracker(decodeURIComponent('${kesc}'))">✕</button>
+          <span class="kts">${fmtDate(t.moved||t.added)}</span>
+        </div></div>`;
+    }).join(''):`<div style="color:var(--subtle);font-family:var(--font-mono);font-size:11px;letter-spacing:.06em">— empty —</div>`;
+    return `<div class="kcol"><h3>${TRACKER_LABEL[s]}<span class="kcnt">${items.length}</span></h3>${cards}</div>`;
+  }).join('');
+}
+
+/* ---------- tailor (paid CV rewrite) ---------- */
+const TAILOR_PAY_URL='';   // e.g. 'https://buy.stripe.com/xxx' once live
+function openTailor(bucket,i){
+  const j=(window.VIS&&window.VIS[bucket]&&window.VIS[bucket][i]); if(!j) return;
+  window.__TAILOR_JOB__=j; showTab('tailor');
+}
+function requestTailor(tier){
+  const j=window.__TAILOR_JOB__||{};
+  const subj=`Tailor request (${tier}) — ${j.title||'(role)'} @ ${j.company||'(company)'}`;
+  const body=`Please tailor my CV for this role:%0D%0A%0D%0ACompany: ${j.company||''}%0D%0ATitle:   ${j.title||''}%0D%0ALink:    ${j.url||''}%0D%0ATier:    ${tier} ${tier==='standard'?'($17.99)':'($44.99)'}%0D%0A%0D%0A(Attach your CV to this email.)`;
+  const url=TAILOR_PAY_URL||`mailto:bharanidharant@gmail.com?subject=${encodeURIComponent(subj)}&body=${body}`;
+  window.location.href=url;
+}
 
 /* ---------- setup interactions ---------- */
 let draft={titles:[],skills:[],home:'',years:null};
@@ -379,7 +687,26 @@ $('#saveBtn').onclick=()=>{
   try{localStorage.setItem('jobboard_profile',JSON.stringify(PROFILE));}catch(e){}
   showBoard();
 };
-$('#toSetup').onclick=showSetup;
+$('#qsGoBtn').onclick=()=>{
+  const person=$('#qsName').value.trim();
+  const home=$('#qsHome').value.trim();
+  if(!person){alert('Enter your name first.');return;}
+  const initials=person.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,3);
+  PROFILE={person,titles:[],skills:[],home,years:null,initials};
+  try{localStorage.setItem('jobboard_profile',JSON.stringify(PROFILE));}catch(e){}
+  rescore();showBoard();
+};
+$('#qsCvBtn').onclick=()=>{
+  $('#quickstartPanel').style.display='none';
+  $('#uploadPanel').style.display='block';
+  $('#uploadPanel').scrollIntoView({behavior:'smooth'});
+};
+document.querySelectorAll('#topTabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+$('#tailorBasicBtn').onclick=()=>requestTailor('standard');
+$('#tailorProBtn').onclick=()=>requestTailor('reviewed');
+$('#reparseBtn').onclick=()=>{$('#savedProfilePanel').style.display='none';$('#uploadPanel').style.display='block';$('#cvText').value='';$('#clText').value='';$('#reviewPanel').style.display='none';$('#uploadPanel').scrollIntoView({behavior:'smooth'});};
+$('#editKwsBtn').onclick=()=>{if(!PROFILE)return;draft={titles:[...PROFILE.titles],skills:[...PROFILE.skills],home:PROFILE.home,years:PROFILE.years,name:PROFILE.person};$('#savedProfilePanel').style.display='none';$('#uploadPanel').style.display='none';$('#reviewPanel').style.display='block';$('#homeCity').value=PROFILE.home||'';$('#yourName').value=PROFILE.person||'';$('#detected').textContent=`Editing your saved profile — ${PROFILE.titles.length} titles, ${PROFILE.skills.length} skills`;renderTags();$('#reviewPanel').scrollIntoView({behavior:'smooth'});};
+$('#clearProfileBtn').onclick=()=>{if(!confirm('Clear your saved CV/keywords? This browser will forget your profile.'))return;PROFILE=null;try{localStorage.removeItem('jobboard_profile');}catch(e){}rescore();showSetup();};
 $('#jdBtn').onclick=()=>{const t=$('#jdIn').value.trim();$('#jdOut').innerHTML=t?gapHtml(gapAnalysis(t)):'<div class="hint">Paste a job description first.</div>';};
 /* JB-8: remember filter + min-score choices per browser */
 const FKEYS=['q','arrangement','country','industry','minScore','ring','sortBy','perCo','mapStatus'];
@@ -464,9 +791,21 @@ $('#mapStatus').addEventListener('input',()=>{saveFilters();renderMap();});
 function init(d){
   JOBS=d;$('#foot').textContent=`generated ${new Date(d.generated).toLocaleString('en-CA')} · ${d.mode}`;
   try{const p=localStorage.getItem('jobboard_profile');if(p){PROFILE=JSON.parse(p);}}catch(e){}
+  loadTracker();
   if(PROFILE)showBoard(); else showSetup();
 }
-fetch('./data/jobs.json?_='+Date.now()).then(r=>r.json()).then(init).catch(e=>{$('#meta').textContent='Could not load data/jobs.json — run the fetcher first.';showSetup();});
+/* JB-50: load the canonical skills DB alongside jobs.json (best-effort — a
+   missing/broken DB just leaves DB_SKILLS/DB_TITLES empty, browser falls back
+   to CV-only scoring). window.__EMBED_SKILLS__ short-circuits the fetch for
+   the offline standalone build. */
+function bootWithSkills(d){
+  if(window.__EMBED_SKILLS__){loadSkillsDb(window.__EMBED_SKILLS__); init(d); return;}
+  fetch('./data/skills.json?_='+Date.now())
+    .then(r=>r.ok?r.json():null)
+    .then(db=>{loadSkillsDb(db); init(d);})
+    .catch(()=>init(d));
+}
+fetch('./data/jobs.json?_='+Date.now()).then(r=>r.json()).then(bootWithSkills).catch(e=>{$('#meta').textContent='Could not load data/jobs.json — run the fetcher first.';showSetup();});
 </script>
 </body>
 </html>
