@@ -168,6 +168,19 @@
 
   <!-- SETUP VIEW -->
   <div id="setupView">
+    <div class="panel" id="quickstartPanel" style="display:none">
+      <h2>Welcome to the Job Board</h2>
+      <p class="sub">Add your name and home city to see roles ranked near you — takes 10 seconds. Your CV stays private, add it later for sharper matches.</p>
+      <div class="row">
+        <div class="fld grow"><label for="qsName">Your name</label><input type="search" id="qsName" placeholder="e.g. Priya Patel"></div>
+        <div class="fld grow"><label for="qsHome">Home city</label><input type="search" id="qsHome" placeholder="e.g. London" value="London"></div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn" id="qsGoBtn">See roles →</button>
+        <button class="btn ghost" id="qsCvBtn">Paste CV for personalized matching</button>
+      </div>
+      <div class="hint" style="margin-top:12px">Only your name + home are stored in this browser. Nothing is uploaded.</div>
+    </div>
     <div class="panel" id="savedProfilePanel" style="display:none">
       <h2>Your saved profile</h2>
       <p class="sub" id="savedProfileMeta"></p>
@@ -181,7 +194,7 @@
         <button class="btn ghost" id="clearProfileBtn" style="color:var(--warn);border-color:rgba(255,140,66,0.35)">✕ Clear profile</button>
       </div>
     </div>
-    <div class="panel" id="uploadPanel">
+    <div class="panel" id="uploadPanel" style="display:none">
       <h2>Set up your board</h2>
       <p class="sub">Paste your CV (and optionally a cover letter). We extract keywords in your browser — nothing is uploaded — then rank the loaded roles against them. You can edit the keywords before saving.</p>
       <label class="fldlbl">Your CV — paste text, or upload a file (.docx / .pdf / .txt)</label>
@@ -542,19 +555,21 @@ function showBoard(){
   showTab('roles');
 }
 function showSetup(){
-  $('#h1').innerHTML='<b>Job Board</b>';$('#meta').textContent='';
+  const who=(PROFILE&&(PROFILE.initials||PROFILE.person))||'';
+  $('#h1').innerHTML=`<b>${who?who+' · ':''}Job Board</b>`;
+  $('#meta').textContent='';
   renderSavedProfile();
-  if(PROFILE){ $('#topTabs').style.display='flex'; showTab('profile'); }
+  if(PROFILE){ $('#topTabs').style.display='flex'; showTab('roles'); }
   else{ $('#topTabs').style.display='none'; VIEW_IDS.forEach(id=>{const el=$('#'+id); if(el) el.style.display=(id==='setupView')?'block':'none';}); }
 }
 function renderSavedProfile(){
-  const saved=$('#savedProfilePanel'), upload=$('#uploadPanel'), review=$('#reviewPanel');
-  if(!PROFILE){ saved.style.display='none'; upload.style.display='block'; return; }
-  saved.style.display='block'; upload.style.display='none'; review.style.display='none';
+  const quick=$('#quickstartPanel'), saved=$('#savedProfilePanel'), upload=$('#uploadPanel'), review=$('#reviewPanel');
+  if(!PROFILE){ quick.style.display='block'; saved.style.display='none'; upload.style.display='none'; review.style.display='none'; return; }
+  quick.style.display='none'; saved.style.display='block'; upload.style.display='none'; review.style.display='none';
   const who=PROFILE.person||'(unnamed)';
   $('#savedProfileMeta').innerHTML=`${who} · home <b>${PROFILE.home||'?'}</b>${PROFILE.years?` · ~${PROFILE.years} yrs`:''} · ${PROFILE.titles.length} titles · ${PROFILE.skills.length} skills · scored in your browser`;
-  $('#savedTitles').innerHTML=PROFILE.titles.map(t=>`<span class="tag">${t}</span>`).join('')||'<span class="hint">no titles</span>';
-  $('#savedSkills').innerHTML=PROFILE.skills.map(s=>`<span class="tag">${s}</span>`).join('')||'<span class="hint">no skills</span>';
+  $('#savedTitles').innerHTML=PROFILE.titles.map(t=>`<span class="tag">${t}</span>`).join('')||'<span class="hint">no titles — add CV for personalized matching</span>';
+  $('#savedSkills').innerHTML=PROFILE.skills.map(s=>`<span class="tag">${s}</span>`).join('')||'<span class="hint">no skills — add CV for personalized matching</span>';
 }
 
 /* ---------- tracker (localStorage kanban) ---------- */
@@ -671,6 +686,20 @@ $('#saveBtn').onclick=()=>{
   PROFILE={person,titles:draft.titles,skills:draft.skills,home,years:draft.years,initials};
   try{localStorage.setItem('jobboard_profile',JSON.stringify(PROFILE));}catch(e){}
   showBoard();
+};
+$('#qsGoBtn').onclick=()=>{
+  const person=$('#qsName').value.trim();
+  const home=$('#qsHome').value.trim();
+  if(!person){alert('Enter your name first.');return;}
+  const initials=person.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,3);
+  PROFILE={person,titles:[],skills:[],home,years:null,initials};
+  try{localStorage.setItem('jobboard_profile',JSON.stringify(PROFILE));}catch(e){}
+  rescore();showBoard();
+};
+$('#qsCvBtn').onclick=()=>{
+  $('#quickstartPanel').style.display='none';
+  $('#uploadPanel').style.display='block';
+  $('#uploadPanel').scrollIntoView({behavior:'smooth'});
 };
 document.querySelectorAll('#topTabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 $('#tailorBasicBtn').onclick=()=>requestTailor('standard');
