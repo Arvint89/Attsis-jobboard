@@ -222,3 +222,64 @@ def classify(job, extra_flags=None):
     verdict = "match" if score >= REPORT_THRESHOLD else "below"
     return {"verdict": verdict, "score": score, "reasons": reasons,
             "flags": sorted(set(flags)), "matched": sorted(set(m for m in matched if m))}
+
+
+def score_explanation(result: dict) -> str:
+    """JB-63: turn classify()'s reasons[] shorthand into a one-paragraph English
+    sentence a non-engineer can read. Addresses COMMERCIALIZATION_RISKS.md §3.4
+    ("score reasons are debug output, not user-grade").
+
+    Deterministic. No LLM. Mirrors the exact decisions classify() made so a
+    paying user can see WHY a role scored what it did -- including excluded
+    jobs, so "why isn't this on my board" has an answer.
+    """
+    verdict = result.get("verdict", "")
+    score = result.get("score", 0)
+    reasons = result.get("reasons", []) or []
+    matched = result.get("matched", []) or []
+
+    if verdict == "excluded":
+        # Reason strings are short tags; expand each.
+        tag = reasons[0] if reasons else "excluded"
+        if tag.startswith("off-profile title"):
+            return f"Excluded: the title names a role outside your profile ({tag.split(':',1)[1].strip()})."
+        if tag == "pure-software":
+            return "Excluded: looks like a pure-software role (no embedded/firmware signal in the description)."
+        if tag == "not relevant to profile":
+            return "Excluded: no title triggers matched and fewer than 2 of your CV skills appear in the description."
+        if tag.startswith("stale"):
+            return f"Excluded: posting is {tag.split('(',1)[1].rstrip(')').strip()} old (past the freshness window)."
+        return f"Excluded: {tag}."
+
+    # Score explanation for match / below.
+    parts = []
+    for r in reasons:
+        if r == "keyword-only match":
+            parts.append("the description mentions your profile keywords but the title didn't name a role you target (+2 base)")
+        elif r.startswith("title match"):
+            titles = r.split(":", 1)[1].strip()
+            parts.append(f"the title names {titles}, which maps to a role you target (+4-5 base)")
+        elif r.startswith("skills x"):
+            n = r.replace("skills x", "").strip()
+            boost = "+1" if int(n) < 4 else "+2" if int(n) < 8 else "+3"
+            sample = ", ".join(matched[:3])
+            parts.append(f"your CV lists {n} skills that appear in the description ({boost}: {sample}{'...' if len(matched)>3 else ''})")
+        elif r == "no skills in body":
+            parts.append("none of your CV skills appear in the description text (-1)")
+        elif r == "no description from source":
+            parts.append("the source only shipped a title (no description to score against -- not penalised)")
+        elif r == "senior/lead(+1)":
+            parts.append("title mentions senior/lead/principal/staff (+1)")
+        elif r.startswith("profile gap"):
+            gap = r.split(":", 1)[1].strip()
+            parts.append(f"title names {gap}, which your profile flags as a gap")
+        elif r == "power/building-services(-2)":
+            parts.append("description reads as power/building-services (not your embedded profile) and fewer than 2 skills matched (-2)")
+        elif r == "commutable/remote(+1)":
+            parts.append("role is remote or inside your inner commute rings (+1)")
+        else:
+            parts.append(r)
+
+    joined = "; ".join(parts) if parts else "no scoring signal captured"
+    verb = "matches" if verdict == "match" else "scored below your match threshold"
+    return f"Score {score}/10 ({verb}): {joined}."
