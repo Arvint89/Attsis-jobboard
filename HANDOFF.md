@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-09-30 (evening)** — big UI/UX + registry push: 5-tab shell (roles/tracker/prep/tailor/profile) + 3 new views wired in site/index.html; design tokens (Syne/Inter/JetBrainsMono, cosmic-navy palette) ported from prototype; profile & tracker polish (saved-profile panel, per-card notes, stage timestamps); registry seeded +33 Canadian tech scaleups then CI resolve-sweep promoted 10 of them to real ATS (ashby×4, greenhouse×2, workday, bamboohr, lever, rippling). PRs #140–#144 all merged. Registry now **209 companies**, **172** still on `platform:"resolve"`. Sweep #36771519109 kicked to pick up the 10 promotions on the live board._
+_Last updated: **2026-10-01 (overnight autonomous run)** — JB-61 quickstart onboarding removes the forced CV gate (name + home city enough); release PR #148 shipped 41 commits main → production; back-merge PR #149 reconciled the JB-49 double-promotion history divergence. Then while BT slept: **JB-62** sweep-hang diagnostic + bounded Getro pagination (#150), **commercialization risks catalog** (#151 — 6-section doc + 7-item pre-launch checklist), **JB-63** user-grade `score_explanation()` helper wired into every row in `jobs.json` (#152). Earlier evening: 5-tab shell + design tokens + registry 176 → 209 + 10 ATS promotions. See §2 for the lift-expectations list._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -38,14 +38,14 @@ job-hunt tool. Prioritise coverage and generalisation over tuning the scorer to 
 
 ---
 
-## 2. Where it actually stands (verified 2026-09-30, post-overnight-run)
+## 2. Where it actually stands (verified 2026-10-01, post-overnight)
 
 The board is **live and healthy**. The pipeline works end to end.
 
 | Check | Result |
 |---|---|
 | Registry size | **209 companies** (was 176; +33 Canadian tech scaleups via #143) |
-| Unit tests | **246 passed** ✅ |
+| Unit tests | **252 passed** ✅ (+6 JB-63 score_explanation tests) |
 | Smoke checks | **11/11 passed** ✅ |
 | Release tagging | **Auto** — `VERSION` → `v<VERSION>` on push to main (JB-27, #116); idempotent no-op if tag exists |
 | Adapter live-check | **4 CI diagnostic workflows**: `verify-dayforce.yml`, `resolve-sweep.yml`, `verify-promotions.yml`, `probe-getro.yml` (all workflow_dispatch, read-only) |
@@ -86,6 +86,11 @@ The board is **live and healthy**. The pipeline works end to end.
 - **Profile + tracker polish** (#142) — new `#savedProfilePanel` above `#uploadPanel` with `renderSavedProfile()` showing name/home/years/title+skill tags on load; buttons `#reparseBtn`, `#editKwsBtn`, `#clearProfileBtn`. Tracker cards now have inline `knotes` textarea (persists on blur via `saveTrackerNotes()`), a `kts` timestamp span, and a `fmtDate()` relative-time helper ('today' / '3d ago' / '2w ago'). Panel header shows `#trackerCount` — "N tracked · M in flight".
 - **JB-59 registry seeding v2** (#143) — added 33 Canadian tech scaleups as `platform:"resolve"` with `careers_url` + `city` + `industry`. Cities: Toronto ×14, Vancouver ×8, Montreal ×2, Ottawa ×2, Kitchener ×2, Quebec City ×1, Calgary ×1. Registry grew 176 → 209. Next CI resolve-sweep run 36766233749 auto-classified 11 supported hits (1 known dayforce false positive).
 - **JB-60 batch 2 promotions** (#144) — promoted the 10 real hits from JB-59 sweep to their actual ATS+slug: 1Password/Wealthsimple/Rewind/KOHO → ashby; Plooto/Flipp → greenhouse; Tulip Retail → bamboohr; Deep Genomics → lever; Plusgrade → workday (tenant=plusgrade, site=Plusgrade_External_Site, dc=wd10); Athennian → rippling. All 10 now fetched directly by daily sweep. Sweep run 36771519109 triggered post-merge to lift the live board.
+- **JB-61 quickstart onboarding** (#147) — removed the hard CV gate from `site/index.html`. First-visit users see a `#quickstartPanel` with name + home city (city defaults to "London") → the board. CV upload stays as an optional personalisation path. Returning users land on the Roles tab with `{initials} · Job Board` header. Scoring falls back to the DB_TITLES + DB_SKILLS canonical lists when no CV-derived profile exists.
+- **Release ops** — PR #148 shipped 41 commits main → production (BT squash-merged after back-merge PR #149 reconciled the JB-49 double-promotion history divergence — same content on main + production at different hashes). Pre-merge PR #148 came back DIRTY; `git merge origin/production --no-ff -X ours` on a `chore/` branch resolved it as a true merge (not --squash) so the ancestry link survives for future production PRs.
+- **JB-62 sweep hang** (#150) — sweep run 36818235757 hung >15 min with ZERO stdout from `build_board.py` → cancelled blind. Two fixes: (a) per-phase stdout in `gather()` (registry fetch, resolve-pass, promoted fetch, sources, enrich) with `flush=True` so next hang names the phase AND the slow board; (b) `fetch_getro` default `max_pages: 15 → 8` (still covers top ~160 relevance-ranked results per keyword query). Next sweep's log will tell us whether the resolver pass or the Getro loop is actually the bottleneck.
+- **COMMERCIALIZATION_RISKS catalog** (#151) — new `docs/COMMERCIALIZATION_RISKS.md` cataloging what BUSINESS_PLAN.md doesn't: architectural cliffs (batch-static-JSON breaks ~2k roles / 500 companies; no multi-tenant isolation; resolver cold-cache hang), data risks (4/6 sources are Getro; DEFAULT_QUERIES is tech-only; LinkedIn/Indeed off-limits for commercial scraping), product gaps for paid tier (no server-side state → no cross-device/email alerts; no payment infra; CV-local vs employer tier conflict; score reasons are debug output), legal (no ToS/Privacy/RTBF, robots.txt not checked), operational (single-maintainer bus factor, support load scales with free users, no acquisition channel). Ends with a 7-item pre-launch checklist. Headline: _"Nothing here blocks the personal-use board. Everything blocks taking money."_
+- **JB-63 score_explanation** (#152) — `jobfilter.score_explanation(result) → str` turns the debug-shorthand `reasons[]` into one plain-English sentence per job. Mitigates risks §3.4. Deterministic (no LLM). Wired into every row in `site/data/jobs.json` so the UI can later render it without a second classify roundtrip. 6 new tests cover matched / excluded-pure-software / stale / off-profile-title / keyword-only-below / single-line-shape. UI card wiring intentionally NOT in this PR — needs browser visual review.
 
 ### Sweep-miss analysis (2026-09-28, 16 misses of 23 known-good roles)
 
@@ -249,9 +254,18 @@ Calgary — grab actual URLs from a browser first, then re-probe.
 
 ## 6. Work in flight
 - Nothing uncommitted on `main`.
-- 2026-09-30 evening: 5 more PRs merged (#140 5-tab UI shell + 3 views, #141 design tokens, #142 profile+tracker polish, #143 +33 Canadian scaleups, #144 promote 10 sweep hits). Closed superseded issues #134/#9/#10/#13. Registry 176 → 209. `platform:"resolve"` count 148 → 172 (added 33, promoted 10, net +14 seeded pending sweep).
-- **Sweep triggered** post-#144: run 36771519109 on main (workflow_dispatch). When complete, the 10 promoted companies should surface live on https://arvint89.github.io/Attsis-jobboard/ — check `python tools/sweep_recall.py` for the lift.
-- Next BLs: **#137 ONBIS spike** (needs BT scope), **#135 intake form** (P1 commercialization, UI shell ready), **JB-5 batch 3** (`ttcportals`/`ultipro`/`scouterecruit` adapters — needs live API discovery), **probe-getro v2** with real custom-domain URLs, **JB-46 LinkedIn scout at scale** on the 172 remaining `resolve` entries.
+- **2026-10-01 overnight** (autonomous run per BT's "continue till you finish it in the main" directive): 3 more PRs merged on `main` — #150 JB-62 sweep-hang diagnostic + bounded Getro, #151 COMMERCIALIZATION_RISKS catalog, #152 JB-63 score_explanation helper. Also earlier that night: #147 JB-61 quickstart onboarding, #148 release PR main→production (41 commits), #149 back-merge PR for history reconciliation.
+- **Production is current** — `origin/production` at 6d9e0cb after #148 (as of 2026-10-01). Live board should now show the 5-tab shell + JB-60 promotions + quickstart onboarding.
+- **Sweep status unknown** — run 36818235757 was cancelled at 15 min with no stdout; the JB-62 diagnostic now in `main` means the NEXT sweep's log will finally say which phase is slow. BT needs to trigger the next sweep manually (not me — production is off-limits) and watch for `[gather]` lines in the "Fetch all ATS + build board" step.
+- Next BLs (ordered by now-pickability):
+  - **UI wire for JB-63 explanation** — `site/index.html` card expand-state should render `row.explanation`. Visual-review task for BT (I couldn't do it overnight without the browser).
+  - **JB-62 phase 2** — once we have per-phase timings from the next sweep log, decide whether to split the resolver pass to its own weekly workflow (writing `resolver_cache.json` as its only artifact). This was previously the "right fix" shelved pending diagnostic data.
+  - **#137 ONBIS spike** (needs BT scope).
+  - **#135 intake form** (P1 commercialization, UI shell ready).
+  - **JB-5 batch 3** (`ttcportals`/`ultipro`/`scouterecruit` adapters — needs live API discovery).
+  - **probe-getro v2** with real custom-domain URLs.
+  - **JB-46 LinkedIn scout at scale** on the 172 remaining `resolve` entries.
+  - **Minor cleanup** — `classify()` puts title_hits into `matched[]` alongside skills, so JB-63 explanations say _"skills: embedded firmware engineer"_. Fix in classify(), one-line.
 - **Release ops changed** (2026-09-29 with JB-27): to cut a release, edit `VERSION` + `CHANGELOG.md` in the same commit → merge to main → `auto-tag` workflow creates `v<VERSION>` on that commit automatically. No manual `git tag` step. See `VERSIONING.md`.
 - **CI-diagnostic pattern now proven 4 times** (2026-09-29/30): `workflow_dispatch` + read-only script for live-network probes. References: `verify-dayforce.yml` (adapter validation), `resolve-sweep.yml` (bulk resolver sweep), `verify-promotions.yml` (post-promotion live check), `probe-getro.yml` (aggregator discovery). Reuse for any future sandbox-blocked probe.
 
@@ -315,6 +329,6 @@ docs/project/       GITHUB_PROJECT_SETUP · RELEASE_PROCESS · PROJECT_PLAN
 
 ### How to verify everything still works
 ```powershell
-python -m pytest tests/ -q          # expect 246 passed
+python -m pytest tests/ -q          # expect 252 passed
 cd engine ; python smoke_test.py    # expect 11/11 PASS
 ```
