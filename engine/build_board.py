@@ -410,7 +410,9 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "score": res["score"], "flags": res["flags"],
             "arrangement": arrangement, "country": country,
             "industry": industry, "sponsorship": sponsor,
-            "reasons": res["reasons"], "matched": res["matched"], "snippet": snippet,
+            "reasons": res["reasons"], "matched": res["matched"],
+            "explanation": jobfilter.score_explanation(res),   # JB-63: user-grade WHY
+            "snippet": snippet,
             "text": full,
         }
         rows.append(row)
