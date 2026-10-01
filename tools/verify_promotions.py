@@ -1,11 +1,11 @@
-"""Live verification of the JB-5 batch 1 promotions (PR #125).
+"""Live verification of the resolve->real-ATS promotions.
 
-Reads engine/companies.json, filters to the 11 companies promoted from
-platform:"resolve" to a real ATS in #125, calls each fetcher against the real
-portal, and prints a per-company diagnostic. Sandbox blocks the outbound calls,
-so this is meant to run in CI (verify-promotions.yml, workflow_dispatch) on
-main -- job-sweep.yml checks out `production` and can't be used to test
-main-only work.
+Reads engine/companies.json, filters to the companies promoted from
+platform:"resolve" to a real ATS across JB-5 batch 1 (#125) and JB-60 batch 2
+(#144), calls each fetcher against the real portal, and prints a per-company
+diagnostic. Sandbox blocks the outbound calls, so this is meant to run in CI
+(verify-promotions.yml, workflow_dispatch) on main -- job-sweep.yml checks out
+`production` and can't be used to test main-only work.
 
 Exit code is always 0 -- the point is to surface data, not to fail the run.
 Read the log; if a company returns 0 jobs, the resolver-guessed slug is wrong
@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.join(ROOT, "engine"))
 import ats  # noqa: E402
 
 PROMOTED = {
+    # JB-5 batch 1 (#125)
     "BOS Innovations",
     "Nicoya Lifesciences",
     "Voltera",
@@ -34,6 +35,17 @@ PROMOTED = {
     "Digital Extremes",
     "Big Viking Games",
     "Manitoulin Transport",
+    # JB-60 batch 2 (#144)
+    "1Password",
+    "Wealthsimple",
+    "Tulip Retail",
+    "Deep Genomics",
+    "Plusgrade",
+    "Plooto",
+    "Rewind",
+    "Flipp",
+    "KOHO",
+    "Athennian",
 }
 
 
