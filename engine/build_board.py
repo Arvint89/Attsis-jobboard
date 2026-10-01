@@ -364,11 +364,20 @@ def cap_per_company(rows, n=PER_COMPANY_CAP):
 
 
 def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
+    # JB-64: per-phase stdout for the post-gather half of build() so CI logs name
+    # the slow phase. gather() already logs its own phases (JB-62); this covers
+    # the ~15min tail that was invisible between enrich_via_ats finishing and the
+    # deploy step starting -- most of which is classify+geo over 5k jobs and the
+    # standalone-HTML json.dumps of the whole payload.
     import time as _time
     _t0 = _time.monotonic()
+    def _say(msg): print(msg, flush=True)
     home, person, initials = load_home()
     raw, errors, unresolved = gather(demo)
+    _t = _time.monotonic()
     raw = [ _defaults(j) for j in dedupe(raw) ]
+    _say(f"[build] dedupe+defaults: {_time.monotonic()-_t:.1f}s -> {len(raw)} jobs")
+    _t = _time.monotonic()
     rows = []
     classified = []
     for j in raw:
@@ -416,6 +425,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "text": full,
         }
         rows.append(row)
+    _say(f"[build] classify+geo+facets loop: {_time.monotonic()-_t:.1f}s -> {len(rows)} kept of {len(raw)}")
+    _t = _time.monotonic()
     # JB-22: keep ALL roles in the data — the per-company cap is now a filter the
     # user controls on the board (default top-N/company, or "All"), not a hard drop.
     matches = [r for r in rows if r["score"] >= min_score]
@@ -427,6 +438,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
                   "industry": opts("industry"), "sponsorship": opts("sponsorship")}
     matches.sort(key=lambda r: (-r["score"], r.get("ring") if r.get("ring") is not None else 9))
     below.sort(key=lambda r: -r["score"])
+    _say(f"[build] split+facets+sort: {_time.monotonic()-_t:.1f}s -> {len(matches)} matches, {len(below)} below")
+    _t = _time.monotonic()
 
     # JB-26: company map — every registry company placed, coloured by hiring status
     strong, anyc = {}, {}
@@ -468,6 +481,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "status": "fit" if s else "open",
             "careers_url": r.get("url", ""), "discovered": True,
         })
+    _say(f"[build] companies_map: {_time.monotonic()-_t:.1f}s -> {len(companies_map)} entries")
+    _t = _time.monotonic()
 
     os.makedirs(DATA, exist_ok=True)
     payload = {
@@ -500,10 +515,14 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     disc_jobs = [j for j in raw if j.get("_discovered")]
     _, promote_alerts = _discovered.record(disc_jobs, reg_keys, DATA, live=not demo)
     payload["alerts"] = list(payload["alerts"]) + promote_alerts
+    _say(f"[build] payload+alerts: {_time.monotonic()-_t:.1f}s")
+    _t = _time.monotonic()
     with open(os.path.join(DATA, "jobs.json"), "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:
         json.dump(unresolved, f, indent=2, ensure_ascii=False)
+    _say(f"[build] write jobs.json+resolve.json: {_time.monotonic()-_t:.1f}s")
+    _t = _time.monotonic()
     # JB-50: publish the skills DB as a static asset so the browser scorer can
     # fetch it. Source of truth is <root>/data/skills.json.
     _skills_src = os.path.join(ROOT, "data", "skills.json")
@@ -536,6 +555,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         std = std.replace("<script>", inline + "<script>", 1)
         with open(os.path.join(ROOT, "site", "board_standalone.html"), "w", encoding="utf-8") as f:
             f.write(std)
+    _say(f"[build] standalone HTML + skills copy: {_time.monotonic()-_t:.1f}s "
+         f"(total build: {_time.monotonic()-_t0:.1f}s)")
 
     print(f"[{payload['mode']}] {len(matches)} matches (>= {min_score}), "
           f"{len(below)} below, {len(errors)} fetch-errors, "
