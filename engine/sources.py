@@ -136,7 +136,7 @@ def _norm_getro(job: dict, board: str) -> dict:
 # ---------------------------------------------------------------------------
 # adapters
 # ---------------------------------------------------------------------------
-def fetch_getro(name: str, network_id, queries=None, per_page: int = 20, max_pages: int = 15) -> list:
+def fetch_getro(name: str, network_id, queries=None, per_page: int = 20, max_pages: int = 8) -> list:
     """Pull a Getro board by network_id. Runs each keyword query, merges, dedupes by job id.
 
     JB-30b/JB-39: each query is paged (0, 1, 2 ...) until a page is empty, the query's reported
@@ -144,6 +144,10 @@ def fetch_getro(name: str, network_id, queries=None, per_page: int = 20, max_pag
     so page length alone is NOT a reliable "last page" signal (it made us stop after page 0). A failing request skips only the rest of THAT query -- jobs
     already collected are kept. Every request failing -> []. Never raises.
     Confirmed shapes: MaRS 383, Communitech 8936.
+    JB-62: default max_pages lowered from 15 to 8 after sweep run 36818235757 hung >15 min.
+    4 boards x 11 queries x 15 pages x ~500 ms = ~5 min just for Getro; 8 keeps the ceiling
+    reasonable while still covering the top ~160 results per query (relevance-ranked, so the
+    tail is low-signal anyway).
     """
     url = f"https://api.getro.com/api/v2/collections/{network_id}/search/jobs"
     queries = queries or DEFAULT_QUERIES
