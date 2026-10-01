@@ -199,6 +199,7 @@ def resolve_registry_entries(entries, resolver):
 
 def gather(demo: bool):
     """Return (all_jobs, errors, unresolved)."""
+    import time as _time
     LAST_RESOLVER["stats"] = None
     LAST_RESOLVER["cache"] = None
     if demo:
@@ -213,6 +214,12 @@ def gather(demo: bool):
     for entry in registry:
         if entry.get("platform") not in (None, "", "resolve"):
             known.add((entry["platform"], entry.get("slug", "")))
+    # JB-62: per-phase stdout so CI logs name the culprit when gather() hangs. Flush each
+    # line because stdout is block-buffered under GHA until the process exits.
+    def _say(msg):
+        print(msg, flush=True)
+    _say(f"[gather] registry: {len(registry)} entries ({sum(1 for e in registry if e.get('platform') == 'resolve')} to resolve)")
+    _t_reg = _time.monotonic()
     for entry, (got, err) in zip(registry, parallel_map(ats.fetch_company, registry)):
         if err == "unresolved":
             unresolved.append(entry)
@@ -226,9 +233,17 @@ def gather(demo: bool):
             j["_industry"] = entry.get("industry", "other")
             j["_sponsors"] = entry.get("sponsors")
         jobs += got
+    _say(f"[gather] registry fetch done in {_time.monotonic()-_t_reg:.1f}s "
+         f"-> {len(jobs)} jobs, {len(errors)} errors, {len(unresolved)} unresolved")
 
     # JB-43: try to resolve registry entries whose platform is 'resolve' (sniff careers_url).
+    _t_resolve = _time.monotonic()
     promoted, unresolved = resolve_registry_entries(unresolved, _r)
+    _say(f"[gather] resolver sniffed {len(unresolved)+len(promoted)} careers pages in "
+         f"{_time.monotonic()-_t_resolve:.1f}s -> {len(promoted)} promoted, {len(unresolved)} still unresolved "
+         f"(cached={_r.stats['cached']} fetched={_r.stats['fetched']} failed={_r.stats['failed']} "
+         f"capped={_r.stats['skipped_cap']})")
+    _t_prom = _time.monotonic()
     for entry, (got, err) in zip(promoted, parallel_map(ats.fetch_company, promoted)):
         if err:
             errors.append({"company": entry["name"], "error": err})
@@ -240,21 +255,33 @@ def gather(demo: bool):
             j["_sponsors"] = entry.get("sponsors")
         jobs += got
         known.add((entry["platform"], entry.get("slug", "")))
+    _say(f"[gather] promoted-resolve fetch done in {_time.monotonic()-_t_prom:.1f}s "
+         f"-> {len(jobs)} jobs cumulative")
 
     # JB-3: second tier -- board SOURCES (aggregators) return many companies' jobs
     # at once, covering companies that aren't on an auto-probeable ATS.
     source_jobs = []
     src = sources.load_sources()
+    _say(f"[gather] sources: {len(src)} boards ({', '.join(s.get('name','?') for s in src)})")
+    _t_src = _time.monotonic()
     for entry, (got, err) in zip(src, parallel_map(sources.fetch_source, src)):
         if err:
             errors.append({"company": entry["name"], "error": err})
+        _say(f"[gather]   {entry.get('name','?')}: {len(got)} jobs"
+             + (f"  ERR: {err}" if err else ""))
         source_jobs += got
+    _say(f"[gather] sources fetch done in {_time.monotonic()-_t_src:.1f}s "
+         f"-> {len(source_jobs)} source jobs")
     # JB-5: follow apply links to each company's own ATS (full descriptions + every role)
     # JB-43: resolver fetches the careers page once when the aggregator link has no detectable ATS
+    _t_enrich = _time.monotonic()
     got, info = enrich_via_ats(source_jobs, known,
                                relevant=lambda j: jobfilter.classify(j)["verdict"] != "excluded",
                                in_region=lambda j: facets.country(j.get("location", "")) == "Canada",
                                resolver=_r)
+    _say(f"[gather] enrich_via_ats done in {_time.monotonic()-_t_enrich:.1f}s "
+         f"-> discovered {len(info['discovered'])} new companies, {info['enriched']} stubs replaced, "
+         f"{len(got)} jobs after enrich")
     errors += info["errors"]
     LAST_DISCOVERY.update(info)
     # JB-56: cross-reference discovered jobs against the registry by name so that
@@ -383,7 +410,9 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "score": res["score"], "flags": res["flags"],
             "arrangement": arrangement, "country": country,
             "industry": industry, "sponsorship": sponsor,
-            "reasons": res["reasons"], "matched": res["matched"], "snippet": snippet,
+            "reasons": res["reasons"], "matched": res["matched"],
+            "explanation": jobfilter.score_explanation(res),   # JB-63: user-grade WHY
+            "snippet": snippet,
             "text": full,
         }
         rows.append(row)
