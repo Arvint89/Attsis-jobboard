@@ -64,15 +64,40 @@ try:
     r = subprocess.run([sys.executable, os.path.join(HERE,"build_board.py"), "--demo"], capture_output=True, text=True)
     check("demo build exits 0", r.returncode==0)
     check("jobs.json exists", os.path.exists(jobs_path))
-    d = json.load(open(jobs_path, encoding="utf-8"))
+    _jobs_raw = open(jobs_path, encoding="utf-8").read()
+    check("jobs.json is minified (JB-71)", "\n" not in _jobs_raw)
+    d = json.loads(_jobs_raw)
     check("jobs.json has matches", d["counts"]["matches"]>=1)
+    _row = (d["matches"] or [{}])[0]
+    check("jobs.json rows have no server reasons/matched (JB-71)",
+          "reasons" not in _row and "matched" not in _row)
+    check("jobs.json rows have pre-matched tokens (JB-69)",
+          "tokens" in _row and "titles" in _row["tokens"] and "skills" in _row["tokens"])
+    # JB-70: sharded files for fast first paint
+    _matches_path = os.path.join(ROOT, "site", "data", "jobs_matches.json")
+    _below_path = os.path.join(ROOT, "site", "data", "jobs_below.json")
+    check("jobs_matches.json emitted (JB-70)", os.path.exists(_matches_path))
+    check("jobs_below.json emitted (JB-70)", os.path.exists(_below_path))
+    _m = json.load(open(_matches_path, encoding="utf-8"))
+    _b = json.load(open(_below_path, encoding="utf-8"))
+    check("jobs_matches.json has matches + empty below (JB-70)",
+          _m.get("counts", {}).get("matches", 0) >= 1 and _m.get("below") == [])
+    check("jobs_below.json has only below (JB-70)",
+          "below" in _b and set(_b.keys()) == {"below"})
     check("standalone board emitted", os.path.exists(std_path))
 finally:
     for s in snaps: _restore(s)
+    # JB-70: clean up the sharded demo artefacts too
+    for _p in (os.path.join(ROOT, "site", "data", "jobs_matches.json"),
+               os.path.join(ROOT, "site", "data", "jobs_below.json")):
+        if os.path.exists(_p):
+            try: os.remove(_p)
+            except OSError: pass
 
 # 4 the site page references the data file
 idx = open(os.path.join(ROOT,"site","index.html"), encoding="utf-8").read()
 check("index.html wired to data/jobs.json", "data/jobs.json" in idx)
+check("index.html wired to data/jobs_matches.json (JB-70)", "data/jobs_matches.json" in idx)
 
 print(f"\n{'ALL SMOKE CHECKS PASSED' if ok else 'SMOKE TEST FAILED'} ({sum(c for _,c in checks)}/{len(checks)})")
 sys.exit(0 if ok else 1)

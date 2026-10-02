@@ -409,8 +409,14 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         sponsor = facets.sponsorship(j.get("description", ""), j.get("_sponsors"))
         snippet = (j.get("description") or "").strip().replace("\n", " ")
         snippet = (snippet[:180] + "\u2026") if len(snippet) > 180 else snippet
+        # JB-69: text used to be 1500 chars (title + description) to let the browser
+        # run DB_SKILLS regex against the full body. Now that tokens[] carries the
+        # pre-matched DB hits, text only needs to hold enough for CV-only skills
+        # that aren't in the canonical DB (user's custom keywords). 500 chars keeps
+        # the strong first-paragraph of the JD, which is almost always where the
+        # tech stack is listed. ~1 MB saved on 1688 jobs.
         full = (j.get("title","") + ". " + (j.get("description") or "")).replace("\n", " ")
-        full = full[:1500]
+        full = full[:500]
         row = {
             "company": j["company"], "title": j["title"], "location": j["location"],
             "location_near": near, "n_locations": max(1, len(geo.split_locations(j.get("location", "")))),
@@ -419,8 +425,14 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "score": res["score"], "flags": res["flags"],
             "arrangement": arrangement, "country": country,
             "industry": industry, "sponsorship": sponsor,
-            "reasons": res["reasons"], "matched": res["matched"],
+            # JB-71: reasons[] + matched[] dropped from payload. Browser's scoreJob()
+            # recomputes both per-user during rescore(). Server-shipped values were
+            # only ever a brief flash of BT's-profile reasoning before the browser
+            # stomped them. Saves ~15-20% of the payload.
             "explanation": jobfilter.score_explanation(res),   # JB-63: user-grade WHY
+            # JB-69: pre-matched DB_TITLES + SKILL_CONFIRMERS so scoreJob() does
+            # set intersection instead of ~1340 regex per job per rescore.
+            "tokens": jobfilter.tokens_for(j),
             "snippet": snippet,
             "text": full,
         }
@@ -518,7 +530,20 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     _say(f"[build] payload+alerts: {_time.monotonic()-_t:.1f}s")
     _t = _time.monotonic()
     with open(os.path.join(DATA, "jobs.json"), "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2, ensure_ascii=False)
+        # JB-71: minified (no indent/whitespace). ~20-25% smaller for a file
+        # no one reads by hand. resolve.json stays pretty-printed (it IS read
+        # by hand during resolver debugging).
+        json.dump(payload, f, separators=(",", ":"), ensure_ascii=False)
+    # JB-70: shard matches + below into separate files. Browser fetches
+    # jobs_matches.json first (fast first paint), then jobs_below.json in
+    # parallel. jobs.json stays as a backwards-compat fallback for 1 release
+    # so cached old browsers / scripts consuming it directly still work.
+    _matches_payload = dict(payload)
+    _matches_payload["below"] = []
+    with open(os.path.join(DATA, "jobs_matches.json"), "w", encoding="utf-8") as f:
+        json.dump(_matches_payload, f, separators=(",", ":"), ensure_ascii=False)
+    with open(os.path.join(DATA, "jobs_below.json"), "w", encoding="utf-8") as f:
+        json.dump({"below": payload["below"]}, f, separators=(",", ":"), ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:
         json.dump(unresolved, f, indent=2, ensure_ascii=False)
     _say(f"[build] write jobs.json+resolve.json: {_time.monotonic()-_t:.1f}s")
