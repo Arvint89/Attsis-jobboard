@@ -64,8 +64,13 @@ try:
     r = subprocess.run([sys.executable, os.path.join(HERE,"build_board.py"), "--demo"], capture_output=True, text=True)
     check("demo build exits 0", r.returncode==0)
     check("jobs.json exists", os.path.exists(jobs_path))
-    d = json.load(open(jobs_path, encoding="utf-8"))
+    _jobs_raw = open(jobs_path, encoding="utf-8").read()
+    check("jobs.json is minified (JB-71)", "\n" not in _jobs_raw)
+    d = json.loads(_jobs_raw)
     check("jobs.json has matches", d["counts"]["matches"]>=1)
+    _row = (d["matches"] or [{}])[0]
+    check("jobs.json rows have no server reasons/matched (JB-71)",
+          "reasons" not in _row and "matched" not in _row)
     check("standalone board emitted", os.path.exists(std_path))
 finally:
     for s in snaps: _restore(s)

@@ -419,7 +419,10 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "score": res["score"], "flags": res["flags"],
             "arrangement": arrangement, "country": country,
             "industry": industry, "sponsorship": sponsor,
-            "reasons": res["reasons"], "matched": res["matched"],
+            # JB-71: reasons[] + matched[] dropped from payload. Browser's scoreJob()
+            # recomputes both per-user during rescore(). Server-shipped values were
+            # only ever a brief flash of BT's-profile reasoning before the browser
+            # stomped them. Saves ~15-20% of the payload.
             "explanation": jobfilter.score_explanation(res),   # JB-63: user-grade WHY
             "snippet": snippet,
             "text": full,
@@ -518,7 +521,10 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     _say(f"[build] payload+alerts: {_time.monotonic()-_t:.1f}s")
     _t = _time.monotonic()
     with open(os.path.join(DATA, "jobs.json"), "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2, ensure_ascii=False)
+        # JB-71: minified (no indent/whitespace). ~20-25% smaller for a file
+        # no one reads by hand. resolve.json stays pretty-printed (it IS read
+        # by hand during resolver debugging).
+        json.dump(payload, f, separators=(",", ":"), ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:
         json.dump(unresolved, f, indent=2, ensure_ascii=False)
     _say(f"[build] write jobs.json+resolve.json: {_time.monotonic()-_t:.1f}s")
