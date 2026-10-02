@@ -409,8 +409,14 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         sponsor = facets.sponsorship(j.get("description", ""), j.get("_sponsors"))
         snippet = (j.get("description") or "").strip().replace("\n", " ")
         snippet = (snippet[:180] + "\u2026") if len(snippet) > 180 else snippet
+        # JB-69: text used to be 1500 chars (title + description) to let the browser
+        # run DB_SKILLS regex against the full body. Now that tokens[] carries the
+        # pre-matched DB hits, text only needs to hold enough for CV-only skills
+        # that aren't in the canonical DB (user's custom keywords). 500 chars keeps
+        # the strong first-paragraph of the JD, which is almost always where the
+        # tech stack is listed. ~1 MB saved on 1688 jobs.
         full = (j.get("title","") + ". " + (j.get("description") or "")).replace("\n", " ")
-        full = full[:1500]
+        full = full[:500]
         row = {
             "company": j["company"], "title": j["title"], "location": j["location"],
             "location_near": near, "n_locations": max(1, len(geo.split_locations(j.get("location", "")))),
@@ -424,6 +430,9 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             # only ever a brief flash of BT's-profile reasoning before the browser
             # stomped them. Saves ~15-20% of the payload.
             "explanation": jobfilter.score_explanation(res),   # JB-63: user-grade WHY
+            # JB-69: pre-matched DB_TITLES + SKILL_CONFIRMERS so scoreJob() does
+            # set intersection instead of ~1340 regex per job per rescore.
+            "tokens": jobfilter.tokens_for(j),
             "snippet": snippet,
             "text": full,
         }

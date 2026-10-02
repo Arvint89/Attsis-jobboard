@@ -153,6 +153,25 @@ def days_old(posted):
     return None
 
 
+def tokens_for(job):
+    """JB-69: pre-compute per-job hits against the canonical DB (ALL_TITLES +
+    SKILL_CONFIRMERS, both already widened by data/skills.json at module load).
+    Shipped on each row of jobs.json so the browser does set intersection
+    (`profile.skills.includes(s)`) instead of 1340 `new RegExp()` per job per
+    rescore (~2.26M regex on cold boot for 1688 jobs).
+
+    The token universe is the SAME for every user, so any CV scored against
+    these pre-matched tokens stays correct. CV-only skills that aren't in the
+    canonical DB still need regex in the browser, but that's a small loop
+    (user's CV has 20-50 skills, not 828)."""
+    title = (job.get("title") or "").lower()
+    body = (job.get("description") or "").lower()
+    return {
+        "titles": sorted(set(t for t in ALL_TITLES if _tokp(title, t))),
+        "skills": sorted(set(s for s in SKILL_CONFIRMERS if _tokp(body, s))),
+    }
+
+
 def classify(job, extra_flags=None):
     """Unified GENERIC scorer — single source of truth, mirrors the browser.
     Score comes only from the CV-derived profile (titles + skills), never from

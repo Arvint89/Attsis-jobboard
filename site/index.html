@@ -430,11 +430,15 @@ function scoreJob(j, p){
   const descLen=Math.max(0, body.length-title.length-2);          // j.text = title + ". " + description
   const has=(t,arr)=>arr.filter(n=>t.includes(n));
   if(has(" "+title+" ",EXCL).length) return {verdict:"excluded"};
+  // JB-69: use pre-matched j.tokens if the server shipped them (new payload);
+  // fall back to full-regex scan if not (defensive: old cached jobs.json, demo
+  // builds from pre-JB-69 engines). Set intersection replaces ~1340 regex/job
+  // on cold rescore. CV-only titles/skills still need regex (small loops).
   const cvTitleHit=titleVariants(p.titles).filter(t=>tokp(title,t));
-  const dbTitleHit=DB_TITLES.filter(t=>tokp(title,t));
+  const dbTitleHit=(j.tokens&&j.tokens.titles)||DB_TITLES.filter(t=>tokp(title,t));
   const titleHit=[...new Set([...cvTitleHit,...dbTitleHit])];
   const cvConf=p.skills.filter(s=>tokp(body,s));
-  const dbConf=DB_SKILLS.filter(s=>tokp(body,s));
+  const dbConf=(j.tokens&&j.tokens.skills)||DB_SKILLS.filter(s=>tokp(body,s));
   const conf=[...new Set([...cvConf,...dbConf])];
   if(!titleHit.length && conf.length<2) return {verdict:"excluded"};
   let score = titleHit.length?5:2, reasons=[];                    // your CV's own titles count as core
