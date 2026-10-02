@@ -71,6 +71,8 @@ try:
     _row = (d["matches"] or [{}])[0]
     check("jobs.json rows have no server reasons/matched (JB-71)",
           "reasons" not in _row and "matched" not in _row)
+    check("jobs.json rows have pre-matched tokens (JB-69)",
+          "tokens" in _row and "titles" in _row["tokens"] and "skills" in _row["tokens"])
     check("standalone board emitted", os.path.exists(std_path))
 finally:
     for s in snaps: _restore(s)

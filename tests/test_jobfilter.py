@@ -145,3 +145,35 @@ def test_explanation_is_a_single_string():
     s = jf.score_explanation(r)
     assert isinstance(s, str)
     assert "\n" not in s   # one sentence/paragraph, no newlines
+
+
+# --- JB-69: tokens_for pre-matches DB_TITLES + SKILL_CONFIRMERS per job -----
+def test_tokens_for_returns_db_skill_hits():
+    j = mk("Firmware Engineer", "ARM Cortex-M, FreeRTOS, Altium, PCB, SPI, I2C, oscilloscope")
+    tok = jf.tokens_for(j)
+    assert isinstance(tok, dict)
+    assert "titles" in tok and "skills" in tok
+    # at least a few canonical skills should be caught from the body
+    assert any(s in tok["skills"] for s in ("altium", "pcb", "freertos", "spi", "i2c"))
+
+
+def test_tokens_for_title_matches_use_whole_word_boundary():
+    # a word that appears INSIDE another word must not be reported as a hit
+    j = mk("Scalable Backend Engineer", "")   # "ble" is inside "scalable" -- must not match
+    tok = jf.tokens_for(j)
+    assert "ble" not in tok["skills"]
+
+
+def test_tokens_for_empty_job():
+    tok = jf.tokens_for({})
+    assert tok == {"titles": [], "skills": []}
+
+
+def test_tokens_for_matches_classify_signal():
+    # tokens_for() should surface the same hits that classify() reports in matched[]
+    j = mk("Embedded Engineer", "firmware, ARM, RTOS, Altium, PCB, schematic")
+    tok = jf.tokens_for(j)
+    r = jf.classify(j)
+    # every DB skill that classify() counted should also appear in tokens.skills
+    classified_skills = set(r["matched"]) & set(tok["skills"])
+    assert len(classified_skills) >= 2, f"tokens.skills {tok['skills']} should include DB hits found by classify {r['matched']}"
