@@ -168,7 +168,12 @@
 
   <!-- SETUP VIEW -->
   <div id="setupView">
-    <div class="panel" id="quickstartPanel" style="display:none">
+    <!-- JB-67: quickstart visible by default so cold boots paint something before jobs.json
+         fetch resolves (3.6MB, 2-6s on slow network). renderSavedProfile() hides this if a
+         saved PROFILE is found after init(). Without this, new browsers see a blank page
+         for the duration of the fetch, which is why the board worked for BT (cached) but
+         appeared broken for first-time visitors. -->
+    <div class="panel" id="quickstartPanel">
       <h2>Welcome to the Job Board</h2>
       <p class="sub">Add your name and home city to see roles ranked near you — takes 10 seconds. Your CV stays private, add it later for sharper matches.</p>
       <div class="row">
