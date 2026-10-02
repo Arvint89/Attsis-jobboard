@@ -534,6 +534,16 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         # no one reads by hand. resolve.json stays pretty-printed (it IS read
         # by hand during resolver debugging).
         json.dump(payload, f, separators=(",", ":"), ensure_ascii=False)
+    # JB-70: shard matches + below into separate files. Browser fetches
+    # jobs_matches.json first (fast first paint), then jobs_below.json in
+    # parallel. jobs.json stays as a backwards-compat fallback for 1 release
+    # so cached old browsers / scripts consuming it directly still work.
+    _matches_payload = dict(payload)
+    _matches_payload["below"] = []
+    with open(os.path.join(DATA, "jobs_matches.json"), "w", encoding="utf-8") as f:
+        json.dump(_matches_payload, f, separators=(",", ":"), ensure_ascii=False)
+    with open(os.path.join(DATA, "jobs_below.json"), "w", encoding="utf-8") as f:
+        json.dump({"below": payload["below"]}, f, separators=(",", ":"), ensure_ascii=False)
     with open(os.path.join(DATA, "resolve.json"), "w", encoding="utf-8") as f:
         json.dump(unresolved, f, indent=2, ensure_ascii=False)
     _say(f"[build] write jobs.json+resolve.json: {_time.monotonic()-_t:.1f}s")
