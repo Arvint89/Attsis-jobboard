@@ -116,13 +116,60 @@ FRESH_DAYS = _M["params"]["fresh_days"]
 
 import re as _re
 
+# JB-66 perf: _tokp() used to compile a fresh regex on every call. With
+# ALL_TITLES ~2.8k and SKILL_CONFIRMERS ~1.3k, that's ~8k regex compilations
+# per job, dominating sweep time (~363ms/job baseline, ~87% of a 1688-job sweep).
+# Cache compiled patterns per needle and tokenize text once so single-token
+# needles (the vast majority) do O(1) set lookups instead of regex search.
+_TOKP_CACHE: dict[str, "_re.Pattern[str]"] = {}
+_TOKEN_RE = _re.compile(r"[a-z0-9]+")
+_SPLIT_CACHE: dict[int, tuple[set[str], list[str]]] = {}
+
+
 def _tokp(text, needle):
-    # whole-token match: 'ble' must not match inside 'scalable'
-    return _re.search(r"(?<![a-z0-9])" + _re.escape(needle) + r"(?![a-z0-9])", text) is not None
+    """whole-token match: 'ble' must not match inside 'scalable'.
+    Compiled pattern cached per needle (JB-66)."""
+    rx = _TOKP_CACHE.get(needle)
+    if rx is None:
+        rx = _re.compile(r"(?<![a-z0-9])" + _re.escape(needle) + r"(?![a-z0-9])")
+        _TOKP_CACHE[needle] = rx
+    return rx.search(text) is not None
+
+
+def _split_needles(needles):
+    """Partition needles into (single-token-set, multi-token-list).
+    Multi-token = anything containing a space, punctuation, or non-alnum char
+    (e.g. 'iso 13485', 'node.js', 'c++'). Memoised by object identity because
+    ALL_TITLES/SKILL_CONFIRMERS are rebuilt once at module load.
+    (JB-66)"""
+    key = id(needles)
+    cached = _SPLIT_CACHE.get(key)
+    if cached is not None and len(cached[0]) + len(cached[1]) == len(needles):
+        return cached
+    single, multi = set(), []
+    for n in needles:
+        if n and n.isalnum():
+            single.add(n)
+        else:
+            multi.append(n)
+    _SPLIT_CACHE[key] = (single, multi)
+    return single, multi
 
 
 def _has(text, needles):
-    return [n for n in needles if _tokp(text, n)]
+    """Return needles present in text as whole tokens, input-order preserved.
+    JB-66: tokenize text once; single-token needles hit a set (O(1)), only
+    multi-token needles fall through to the cached-regex path."""
+    single, _multi = _split_needles(needles)
+    tset = set(_TOKEN_RE.findall(text)) if single else set()
+    out = []
+    for n in needles:
+        if n in single:
+            if n in tset:
+                out.append(n)
+        elif _tokp(text, n):
+            out.append(n)
+    return out
 
 
 def _title_hit(title):
@@ -163,12 +210,15 @@ def tokens_for(job):
     The token universe is the SAME for every user, so any CV scored against
     these pre-matched tokens stays correct. CV-only skills that aren't in the
     canonical DB still need regex in the browser, but that's a small loop
-    (user's CV has 20-50 skills, not 828)."""
+    (user's CV has 20-50 skills, not 828).
+
+    JB-66: uses _has() which tokenizes once + set-intersects (O(1) per
+    single-token needle) instead of compiling 2.8k+1.3k fresh regexes."""
     title = (job.get("title") or "").lower()
     body = (job.get("description") or "").lower()
     return {
-        "titles": sorted(set(t for t in ALL_TITLES if _tokp(title, t))),
-        "skills": sorted(set(s for s in SKILL_CONFIRMERS if _tokp(body, s))),
+        "titles": sorted(set(_has(title, ALL_TITLES))),
+        "skills": sorted(set(_has(body, SKILL_CONFIRMERS))),
     }
 
 
@@ -191,7 +241,8 @@ def classify(job, extra_flags=None):
         return {"verdict": "excluded", "score": 0, "reasons": ["pure-software"], "flags": flags, "matched": []}
 
     # relevance: a title trigger, or >=2 skill confirmers --------------------
-    title_hits = [t for t in ALL_TITLES if _tokp(title, t)]
+    # JB-66: _has() uses tokenize-once + set-intersect, not per-needle regex
+    title_hits = _has(title, ALL_TITLES)
     conf = sorted(set(_has(body, SKILL_CONFIRMERS)))
     if not title_hits and len(conf) < 2:
         return {"verdict": "excluded", "score": 0, "reasons": ["not relevant to profile"], "flags": flags, "matched": []}
@@ -202,7 +253,7 @@ def classify(job, extra_flags=None):
 
     # generic scoring (identical formula to the browser) --------------------
     # JB-38: core title 5, adjacent/fpga title 4, keyword-only 2
-    core_hit = [t for t in TITLE_CORE if _tokp(title, t)]
+    core_hit = _has(title, TITLE_CORE)
     score = 5 if core_hit else (4 if title_hits else 2)
     reasons.append("title match: " + ", ".join(title_hits[:2]) if title_hits else "keyword-only match")
     matched += title_hits
