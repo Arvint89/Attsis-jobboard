@@ -1,0 +1,4 @@
+{
+  "_note": "Runtime config -- editable without a code deploy. tailor_pay_url: when set to a Stripe/merchant URL, the 'Tailor CV' button on each job card opens <url>?job=<encoded-job-url> in a new tab instead of routing through the in-app Tailor tab (JB-60). Leave empty to keep the current mailto flow.",
+  "tailor_pay_url": ""
+}

@@ -1,0 +1,17 @@
+{
+  "slug": "example",
+  "name": "LEDC",
+  "region_cities": [
+    "London",
+    "St. Thomas",
+    "Strathroy",
+    "Ilderton",
+    "Komoka",
+    "Dorchester",
+    "Putnam",
+    "Mount Brydges"
+  ],
+  "logo_url": "",
+  "accent_hex": "#0057B7",
+  "footer_html": "Powered by Attsis Job Board \u00b7 showing roles in the London economic region"
+}
