@@ -177,3 +177,57 @@ def test_tokens_for_matches_classify_signal():
     # every DB skill that classify() counted should also appear in tokens.skills
     classified_skills = set(r["matched"]) & set(tok["skills"])
     assert len(classified_skills) >= 2, f"tokens.skills {tok['skills']} should include DB hits found by classify {r['matched']}"
+
+
+# --- JB-66: classify-loop perf fix (regex cache + tokenize-and-intersect) ---
+def test_jb66_classify_perf_under_budget():
+    """200 jobs through classify() must stay under 2.5s (12.5ms/job).
+    Pre-fix was ~363ms/job -> 72s. Post-fix ~13ms/job. Budget leaves 2x
+    headroom for CI noise but will trip if the regex cache ever regresses."""
+    import time
+    j = {"title": "Senior Firmware Engineer",
+         "description": "ARM Cortex-M, FreeRTOS, Altium, PCB, SPI, I2C, Python " * 20,
+         "location": "London, ON", "posted": "2026-09-15"}
+    t0 = time.time()
+    for _ in range(200):
+        jf.classify(j)
+    elapsed = time.time() - t0
+    assert elapsed < 4.0, f"classify perf regressed: {elapsed:.2f}s for 200 jobs (budget 4s = 20ms/job)"
+
+
+def test_jb66_tokens_for_perf_under_budget():
+    """200 jobs through tokens_for() must stay under 2.5s. Same reasoning
+    as classify perf test."""
+    import time
+    j = {"title": "Senior Firmware Engineer",
+         "description": "ARM Cortex-M, FreeRTOS, Altium, PCB, SPI, I2C, Python " * 20}
+    t0 = time.time()
+    for _ in range(200):
+        jf.tokens_for(j)
+    elapsed = time.time() - t0
+    assert elapsed < 4.0, f"tokens_for perf regressed: {elapsed:.2f}s for 200 jobs (budget 4s = 20ms/job)"
+
+
+def test_jb66_has_preserves_input_order():
+    """_has() output order must match input needle order so title_hits[:2]
+    stays deterministic across runs."""
+    text = "altium pcb schematic arm"
+    hits = jf._has(text, ["pcb", "altium", "arm", "nothere"])
+    assert hits == ["pcb", "altium", "arm"]
+
+
+def test_jb66_has_handles_multi_token_needles():
+    """Multi-word needles like 'iso 13485' or 'node.js' or 'c++' must still
+    match via the cached-regex path (not the single-token set path)."""
+    text = "we build to iso 13485 and iec 60601-1 using node.js and c++"
+    assert "iso 13485" in jf._has(text, ["iso 13485", "iec 60601", "nothere"])
+    assert "iec 60601" in jf._has(text, ["iso 13485", "iec 60601"])
+    assert "node.js" in jf._has(text, ["node.js", "python"])
+    assert "c++" in jf._has(text, ["c++", "python"])
+
+
+def test_jb66_single_token_preserves_word_boundary():
+    """Single-token path uses regex-free set intersection but must still
+    reject partial-word matches ('ble' inside 'scalable')."""
+    assert jf._has("scalable backend", ["ble"]) == []
+    assert jf._has("ble module", ["ble"]) == ["ble"]
