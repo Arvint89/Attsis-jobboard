@@ -99,5 +99,18 @@ idx = open(os.path.join(ROOT,"site","index.html"), encoding="utf-8").read()
 check("index.html wired to data/jobs.json", "data/jobs.json" in idx)
 check("index.html wired to data/jobs_matches.json (JB-70)", "data/jobs_matches.json" in idx)
 
+# 5 JB-62: tenant example fixture ships + round-trips through the Python filter
+import tenants
+_tenant_path = os.path.join(ROOT, "site", "data", "tenants", "example.json")
+check("JB-62 example tenant JSON exists", os.path.exists(_tenant_path))
+if os.path.exists(_tenant_path):
+    _t = json.load(open(_tenant_path, encoding="utf-8"))
+    check("JB-62 example tenant is valid shape", tenants.is_valid_tenant(_t))
+    _demo_jobs = [{"location":"London, ON, Canada"}, {"location":"Toronto, ON, Canada"}]
+    _kept = tenants.filter_jobs(_demo_jobs, _t)
+    check("JB-62 tenant filter keeps London / drops Toronto",
+          len(_kept) == 1 and "London" in _kept[0]["location"])
+check("index.html wired to ?tenant= query param (JB-62)", "?tenant=" in idx or "'tenant='" in idx or "tenant=" in idx)
+
 print(f"\n{'ALL SMOKE CHECKS PASSED' if ok else 'SMOKE TEST FAILED'} ({sum(c for _,c in checks)}/{len(checks)})")
 sys.exit(0 if ok else 1)
