@@ -647,16 +647,26 @@ function renderTracker(){
 }
 
 /* ---------- tailor (paid CV rewrite) ---------- */
-const TAILOR_PAY_URL='';   // e.g. 'https://buy.stripe.com/xxx' once live
+/* JB-60: tailor_pay_url lives in site/data/config.json so BT can flip the
+   switch to a direct Stripe/merchant link without a code deploy. Loaded at
+   boot into window.__CONFIG__; empty string => falls through to the in-app
+   Tailor tab (backwards-compat). */
 function openTailor(bucket,i){
   const j=(window.VIS&&window.VIS[bucket]&&window.VIS[bucket][i]); if(!j) return;
+  const payUrl=(window.__CONFIG__&&window.__CONFIG__.tailor_pay_url)||'';
+  if(payUrl && j.url){
+    const target=payUrl + (payUrl.indexOf('?')>=0?'&':'?') + 'job=' + encodeURIComponent(j.url);
+    window.open(target, '_blank', 'noopener');
+    return;
+  }
   window.__TAILOR_JOB__=j; showTab('tailor');
 }
 function requestTailor(tier){
   const j=window.__TAILOR_JOB__||{};
   const subj=`Tailor request (${tier}) — ${j.title||'(role)'} @ ${j.company||'(company)'}`;
   const body=`Please tailor my CV for this role:%0D%0A%0D%0ACompany: ${j.company||''}%0D%0ATitle:   ${j.title||''}%0D%0ALink:    ${j.url||''}%0D%0ATier:    ${tier} ${tier==='standard'?'($17.99)':'($44.99)'}%0D%0A%0D%0A(Attach your CV to this email.)`;
-  const url=TAILOR_PAY_URL||`mailto:bharanidharant@gmail.com?subject=${encodeURIComponent(subj)}&body=${body}`;
+  const payUrl=(window.__CONFIG__&&window.__CONFIG__.tailor_pay_url)||'';
+  const url=payUrl?(payUrl + (payUrl.indexOf('?')>=0?'&':'?') + 'job=' + encodeURIComponent(j.url||'') + '&tier=' + tier):`mailto:bharanidharant@gmail.com?subject=${encodeURIComponent(subj)}&body=${body}`;
   window.location.href=url;
 }
 
@@ -869,12 +879,21 @@ function _loadTenant(){
     .then(t=>{ if(_tvalid(t)) TENANT=t; return TENANT; })
     .catch(()=>null);
 }
+/* JB-60: site/data/config.json carries editable runtime config (e.g.
+   tailor_pay_url) so BT can flip a payment-link switch without a code
+   deploy. Missing/404 is fail-safe: window.__CONFIG__ stays {}. */
+function _loadConfig(){
+  return fetch('./data/config.json?_='+Date.now())
+    .then(r=>r.ok?r.json():null)
+    .then(c=>{ window.__CONFIG__=(c&&typeof c==='object')?c:{}; })
+    .catch(()=>{ window.__CONFIG__={}; });
+}
 
 /* JB-70: fetch matches first (fast first paint), lazy-load below in parallel.
    Fall back to the combined jobs.json if the sharded files aren't on the
    server yet (first deploy of this change, or any browser that landed between
    the merge and the sweep.yml artefact regen). */
-_loadTenant().then(()=>{
+Promise.all([_loadTenant(), _loadConfig()]).then(()=>{
 fetch('./data/jobs_matches.json?_='+Date.now())
   .then(r=>{if(!r.ok)throw new Error('matches '+r.status);return r.json();})
   .then(d=>{
