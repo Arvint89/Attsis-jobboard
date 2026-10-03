@@ -112,5 +112,14 @@ if os.path.exists(_tenant_path):
           len(_kept) == 1 and "London" in _kept[0]["location"])
 check("index.html wired to ?tenant= query param (JB-62)", "?tenant=" in idx or "'tenant='" in idx or "tenant=" in idx)
 
+# 6 JB-60: site/data/config.json ships + has tailor_pay_url
+_cfg_path = os.path.join(ROOT, "site", "data", "config.json")
+check("JB-60 config.json exists", os.path.exists(_cfg_path))
+if os.path.exists(_cfg_path):
+    _cfg = json.load(open(_cfg_path, encoding="utf-8"))
+    check("JB-60 config.json has tailor_pay_url (string)",
+          "tailor_pay_url" in _cfg and isinstance(_cfg["tailor_pay_url"], str))
+check("index.html loads config.json (JB-60)", "data/config.json" in idx)
+
 print(f"\n{'ALL SMOKE CHECKS PASSED' if ok else 'SMOKE TEST FAILED'} ({sum(c for _,c in checks)}/{len(checks)})")
 sys.exit(0 if ok else 1)
