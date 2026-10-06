@@ -1,0 +1,62 @@
+name: preprod-smoke
+# JB-68 pre-production testing. On every PR touching the site or engine, build
+# the board in demo mode, serve it locally, and run the headless-Chromium
+# incognito smoke script. Catches regressions BEFORE they reach `main`.
+#
+# Deliberately decoupled from the main deploy (sweep.yml) — this workflow
+# only tests, it never deploys. If this check fails, the PR won't auto-merge.
+on:
+  pull_request:
+    paths:
+      - "engine/**"
+      - "site/**"
+      - ".github/workflows/preprod-smoke.yml"
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Override: run smoke against a specific URL instead of the local build"
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Python deps
+        run: |
+          pip install -r engine/requirements.txt
+          pip install playwright
+          playwright install --with-deps chromium
+      - name: Build the board in demo mode
+        if: ${{ github.event.inputs.url == '' || github.event_name != 'workflow_dispatch' }}
+        run: cd engine && python build_board.py --demo
+      - name: Start local server
+        if: ${{ github.event.inputs.url == '' || github.event_name != 'workflow_dispatch' }}
+        run: |
+          python -m http.server 8000 --directory site > /tmp/httpd.log 2>&1 &
+          echo $! > /tmp/httpd.pid
+          # give the server a moment to come up
+          for i in $(seq 1 10); do
+            curl -sf http://localhost:8000/ > /dev/null && break
+            sleep 0.5
+          done
+      - name: Run incognito smoke (local build)
+        if: ${{ github.event.inputs.url == '' || github.event_name != 'workflow_dispatch' }}
+        run: python engine/incognito_smoke.py http://localhost:8000/
+      - name: Run incognito smoke (override URL)
+        if: ${{ github.event.inputs.url != '' && github.event_name == 'workflow_dispatch' }}
+        run: python engine/incognito_smoke.py "${{ github.event.inputs.url }}"
+      - name: Stop local server
+        if: always() && github.event.inputs.url == ''
+        run: |
+          if [ -f /tmp/httpd.pid ]; then
+            kill $(cat /tmp/httpd.pid) || true
+          fi
+          echo "--- httpd log ---"
+          cat /tmp/httpd.log || true
