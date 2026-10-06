@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Job Board</title>
+<title>Attsis Job Board</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
@@ -155,7 +155,7 @@
 </head>
 <body>
 <header>
-  <div><h1 id="h1"><b>Job Board</b></h1><div class="meta" id="meta"></div></div>
+  <div><h1 id="h1"><b>Attsis Job Board</b></h1><div class="meta" id="meta"></div></div>
   <div class="tabbar" id="topTabs" style="display:none">
     <button data-tab="roles" class="on">Roles</button>
     <button data-tab="tracker">Tracker</button>
@@ -174,7 +174,7 @@
          for the duration of the fetch, which is why the board worked for BT (cached) but
          appeared broken for first-time visitors. -->
     <div class="panel" id="quickstartPanel">
-      <h2>Welcome to the Job Board</h2>
+      <h2>Welcome to Attsis Job Board</h2>
       <p class="sub">Add your name and home city to see roles ranked near you — takes 10 seconds. Your CV stays private, add it later for sharper matches.</p>
       <div class="row">
         <div class="fld grow"><label for="qsName">Your name</label><input type="search" id="qsName" placeholder="e.g. Priya Patel"></div>
@@ -553,7 +553,7 @@ function showTab(name){
 function showBoard(){
   $('#topTabs').style.display='flex';
   const who=(PROFILE&&(PROFILE.initials||PROFILE.person))||'';
-  $('#h1').innerHTML=`<b>${who?who+' · ':''}Job Board</b>`;
+  $('#h1').innerHTML=`<b>${who?who+' · ':''}Attsis Job Board</b>`;
   $('#meta').innerHTML=PROFILE?`${PROFILE.person?PROFILE.person+' · ':''}home: <b>${PROFILE.home||'?'}</b> · ${PROFILE.skills.length} keywords · scored in your browser`:'';
   const fc=JOBS.facets||{};
   $('#country').innerHTML='<option value="">Any</option>'+(fc.country||[]).map(v=>`<option>${v}</option>`).join('');
@@ -565,7 +565,7 @@ function showBoard(){
 }
 function showSetup(){
   const who=(PROFILE&&(PROFILE.initials||PROFILE.person))||'';
-  $('#h1').innerHTML=`<b>${who?who+' · ':''}Job Board</b>`;
+  $('#h1').innerHTML=`<b>${who?who+' · ':''}Attsis Job Board</b>`;
   $('#meta').textContent='';
   renderSavedProfile();
   if(PROFILE){ $('#topTabs').style.display='flex'; showTab('roles'); }
