@@ -163,17 +163,37 @@ def fetch_recruitee(company, slug, **_):
 
 
 def fetch_workable(company, slug, **_):
-    url = f"https://apply.workable.com/api/v3/accounts/{slug}/jobs"
-    data = _get(url, method="POST", json={"query": "", "location": []}).json()
+    # JB-48b: v3 list returns titles with empty descriptions AND caps at 10 results
+    # (follow nextPage token). Per-job description lives at the v2 detail endpoint
+    # as separate description/requirements/benefits HTML blocks that we concatenate.
+    list_url = f"https://apply.workable.com/api/v3/accounts/{slug}/jobs"
+    body = {"query": "", "location": []}
+    jobs = []
+    for _page in range(20):   # defensive cap: 20 pages * 10 = 200 jobs/company
+        data = _get(list_url, method="POST", json=body).json()
+        jobs.extend(data.get("results") or [])
+        token = data.get("nextPage")
+        if not token:
+            break
+        body = {"query": "", "location": [], "token": token}
     out = []
-    for j in data.get("results", []):
+    for j in jobs:
         loc = j.get("location") or {}
         location = ", ".join(x for x in [loc.get("city"), loc.get("region"), loc.get("country")] if x)
+        description = j.get("description") or ""
+        try:   # v3 has no per-job GET (404); v2 does and carries the real body
+            det = _get(f"https://apply.workable.com/api/v2/accounts/{slug}/jobs/{j.get('shortcode')}").json()
+            parts = [det.get("description") or "", det.get("requirements") or "", det.get("benefits") or ""]
+            joined = "\n".join(p for p in parts if p)
+            if joined:
+                description = joined
+        except Exception:
+            pass   # keep whatever the list gave us (often empty) rather than crash
         out.append(_norm(
             company, j.get("title"), location,
             f"https://apply.workable.com/{slug}/j/{j.get('shortcode')}/",
             j.get("published_on") or j.get("created_at"),
-            j.get("description"), "workable"))
+            description, "workable"))
     return out
 
 
