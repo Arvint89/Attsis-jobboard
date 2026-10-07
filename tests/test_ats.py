@@ -87,6 +87,85 @@ def test_workable_empty_results_is_safe():
     assert ats.fetch_workable("Acme", "acme") == []
 
 
+def test_workable_fetches_description_from_v2_detail():
+    # JB-48b: v3 list omits description body; v2 /jobs/{shortcode} returns
+    # description + requirements + benefits (all HTML). We concat + strip.
+    def fake(url, method="GET", **kw):
+        if "/api/v3/accounts/" in url and "/jobs" in url:
+            return FakeResp({"results": [{
+                "title": "FPGA Designer",
+                "shortcode": "B9DA76D73F",
+                "location": {"city": "Ottawa", "region": "Ontario", "country": "Canada"},
+                "published_on": "2026-09-20",
+                "description": "",   # list payload is thin
+            }]})
+        if "/api/v2/accounts/" in url and "/jobs/B9DA76D73F" in url:
+            return FakeResp({
+                "description":  "&lt;p&gt;Design FPGAs for ASIC prototyping.&lt;/p&gt;",
+                "requirements": "&lt;p&gt;Verilog, SystemVerilog, Vivado, Quartus.&lt;/p&gt;",
+                "benefits":     "&lt;p&gt;Health, dental, RRSP match.&lt;/p&gt;",
+            })
+        raise AssertionError("unexpected url: " + url)
+    ats._get = fake
+    j = ats.fetch_workable("Fidus", "fidus")[0]
+    assert REQUIRED <= set(j)
+    assert j["title"] == "FPGA Designer"
+    # all three sections concatenated + HTML stripped
+    assert "Verilog" in j["description"]
+    assert "RRSP" in j["description"]
+    assert "FPGAs" in j["description"]
+    assert "<" not in j["description"]
+
+
+def test_workable_detail_failure_keeps_list_description():
+    # JB-48b: if the v2 detail call errors, fall back to whatever the list gave us
+    # (title-only if list description was also empty). Must not crash the sweep.
+    def fake(url, method="GET", **kw):
+        if "/api/v3/accounts/" in url and "/jobs" in url and "token" not in (kw.get("json") or {}):
+            return FakeResp({"results": [{
+                "title": "RF Designer", "shortcode": "XYZ",
+                "location": {"city": "Ottawa"},
+                "description": "",
+            }]})
+        raise RuntimeError("v2 detail down")
+    ats._get = fake
+    jobs = ats.fetch_workable("Fidus", "fidus")
+    assert len(jobs) == 1
+    assert jobs[0]["title"] == "RF Designer"
+    assert jobs[0]["description"] == ""   # title-only, no crash
+
+
+def test_workable_follows_next_page_token():
+    # JB-48b: v3 list caps at 10 results and returns a nextPage token for the rest.
+    # Issue #98: Fidus has 13 jobs; reading only page 1 silently drops 3.
+    calls = {"n": 0}
+    def fake(url, method="GET", **kw):
+        if "/api/v3/accounts/" in url and "/jobs" in url:
+            calls["n"] += 1
+            body = kw.get("json") or {}
+            if "token" not in body:
+                return FakeResp({
+                    "results": [{"title": f"Job {i}", "shortcode": f"S{i}",
+                                 "location": None, "description": ""}
+                                for i in range(10)],
+                    "nextPage": "page2tok",
+                })
+            if body.get("token") == "page2tok":
+                return FakeResp({
+                    "results": [{"title": f"Job {i}", "shortcode": f"S{i}",
+                                 "location": None, "description": ""}
+                                for i in range(10, 13)],
+                })
+            raise AssertionError("unknown token: " + str(body))
+        if "/api/v2/accounts/" in url:
+            return FakeResp({})   # detail returns nothing -> keep title-only
+        raise AssertionError("unexpected url: " + url)
+    ats._get = fake
+    jobs = ats.fetch_workable("Fidus", "fidus")
+    assert len(jobs) == 13
+    assert calls["n"] == 2   # one page + one followup, not more
+
+
 def test_breezy_normalizes():
     # JB-49: {slug}.breezy.hr/json returns a top-level list of postings
     patch([{
