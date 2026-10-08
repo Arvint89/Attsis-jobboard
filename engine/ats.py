@@ -438,6 +438,11 @@ FETCHERS = {
 
 def fetch_company(entry: dict):
     """Fetch one registry entry. Returns (jobs, error_or_None)."""
+    if entry.get("skip"):
+        # JB-5: directory-seeded entries whose careers_url is a company home page
+        # (not a careers page) are not resolvable and shouldn't burn resolver budget
+        # every sweep. Treat as a silent no-op: no jobs, no error, no "unresolved".
+        return [], None
     platform = entry.get("platform")
     if platform in (None, "", "resolve"):
         return [], "unresolved"

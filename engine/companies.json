@@ -685,7 +685,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "St. Joseph's Health Care London",
@@ -697,7 +699,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Lawson Health Research Institute",
@@ -709,7 +713,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "3M Canada",
@@ -721,7 +727,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Presstran Industries, a division of Magna International",
@@ -733,7 +741,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Robarts Research Institute",
@@ -745,7 +755,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Trackunit",
@@ -757,7 +769,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Digital Extremes",
@@ -781,7 +795,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Diamond Aircraft Industries",
@@ -793,7 +809,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "DYNA-MIG, A Division of F&P Mfg., Inc.",
@@ -805,7 +823,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "Stratford"
+      "city": "Stratford",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Vuteq Canada Inc.",
@@ -817,7 +837,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "Woodstock"
+      "city": "Woodstock",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Meridian Lightweight Technologies Inc.",
@@ -829,7 +851,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "The London Free Press",
@@ -841,7 +865,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Sodecia London",
@@ -853,7 +879,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Great Lakes Copper Inc.",
@@ -865,7 +893,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Vari-Form",
@@ -877,7 +907,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Armatec Survivability",
@@ -889,7 +921,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Canadian Pacific Railway",
@@ -901,7 +935,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Freudenberg-NOK Inc.",
@@ -913,7 +949,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "Tillsonburg"
+      "city": "Tillsonburg",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Kaiser Aluminum Canada",
@@ -925,7 +963,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Jones Healthcare Group",
@@ -937,7 +977,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "North Star Windows & Doors",
@@ -949,7 +991,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Bradken Ltd.",
@@ -961,7 +1005,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Centennial Windows & Doors",
@@ -973,7 +1019,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Tyk",
@@ -985,7 +1033,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Inoac Interior Systems",
@@ -997,7 +1047,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "St. Mary's"
+      "city": "St. Mary's",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Hyundai L&C Canada (formerly Hanwha L & C Canada)",
@@ -1009,7 +1061,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Start.ca",
@@ -1021,7 +1075,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Sterling Marking Products Inc",
@@ -1033,7 +1089,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Middlesex-London Health Unit",
@@ -1045,7 +1103,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Lamko Tool & Mould Inc",
@@ -1057,7 +1117,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "CTV News - London",
@@ -1069,7 +1131,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "SMP Unimotor (a division of Standard Motor Products, Inc.)",
@@ -1081,7 +1145,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Militex Coatings Inc",
@@ -1093,7 +1159,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Norampac - St. Marys, a division of Cascades Canada Inc",
@@ -1105,7 +1173,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "St. Marys"
+      "city": "St. Marys",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Elgin Motor Freight Inc (a division of Challenger Motor Freight)",
@@ -1117,7 +1187,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Canduct Industries",
@@ -1129,7 +1201,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Starlim North America Corporation",
@@ -1141,7 +1215,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Riverside Millwork Group (Formerly County Heritage Forest Products)",
@@ -1153,7 +1229,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Armo-Tool Ltd.",
@@ -1165,7 +1243,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Multi Fittings Corp.",
@@ -1177,7 +1257,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Terago Networks Inc.",
@@ -1189,7 +1271,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Carfax U.S",
@@ -1213,7 +1297,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Big Viking Games",
@@ -1237,7 +1323,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Martinrea Automotive Systems Ltd.",
@@ -1249,7 +1337,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "Ingersoll"
+      "city": "Ingersoll",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Voices.com",
@@ -1261,7 +1351,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "London Machinery Inc",
@@ -1273,7 +1365,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Damian Warner Fitness Centre",
@@ -1285,7 +1379,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Diversey (Division of Sealed Air)",
@@ -1297,7 +1393,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Execulink Telecom",
@@ -1309,7 +1407,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "Woodstock"
+      "city": "Woodstock",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Leggett and Platt Canada",
@@ -1321,7 +1421,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Lor-Don",
@@ -1333,7 +1435,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "London Research and Development Centre",
@@ -1345,7 +1449,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Canada Cartage",
@@ -1357,7 +1463,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "TForce (Formerly Dynamex Canada Inc.)",
@@ -1369,7 +1477,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Rogers TV",
@@ -1381,7 +1491,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Means Transform Products (formerly TransForm Automotive)",
@@ -1393,7 +1505,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Hudson Boat Works",
@@ -1405,7 +1519,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Senton Printing and Packaging",
@@ -1417,7 +1533,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Children's Health Research Institute",
@@ -1429,7 +1547,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Dairy Lane Systems",
@@ -1441,7 +1561,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Forest City Graphics",
@@ -1453,7 +1575,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Motif Labs, an Organigram Company",
@@ -1465,7 +1589,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "Aylmer"
+      "city": "Aylmer",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Lifebreath (Airia Brands Inc.)",
@@ -1477,7 +1603,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "ECL Carriers",
@@ -1489,7 +1617,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Forest City Castings Inc.",
@@ -1501,7 +1631,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Lac-Mac Ltd.",
@@ -1513,7 +1645,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Sylvite",
@@ -1525,7 +1659,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "International Name Plate Supplies",
@@ -1537,7 +1673,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "CDK Global Heavy Equipment",
@@ -1549,7 +1687,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Royal Containers Ltd",
@@ -1561,7 +1701,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "ArcelorMittal",
@@ -1573,7 +1715,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Tornado Insulation",
@@ -1585,7 +1729,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Big Blue Bubble, Inc.",
@@ -1597,7 +1743,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "CS Automotive Tubing Inc.",
@@ -1609,7 +1757,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Dma Rehability",
@@ -1621,7 +1771,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Doug Coleman Trucking Ltd.",
@@ -1633,7 +1785,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "London Automotive & Manufacturing Ltd",
@@ -1645,7 +1799,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Presidium Equipment",
@@ -1657,7 +1813,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Saand London",
@@ -1669,7 +1827,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "General Storage Systems Ltd",
@@ -1681,7 +1841,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Vaughn Custom Sports Canada Ltd.",
@@ -1693,7 +1855,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Black Fly Beverage Company",
@@ -1705,7 +1869,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Accell Graphics",
@@ -1717,7 +1883,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Dock Products Canada Inc",
@@ -1729,7 +1897,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Shamir Canada",
@@ -1741,7 +1911,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Coldstream Concrete Ltd",
@@ -1753,7 +1925,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "KGK Science Inc.",
@@ -1765,7 +1939,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Manitoulin Transport",
@@ -1789,7 +1965,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Race Roster",
@@ -1801,7 +1979,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Federal White Cement Ltd.",
@@ -1813,7 +1993,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "Woodstock"
+      "city": "Woodstock",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Canada Tubeform (formerly CT Innovation)",
@@ -1825,7 +2007,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "H & G Powder Painting",
@@ -1837,7 +2021,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Ideal Pipe",
@@ -1849,7 +2035,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "Thorndale"
+      "city": "Thorndale",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Scott Douglas Plastics Ltd.",
@@ -1861,7 +2049,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "Ingersoll"
+      "city": "Ingersoll",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Mosaic Medical - Education & Medical Services Ltd.",
@@ -1873,7 +2063,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "BLES Biochemicals Inc.",
@@ -1885,7 +2077,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Laser Sales Inc.",
@@ -1897,7 +2091,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Arvin Sango",
@@ -1909,7 +2105,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Canada Mold Technology Inc.",
@@ -1921,7 +2119,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "Woodstock"
+      "city": "Woodstock",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Canvas n' Decor",
@@ -1933,7 +2133,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Stryker / CHG Hospital Beds",
@@ -1945,7 +2147,9 @@
       "flags": [],
       "industry": "health",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "EDGE Automation Inc.",
@@ -1957,7 +2161,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Helix Courier Limited",
@@ -1969,7 +2175,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "LBMX INC.",
@@ -1981,7 +2189,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "London Roof Truss Inc.",
@@ -1993,7 +2203,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Northern Contours (formerly Nubold Industries)",
@@ -2005,7 +2217,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Simtech Supply Chain Management",
@@ -2017,7 +2231,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "S L H Transport",
@@ -2041,7 +2257,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Wirco Products Ltd",
@@ -2053,7 +2271,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Zucora",
@@ -2065,7 +2285,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Harring Doors (A division of Masonite)",
@@ -2077,7 +2299,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "McCabe Promotional Advertising Inc.",
@@ -2089,7 +2313,9 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Unifin International a division of Wabtec Canada",
@@ -2101,7 +2327,9 @@
       "flags": [],
       "industry": "manufacturing",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "skip": true,
+      "skip_reason": "LEDC directory home-page URL -- not a careers page; kept for discovery-via-aggregators only"
     },
     {
       "name": "Loblaw Companies Limited",
