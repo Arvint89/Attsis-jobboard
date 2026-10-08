@@ -377,6 +377,16 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     _t = _time.monotonic()
     raw = [ _defaults(j) for j in dedupe(raw) ]
     _say(f"[build] dedupe+defaults: {_time.monotonic()-_t:.1f}s -> {len(raw)} jobs")
+    # JB-52: Workday search endpoint returns titles with empty bodies; most Workday
+    # rows end up in `below` because the scorer sees no description. Fill via the
+    # per-job CXS detail endpoint, capped so a flaky run can't N+1 forever.
+    if not demo:
+        import enrich as _enrich
+        _t_jd = _time.monotonic()
+        jd_stats = _enrich.enrich_thin_descriptions(raw)
+        _say(f"[build] thin-JD enrich (JB-52): {_time.monotonic()-_t_jd:.1f}s -> "
+             f"enriched={jd_stats['enriched']} attempted={jd_stats['attempted']} "
+             f"failed={jd_stats['failed']} skipped_budget={jd_stats['skipped_budget']}")
     _t = _time.monotonic()
     rows = []
     classified = []
