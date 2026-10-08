@@ -384,3 +384,12 @@ def test_fetch_company_unresolved():
 def test_fetch_company_unknown_platform():
     jobs, err = ats.fetch_company({"name": "X", "platform": "nope", "slug": "x"})
     assert jobs == [] and "no adapter" in err
+
+
+def test_fetch_company_skip_true_is_silent_no_op():
+    # JB-5: directory-seeded entries whose careers_url is a home page (not a careers
+    # page) must not consume resolver budget or appear as "unresolved"/errors.
+    jobs, err = ats.fetch_company({"name": "3M Canada", "platform": "resolve",
+                                   "careers_url": "http://www.3m.ca",
+                                   "skip": True, "skip_reason": "home-page URL"})
+    assert jobs == [] and err is None
