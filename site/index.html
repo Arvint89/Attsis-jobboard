@@ -241,6 +241,24 @@
   .maplegend{display:flex;flex-wrap:wrap;gap:14px;margin:8px 2px;font-family:var(--font-mono);font-size:11px;color:var(--dim);letter-spacing:.04em}
   .maplegend b{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle}
   .leaflet-popup-content{font:13px -apple-system,Segoe UI,sans-serif}
+  /* JB-76 tracker v2 */
+  .pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin:10px 0 22px}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--subtle)}
+  .eyebrow.warn{color:var(--warn);margin:4px 0 10px;font-weight:600}
+  .pagetitle{font-family:var(--font-display);font-size:44px;font-weight:800;letter-spacing:-0.03em;line-height:1.05;margin:8px 0 0}
+  .stats{display:flex;gap:26px;flex-wrap:wrap}
+  .stat{border-left:2px solid var(--hi);padding:2px 0 2px 14px;min-width:84px}
+  .stat:last-child{border-left-color:var(--good)}
+  .slbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--subtle)}
+  .sval{font-family:var(--font-mono);font-size:26px;font-weight:700;color:var(--ink);margin-top:4px}
+  .nudge{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:16px 18px;margin-bottom:10px;font-size:15px}
+  .nmeta{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--subtle);margin-top:6px}
+  .nbtns{display:flex;gap:8px;flex-wrap:wrap}
+  .kcard{position:relative}
+  .kscore{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font:700 12px var(--font-mono)}
+  .kco{font-size:12px;color:var(--dim);padding-right:34px}
+  .kcard .ktitle{padding-right:34px}
+  @media (max-width:700px){ .pagetitle{font-size:32px} .stats{gap:16px} }
   /* JB-75 job card v2 */
   .job{display:block;padding:0;overflow:hidden}
   .jobhead{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:16px;padding:16px 18px;cursor:pointer;align-items:start}
@@ -440,12 +458,15 @@
 
   <!-- TRACKER VIEW -->
   <div id="trackerView" style="display:none">
-    <div class="panel">
-      <h2>Pipeline tracker</h2>
-      <p class="sub">Save roles from the board with <b>+ Save to tracker</b>, then use ◀ ▶ to move through the stages. Add notes per card as you apply, interview, and negotiate. Everything stays in this browser — no server, no account.</p>
-      <div class="hint" id="trackerCount"></div>
+    <!-- JB-76: page header + stats + local nudges (docs/design/DESIGN_jb76_tracker.md) -->
+    <div class="pagehead">
+      <div><div class="eyebrow" id="trkEyebrow">Tracker</div><h2 class="pagetitle" id="trkTitle">Your applications</h2></div>
+      <div class="stats" id="trkStats"></div>
     </div>
+    <div id="trkNudges"></div>
+    <div class="hint" id="trackerCount" style="margin:4px 2px 12px"></div>
     <div class="kboard" id="kboard"></div>
+    <div class="hint" style="margin-top:10px">Everything stays in this browser: no server, no account. Use ◀ ▶ to move a role between stages; add notes as you go.</div>
   </div>
 
   <!-- PREP VIEW -->
@@ -849,7 +870,7 @@ function saveToTracker(bucket,i){
   const k=jobKey(j);
   if(isTracked(k)){ alert('Already in tracker.'); return; }
   const now=Date.now();
-  TRACKER.push({key:k,stage:'saved',company:j.company||'',title:j.title||'',location:j.location_near||j.location||'',url:j.url||'',score:j.score||0,notes:'',added:now,moved:now});
+  TRACKER.push({key:k,stage:'saved',posted:j.posted||'',company:j.company||'',title:j.title||'',location:j.location_near||j.location||'',url:j.url||'',score:j.score||0,notes:'',added:now,moved:now});
   saveTracker(); renderBoard();
 }
 function moveTracker(k,dir){
@@ -872,8 +893,54 @@ function fmtDate(ts){ if(!ts) return ''; const d=new Date(ts); const now=new Dat
   if(days===0) return 'today'; if(days===1) return '1d ago';
   if(days<7) return days+'d ago'; if(days<30) return Math.round(days/7)+'w ago';
   return d.toLocaleDateString('en-CA');}
+/* TRACKER-PURE-BEGIN */
+function trackerStats(items){
+  const c={saved:0,applied:0,interviewing:0,offer:0,closed:0};
+  (items||[]).forEach(t=>{ if(c[t.stage]!=null) c[t.stage]++; else c.saved++; });
+  const den=c.applied+c.interviewing+c.offer+c.closed;
+  return {total:(items||[]).length, active:c.applied+c.interviewing+c.offer, interviews:c.interviewing+c.offer, rate:den?(c.interviewing+c.offer)/den:null};
+}
+function trackerNudges(items,now){
+  const D=864e5, out=[];
+  (items||[]).forEach(t=>{
+    if(t.snooze&&t.snooze>now) return;
+    const since=t.moved||t.added; if(!since) return;
+    const days=Math.floor((now-since)/D); if(days<7) return;
+    if(t.stage==='saved') out.push({key:t.key,kind:'saved',days});
+    else if(t.stage==='applied') out.push({key:t.key,kind:'applied',days});
+  });
+  return out.sort((a,b)=>b.days-a.days);
+}
+/* TRACKER-PURE-END */
+function renderTrkHead(){
+  const s=trackerStats(TRACKER), e=$('#trkEyebrow'), st=$('#trkStats'); if(!e||!st) return;
+  e.textContent='Tracker · '+s.total+' role'+(s.total!==1?'s':'');
+  const tip='(Interviewing + offer) ÷ every role you applied to, including closed ones. A floor: withdrawn roles count as no response.';
+  st.innerHTML=[['Active',s.active,''],['Interviews',s.interviews,''],['Response rate',s.rate==null?'—':Math.round(s.rate*100)+'%',tip]]
+    .map(([l,v,t])=>`<div class="stat"${t?` title="${t}"`:''}><div class="slbl">${l}</div><div class="sval">${v}</div></div>`).join('');
+}
+function renderNudges(){
+  const box=$('#trkNudges'); if(!box) return;
+  const ns=trackerNudges(TRACKER,Date.now());
+  if(!ns.length){ box.innerHTML=''; return; }
+  box.innerHTML=`<div class="eyebrow warn">Needs your answer · ${ns.length}</div>`+ns.map(n=>{
+    const t=TRACKER.find(x=>x.key===n.key)||{}, k=encodeURIComponent(n.key).replace(/'/g,'%27');
+    const what=`<b>${escH(t.company||'')}</b> — ${escH(t.title||'')}`;
+    const B=(act,label,ghost)=>`<button class="btn sm${ghost?' ghost':''}" type="button" onclick="nudge('${k}','${act}')">${label}</button>`;
+    return n.kind==='saved'
+      ? `<div class="nudge"><div><div>You saved ${what} ${n.days} days ago. Still interested?</div><div class="nmeta">Saved roles · weekly check</div></div><div class="nbtns">${B('applied','Mark applied')}${B('closed','Drop',1)}${B('later','Later',1)}</div></div>`
+      : `<div class="nudge"><div><div>You applied to ${what} ${n.days} days ago. Heard back?</div><div class="nmeta">Applied roles · after 7 days</div></div><div class="nbtns">${B('interviewing','Interview booked')}${B('later','No reply yet',1)}${B('closed','Rejected',1)}</div></div>`;
+  }).join('');
+}
+window.nudge=function(k,act){
+  k=decodeURIComponent(k); const t=TRACKER.find(x=>x.key===k); if(!t) return;
+  if(act==='later') t.snooze=Date.now()+7*864e5; else { t.stage=act; t.moved=Date.now(); delete t.snooze; }
+  saveTracker(); renderTracker();
+};
+const STAGE_VERB={saved:'Saved',applied:'Applied',interviewing:'Interviewing',offer:'Offer',closed:'Closed'};
 function renderTracker(){
   const board=$('#kboard'); if(!board) return;
+  renderTrkHead(); renderNudges();
   const by={}; TRACKER_STAGES.forEach(s=>by[s]=[]);
   TRACKER.forEach(t=>{ if(by[t.stage]) by[t.stage].push(t); else by.saved.push(t); });
   const total=TRACKER.length;
@@ -885,8 +952,8 @@ function renderTracker(){
       const kesc2=t.key.replace(/'/g,"\\'").replace(/"/g,'&quot;');
       const link=t.url?`<a href="${t.url}" target="_blank" rel="noopener">open ↗</a>`:'';
       const notes=(t.notes||'').replace(/</g,'&lt;');
-      return `<div class="kcard"><div class="ktitle">${t.title||'(untitled)'}</div>
-        <div class="ksub">${t.company||''}${t.location?' · '+t.location:''}${t.score?' · score '+t.score:''}</div>
+      return `<div class="kcard">${t.score?`<span class="kscore ${sc(t.score)}">${t.score}</span>`:''}<div class="kco">${escH(t.company||'')}</div><div class="ktitle">${escH(t.title||'(untitled)')}</div>
+        <div class="ksub">${t.location?escH(t.location)+' · ':''}${STAGE_VERB[t.stage]||'Saved'} ${fmtDate(t.moved||t.added)}</div>
         ${link}
         <textarea class="knotes" placeholder="notes — call log, contact, next step…"
                   onblur="saveTrackerNotes(decodeURIComponent('${kesc}'),this.value)">${notes}</textarea>
