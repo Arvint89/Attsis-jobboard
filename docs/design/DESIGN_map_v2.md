@@ -136,3 +136,17 @@ placeCounts(jobs, bounds) -> {inside, outside, unplaced}
 | Page errors | ✅ none |
 
 Screenshots: `docs/design/screenshots/jb72/` (before = live site 2026-10-11, after = this branch, prototype reference).
+
+## 9. Phase B (JB-81, 2026-10-11): place more roles
+Changes in `engine/geo.py` (rings and remote semantics unchanged; only coordinates):
+| Change | Why (✅ live `jobs.json` 2026-10-09) |
+|---|---|
+| A posting that says "remote" **and** names a known city is plotted at that city | "London, Ontario or Remote", "Remote or Mississauga", "Remote - US, Ann Arbor, MI" were dropped |
+| +~110 cities (Ontario/Canada mid-size, US tech hubs, world cities seen in postings) | Ann Arbor ×11, Singapore ×9, Katowice ×8, Atlanta, Detroit, Guadalupe… had no coords |
+| Country detection: more names, whole-token codes (USA/U.S, TWN, ", cn"), **Canadian province / US state codes from the original-case text** (", ON" → CA; ", MI" → US) | Unknown US cities with a state code now get at least the US centroid |
+| City matching is whole-word | Avoids "milton" inside "hamilton", "paris" inside "comparison" |
+| `home_coords()` resolves a bare ambiguous home ("London") to its default entry | `home_coords` was **null** in `jobs.json`, so the map used a hard-coded fallback |
+
+**Measured on live data (simulation, not a sweep):** placed roles 1,241 → 1,411 (70 % → 80 %). 112 previously placed roles move. Every one checked was a correction: Tokyo/Taipei/Gdańsk had fallen back to Toronto HQ, Singapore/Brno to Mississauga, **Cambridge MA → Cambridge ON** and **Vancouver WA → Vancouver BC** were wrong. ⚠️ The real sweep also uses the company-HQ fallback, so the live number after the next sweep may differ slightly.
+
+Still unplaceable by design: "Canada", "n/a", "N Locations", pure "Remote …" (~230 roles). The map footer shows the count.
