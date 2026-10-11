@@ -1,6 +1,7 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-10-01 (overnight autonomous run)** — JB-61 quickstart onboarding removes the forced CV gate (name + home city enough); release PR #148 shipped 41 commits main → production; back-merge PR #149 reconciled the JB-49 double-promotion history divergence. Then while BT slept: **JB-62** sweep-hang diagnostic + bounded Getro pagination (#150), **commercialization risks catalog** (#151 — 6-section doc + 7-item pre-launch checklist), **JB-63** user-grade `score_explanation()` helper wired into every row in `jobs.json` (#152). Earlier evening: 5-tab shell + design tokens + registry 176 → 209 + 10 ATS promotions. See §2 for the lift-expectations list._
+_Last updated: **2026-10-11** — strategy session: job board is the focus product; Map v2 (#180) + Design parity (#181) are P0 in parallel; observability after design; `DISTRIBUTION.md` tonight. **Read §0.1 first.**_
+_Previous update: **2026-10-01 (overnight autonomous run)** — JB-61 quickstart onboarding removes the forced CV gate (name + home city enough); release PR #148 shipped 41 commits main → production; back-merge PR #149 reconciled the JB-49 double-promotion history divergence. Then while BT slept: **JB-62** sweep-hang diagnostic + bounded Getro pagination (#150), **commercialization risks catalog** (#151 — 6-section doc + 7-item pre-launch checklist), **JB-63** user-grade `score_explanation()` helper wired into every row in `jobs.json` (#152). Earlier evening: 5-tab shell + design tokens + registry 176 → 209 + 10 ATS promotions. See §2 for the lift-expectations list._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
 ---
@@ -20,6 +21,85 @@ It is **deployed and working**. The current work is **not** new features — it 
 > **Tip:** open this folder in **VS Code** while you work. Its Source Control panel shows
 > branches, staged vs unstaged files, and diffs visually — that is the fastest way to build
 > a mental model of git. Use the chat to drive, VS Code to see.
+
+---
+
+## 0.1 Session 2026-10-11: decisions, facts, next steps
+
+**Fact-labelling rule (BT, 2026-10-11):** every claim in this file, issues, PRs and the nightly log
+is labelled ✅ **verified** (and how) · ⚠️ **inferred** · ❓ **unchecked**. "Done" means checked live,
+not "PR merged".
+
+### Decisions (BT)
+1. **The job board is the focus product.** The other Attsis repos are **not** shut down. They get
+   nightly maintenance only (CI and hygiene issues).
+2. **P0, in parallel:** [#180 JB-72 Map v2](https://github.com/Arvint89/Attsis-jobboard/issues/180)
+   (split list+map, score pins, clustering, search as I move, rings) and
+   [#181 JB-73 Design parity with v6 prototype](https://github.com/Arvint89/Attsis-jobboard/issues/181)
+   (gap audit → tokens → per tab). Each starts with its design doc (PD rule).
+3. **Observability + feedback comes after the major design work.** Exception: BT signs up
+   for GoatCounter **before any advertising**, so the launch can be measured.
+4. **Launch/advertising waits** until #180 + #181 are live. Plan goes in `docs/research/DISTRIBUTION.md`
+   (written by the 2026-10-11 night run).
+
+### Verified state (2026-10-10/11)
+| Fact | Label | How |
+|---|---|---|
+| Tests 303/304 pass; the 1 failure is a flaky perf test (passes alone), filed as #179 | ✅ | `pytest tests/ -q` |
+| Smoke 26/26 pass | ✅ | `engine/smoke_test.py` |
+| GoatCounter has **never recorded anything**: `attsis.goatcounter.com` → HTTP 400 (site never created) | ✅ | `curl` |
+| Live `jobs.json` (2026-10-09): 1,763 jobs, 191 companies; Canada 699, US 408, India 140, **no country 443** | ✅ | counted from live file |
+| `counts`: 301 matches, 4 fetch errors, **170 unresolved** companies | ✅ | `jobs.json` `counts` |
+| About 321 jobs have no coordinates/ring | ⚠️ | heuristic count |
+| Location junk: "2 Locations", "n/a", "Canada" used as cities | ✅ | top city values |
+| Board sources: MaRS, Communitech, Communitech Partners, Economic Development Jobs, LEDC Tech, LEDC Mfg | ✅ | `engine/sources.json` |
+| Regions covered ≈ Toronto / Waterloo / London only; Ottawa, Montreal, Vancouver, Calgary missing | ⚠️ | inferred from source names |
+| Map: Leaflet 1.9.4, light-gray Esri tiles, one `circleMarker` per company, list and map in separate tabs, no clustering or viewport sync | ✅ | `site/index.html:143,235,762,789` |
+| Live site has tabs Roles · Tracker · Prep · Tailor · Profile | ✅ | `site/index.html:159-164` |
+| Payments not live: `tailor_pay_url` is empty | ✅ | `site/data/config.json` |
+| `docs/research/DISTRIBUTION.md` and `PAYMENTS.md` (planned for the 2026-10-07 night) were **never created** | ✅ | `git log --all` |
+| No weekly metrics ever recorded in `docs/status/` | ✅ | directory listing |
+| Whether the Sep 23 commercialization-plan launch posts/emails were sent | ❓ | only BT knows |
+
+### Why the map feels behind Airbnb / HouseSigma (⚠️ inferred)
+It isn't the technology. They use the same kind of free mapping libraries. The difference is the patterns:
+(1) list and map side by side, with the list filtered to the viewport; (2) value pins (their price, our score);
+(3) clustering; (4) hover sync between card and pin; (5) exact geodata. Items 1–4 are front-end work
+in #180; item 5 is location cleanup (also in #180).
+
+### Competitors (⚠️ general knowledge, not verified; no web access in session)
+Indeed, LinkedIn Jobs, Glassdoor, Talent.com (big boards) · **Eluta.ca** (closest: Canadian, straight from employer sites; spike #87) ·
+Job Bank (Government of Canada) · Communitech / MaRS / LEDC boards (also our sources) · Jobscan, Teal, Simplify, Huntr, Rezi
+(CV tools; they upload your CV, ours stays in the browser). Positioning (⚠️): SW Ontario engineers / med-device,
+map of who's hiring, CV-private, direct from employers' own job systems.
+
+### Advertising order (to be detailed in DISTRIBUTION.md)
+GoatCounter live → launch after #180/#181 → communities (r/cscareerquestionsCAD, r/ECEjobs, r/londonontario,
+Communitech + London tech groups; story-led, not ads) → BT's LinkedIn (map screenshot) → partners
+(LEDC, Invest Ottawa, Western, Fanshawe, Waterloo co-op; regional licence pilot, $197.99/mo after 60 days per
+`COMMERCIALIZATION_PLAN.md`) → SEO later (custom domain + per-region pages).
+
+### Nightly loop (all Attsis repos)
+- Runs 23:03 → hard stop 04:45. Plan: `~/.claude/projects/C--Users-Namrata-Attsis-jobboard/memory/nightly_review_oct10_17.md`;
+  progress log: `nightly_ledger.md` in the same folder.
+- Order each night: tonight `DISTRIBUTION.md` first → #180 / #181 → cross-repo maintenance queue.
+- ✅ The schedule is **session-only** (lost if the Claude window closes) and **expires 2026-10-17**. A permanent
+  Windows Task Scheduler runner has been proposed and is pending BT's OK.
+- ⚠️ Overnight runs stall on permission prompts unless `git` / `gh` / `pytest` are pre-approved (or launched
+  from a terminal that honours `.claude/settings.json` bypass, see §5 step 3).
+
+### Cross-repo issues filed 2026-10-10 (maintenance queue)
+ai-empire #311–#315 (CI has had 0 green runs in its last 100: missing `ddgs`, income_tracker test guard, untracked
+`lp_attributes.json`, stale architecture test, tracked runtime data) · Attsis-Electroedge #1 + attsis-automate #6
+(private shared action not accessible) · attsis-etsy #19 (tracked logs) · attsis-planner #1 (local-only work;
+**attsis-audit has no GitHub repo**; vault drift).
+
+### BT action items
+- [ ] Sign up at goatcounter.com, create site `attsis` (before any advertising)
+- [ ] OK the permanent nightly runner + pre-approve `git` / `gh` / `pytest`
+- [ ] attsis-automate #6: Actions access setting (fixes Electroedge CI)
+- [ ] Decide on the local-only work listed in attsis-planner #1, and on creating the attsis-audit GitHub repo
+- [ ] Verify the ❓ competitor facts in DISTRIBUTION.md once it lands
 
 ---
 
