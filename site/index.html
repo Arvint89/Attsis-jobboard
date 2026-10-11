@@ -256,6 +256,13 @@
   #reviewPanel.noid .row .fld{display:none}
   .analyzebar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 20px}
   @media (max-width:900px){ .profgrid{grid-template-columns:1fr} .profright{position:static} }
+  /* JB-78 prep plan */
+  #prepPlan{margin-bottom:6px}
+  .planitem{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--edge)}
+  .planitem:last-of-type{border-bottom:none}
+  .planitem .hint{margin:3px 0 0}
+  .pdot{width:8px;height:8px;border-radius:50%;margin-top:7px;flex:none}
+  .pdot.warn{background:var(--warn)}.pdot.good{background:var(--good)}
   /* JB-76 tracker v2 */
   .pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin:10px 0 22px}
   .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--subtle)}
@@ -502,10 +509,13 @@
 
   <!-- PREP VIEW -->
   <div id="prepView" style="display:none">
-    <div class="panel">
-      <h2>Interview prep</h2>
-      <p class="sub">A lightweight, deterministic starter kit. Every card is a template — no LLM required. The Tailor tab is where paid, reviewed material lives.</p>
+    <!-- JB-78: prep plan from your gaps (deterministic, no LLM) -->
+    <div class="pagehead">
+      <div><div class="eyebrow" id="prepEyebrow">Interview prep</div><h2 class="pagetitle" id="prepTitle">Get ready for the conversation</h2></div>
+      <div class="fld" style="min-width:280px;max-width:100%"><label for="prepRole">Role from your tracker</label><select id="prepRole"></select></div>
     </div>
+    <div class="panel" id="prepPlan"></div>
+    <div class="eyebrow" style="margin:22px 2px 10px">Templates for any interview</div>
     <div class="prepgrid">
       <div class="prepcard">
         <h3>Company brief template</h3>
@@ -710,17 +720,29 @@ function scoreJob(j, p){
 }
 
 /* ---------- JD capture + short gap analysis (free, deterministic) ---------- */
-function gapAnalysis(jdText){
+/* JB-78: gaps = canonical skills in the posting that your CV doesn't cover (was: raw JD
+   bigrams like "engineer. tenstorrent"). Uses the server's per-job skill tokens (JB-69)
+   when present, else scans the JD against the skills DB. */
+/* GAP-PURE-BEGIN */
+const GAP_NOISE=new Set(['ear','foundation','lead','design','support','tools','testing','engineering','software','hardware','data','cloud']);
+function gapTerms(jdSkills, cvSkills, jdLower){
+  const norm=x=>String(x||'').toLowerCase().trim();
+  let jd=[...new Set((jdSkills||[]).map(norm))].filter(f=>f&&!(f.length<=2&&/^[a-z]+$/.test(f))&&!GAP_NOISE.has(f));
+  jd=jd.filter(f=>!jd.some(o=>o!==f&&o.length>f.length&&o.includes(f)));   // prefer the longer form
+  const cv=[...new Set((cvSkills||[]).map(norm))].filter(Boolean);
+  const covered=f=>cv.some(c=>c===f||c.includes(f)||(c.length>=3&&f.includes(c)));
+  const text=String(jdLower||'');
+  const have=[...new Set([...jd.filter(covered),...cv.filter(c=>c.length>=3&&text.includes(c))])];
+  return {have, missing:jd.filter(f=>!covered(f))};
+}
+/* GAP-PURE-END */
+function gapAnalysis(jdText, jdSkills){
   const jd=(jdText||'').toLowerCase();
-  const skills=(PROFILE&&PROFILE.skills)||[], titles=(PROFILE&&PROFILE.titles)||[];
-  const have=[...new Set(skills.filter(sx=>tokp(jd,sx)))];
-  const toks=tokens(jd); const fr={}; toks.forEach(w=>fr[w]=(fr[w]||0)+1);
-  for(let i=0;i<toks.length-1;i++){const bg=toks[i]+' '+toks[i+1]; fr[bg]=(fr[bg]||0)+1.5;}
-  const own=new Set([...skills,...titles]);
-  const missing=Object.entries(fr).filter(([k,v])=>v>=2||k.includes(' ')).sort((a,b)=>b[1]-a[1])
-    .map(x=>x[0]).filter(k=>!own.has(k)&&!have.includes(k)&&k.length>3).slice(0,8);
-  const keyTerms=have.length+missing.length;
-  return {have,missing,line:`You match ${have.length} of ~${keyTerms} key terms in this JD.`};
+  const skills=(PROFILE&&PROFILE.skills)||[];
+  const js=(jdSkills&&jdSkills.length)?jdSkills:DB_SKILLS.filter(x=>x.length>2&&tokp(jd,x));
+  const g=gapTerms(js,skills,jd);
+  const keyTerms=g.have.length+g.missing.length;
+  return {have:g.have, missing:g.missing.slice(0,8), line:`You match ${g.have.length} of ~${keyTerms} key terms in this JD.`};
 }
 function gapHtml(g){
   return `<div class="gapbox"><div class="gapline">${g.line}</div>
@@ -731,7 +753,7 @@ function gapHtml(g){
 window.gap=function(bucket,i){const j=(window.VIS&&window.VIS[bucket]&&window.VIS[bucket][i]);if(!j)return;
   const box=document.getElementById(bucket+'gap'+i);if(!box)return;
   if(box.innerHTML){box.innerHTML='';box.style.display='none';return;}
-  box.innerHTML=gapHtml(gapAnalysis(j.text||j.snippet||''));box.style.display='block';};
+  box.innerHTML=gapHtml(gapAnalysis(j.text||j.snippet||'',j.tokens&&j.tokens.skills));box.style.display='block';};
 
 /* ---------- render ---------- */
 const sc=s=>s>=8?'s-hi':s>=7?'s-mid':'s-lo';
@@ -794,7 +816,7 @@ function cardBody(j,bucket,i){
   if(!PROFILE) fits+=`<p class="hint">${escH(j.explanation?sampleWhy(j.explanation):'Scored against the sample profile.')}</p>`;
   let gaps;
   if(PROFILE&&(PROFILE.skills||[]).length){
-    const g=gapAnalysis(j.text||j.snippet||'');
+    const g=gapAnalysis(j.text||j.snippet||'',j.tokens&&j.tokens.skills);
     gaps=`<p class="gapline">${escH(g.line.replace(/ in this JD\.$/,'.'))}</p><div class="chips">${g.missing.length?g.missing.map(x=>`<span class="chip miss">${escH(x)}</span>`).join(''):'<span class="chip">none obvious</span>'}</div>`;
   } else gaps=`<p class="hint">Add your CV to see which of this role's key terms you're missing.</p><button class="btn ghost sm" type="button" onclick="openUpload('#cvText')">Add your CV →</button>`;
   const about=j.snippet?`<div class="sect"><div class="sectlbl">About the role</div><p class="snip">${escH(j.snippet)}</p></div>`:'';
@@ -850,6 +872,7 @@ function showTab(name){
   document.querySelectorAll('#topTabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===name));
   { const w=document.querySelector('.wrap'); if(w) w.classList.toggle('wide',name==='roles'&&!!LAYOUT&&LAYOUT!=='list'); }
   if(name==='tracker') renderTracker();
+  if(name==='prep') renderPrep();
   if(name==='roles'){ rescore(); renderBoard(); if(mapVisible()) renderMap(); }
   if(name==='profile') renderSavedProfile();
   window.scrollTo(0,0);
@@ -972,6 +995,37 @@ window.nudge=function(k,act){
   saveTracker(); renderTracker();
 };
 const STAGE_VERB={saved:'Saved',applied:'Applied',interviewing:'Interviewing',offer:'Offer',closed:'Closed'};
+/* JB-78: prep plan from the gap between the saved posting and your CV */
+function prepRoles(){
+  const order={interviewing:0,offer:1,applied:2,saved:3};
+  return TRACKER.filter(t=>t.stage!=='closed').sort((a,b)=>((order[a.stage]??5)-(order[b.stage]??5))||((b.moved||0)-(a.moved||0)));
+}
+function renderPrep(){
+  const sel=$('#prepRole'), plan=$('#prepPlan'); if(!sel||!plan) return;
+  const roles=prepRoles(), cur=sel.value;
+  sel.innerHTML=roles.length?roles.map(t=>`<option value="${escH(t.key)}">${escH((STAGE_VERB[t.stage]||'Saved')+' · '+(t.company||'')+' — '+(t.title||''))}</option>`).join(''):'<option value="">No saved roles yet</option>';
+  if(cur&&roles.some(t=>t.key===cur)) sel.value=cur;
+  const t=roles.find(x=>x.key===sel.value)||roles[0];
+  const head='<div class="sectlbl">Prep plan from your gaps</div>';
+  if(!t){
+    $('#prepEyebrow').textContent='Interview prep'; $('#prepTitle').textContent='Get ready for the conversation';
+    plan.innerHTML=head+'<p class="hint">Save a role from <a href="#" onclick="showTab(\'roles\');return false">Roles</a> and it appears here with a plan built from the posting.</p>';
+    return;
+  }
+  $('#prepEyebrow').textContent='Interview prep · '+(t.company||''); $('#prepTitle').textContent=t.title||'';
+  const j=(typeof POOL!=='undefined'?POOL:[]).find(x=>jobKey(x)===t.key);
+  if(!j){ plan.innerHTML=head+'<p class="hint">This posting isn\'t in today\'s data any more (it may have closed), so there\'s no description to plan from.</p>'; return; }
+  if(!PROFILE||!(PROFILE.skills||[]).length){
+    plan.innerHTML=head+'<p class="hint">Add your CV so we can compare it with this posting.</p><button class="btn ghost sm" type="button" onclick="openUpload(\'#cvText\')">Add your CV →</button>';
+    return;
+  }
+  const g=gapAnalysis(j.text||j.snippet||'',j.tokens&&j.tokens.skills), n=(j.text||j.snippet||'').length;
+  const item=(cls,title,sub)=>`<div class="planitem"><span class="pdot ${cls}"></span><div><b>${escH(title)}</b><div class="hint">${sub}</div></div></div>`;
+  plan.innerHTML=head
+    +(g.missing.length?g.missing.slice(0,5).map(m=>item('warn',m,'In the posting, not in your CV. Expect a question on it.')).join(''):'<p class="hint">No obvious gaps between this posting and your CV.</p>')
+    +(g.have.length?item('good','Lead with: '+g.have.slice(0,4).join(', '),'Your strongest overlap with this role. Open your answers with these.'):'')
+    +`<p class="hint" style="margin-top:12px">Keyword-based, from the ${n.toLocaleString('en-CA')} characters of the description we have (often only the start of the posting).${j.url?` <a href="${escH(j.url)}" target="_blank" rel="noopener">Read the full posting ↗</a>`:''}</p>`;
+}
 function renderTracker(){
   const board=$('#kboard'); if(!board) return;
   renderTrkHead(); renderNudges();
@@ -1097,6 +1151,7 @@ $('#heroBuild').onclick=()=>openUpload('#cvText');
 $('#heroHome').onclick=e=>{ e.preventDefault(); showTab('profile'); };
 $('#qsCvBtn').onclick=()=>{ $('#uploadPanel').scrollIntoView({behavior:'smooth'}); setTimeout(()=>$('#cvText').focus(),300); };
 document.querySelectorAll('#topTabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+$('#prepRole').onchange=renderPrep;
 $('#tailorBasicBtn').onclick=()=>requestTailor('standard');
 $('#tailorProBtn').onclick=()=>requestTailor('reviewed');
 $('#reparseBtn').onclick=()=>{$('#cvText').value='';$('#clText').value='';$('#liText').value='';$('#uploadPanel').scrollIntoView({behavior:'smooth'});setTimeout(()=>$('#cvText').focus(),300);};
