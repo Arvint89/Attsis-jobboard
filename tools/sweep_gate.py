@@ -9,21 +9,35 @@ sweep only printed them as ::warning:: annotations, so a broken sweep deployed s
 --block-severe  exit 1 when a SEVERE alert fired (total roles or companies-with-roles
                 fell >30%), so the deploy step never runs and yesterday's data stays live.
                 ALLOW_REGRESSION=true (manual run input) lets an intended drop through.
---report        print every alert as ::error:: + into the job summary; exit 1 if any, so
-                the run is marked failed and GitHub emails the owner. Runs after deploy.
+--report        print every REGRESSION as ::error:: + into the job summary; exit 1 if any, so
+                the run is marked failed and GitHub emails the owner. Informational notices
+                (AUTO-PROMOTE ...) are listed in the summary but never fail. Runs after deploy.
 """
 from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 
 SEVERE_PREFIXES = ("roles kept fell", "companies with roles fell")
+# Only these shapes (engine/history.py check_regression) are regressions. jobs.json `alerts`
+# ALSO carries informational notices -- e.g. ~200 "AUTO-PROMOTE: '<co>' seen in N sweeps"
+# lines (discovered companies worth adding to the registry). Those must never fail a run.
+_REGRESSION = re.compile(r" fell \d| rose \d|went from \d+ kept roles to 0")
+
+
+def split(alerts: list) -> tuple[list, list, list]:
+    """-> (severe, regressions_other, info)."""
+    regs = [a for a in alerts if _REGRESSION.search(a)]
+    severe = [a for a in regs if a.startswith(SEVERE_PREFIXES)]
+    other = [a for a in regs if a not in severe]
+    info = [a for a in alerts if a not in regs]
+    return severe, other, info
 
 
 def classify(alerts: list) -> tuple[list, list]:
-    severe = [a for a in alerts if a.startswith(SEVERE_PREFIXES)]
-    other = [a for a in alerts if a not in severe]
+    severe, other, _ = split(alerts)
     return severe, other
 
 
@@ -45,7 +59,7 @@ def main(argv: list) -> int:
         print("sweep_gate: not a live build; nothing to check")
         return 0
     alerts = list(payload.get("alerts") or [])
-    severe, other = classify(alerts)
+    severe, other, info = split(alerts)
     if argv[1] == "--block-severe":
         if not severe:
             print("sweep_gate: no severe regression")
@@ -59,13 +73,16 @@ def main(argv: list) -> int:
                                    "allow_regression=true if the drop is intended.")])
         return 0 if allow else 1
     # --report
-    if not alerts:
-        _summary(["### Sweep health: OK (no alerts)"])
-        print("sweep_gate: healthy")
+    info_lines = ([f"", f"{len(info)} informational notice(s) (not failures), first 10:", *[f"- {a}" for a in info[:10]]]
+                  if info else [])
+    regs = severe + other
+    if not regs:
+        _summary(["### Sweep health: OK (no regressions)", *info_lines])
+        print(f"sweep_gate: healthy ({len(info)} informational notices)")
         return 0
-    for a in alerts:
+    for a in regs:
         print(f"::error title=Sweep health::{a}")
-    _summary(["### Sweep health: alerts", *[f"- {a}" for a in alerts]])
+    _summary(["### Sweep health: regressions", *[f"- {a}" for a in regs], *info_lines])
     return 1
 
 

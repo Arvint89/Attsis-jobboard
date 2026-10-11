@@ -53,3 +53,15 @@ def test_workflow_wires_gate_before_deploy_and_report_after():
     gate, upload, report = (wf.index("--block-severe"), wf.index("upload-pages-artifact"), wf.index("--report"))
     assert gate < upload < report
     assert "allow_regression" in wf
+
+
+def test_auto_promote_notices_never_fail(tmp_path, monkeypatch):
+    # ✅ real shape from live jobs.json 2026-10-09: ~200 of these sit in `alerts`
+    monkeypatch.delenv("ALLOW_REGRESSION", raising=False)
+    notice = ("AUTO-PROMOTE: '7shifts' seen in 11 sweeps via greenhouse (via Communitech) -- "
+              "add to engine/companies.json (sample: https://job-boards.greenhouse.io/7shifts/jobs/6130175004)")
+    f = _write(tmp_path, [notice] * 5)
+    assert sweep_gate.main([f, "--block-severe"]) == 0
+    assert sweep_gate.main([f, "--report"]) == 0
+    sev, oth, info = sweep_gate.split([notice, "fetch errors rose 4 -> 9"])
+    assert sev == [] and oth == ["fetch errors rose 4 -> 9"] and info == [notice]
