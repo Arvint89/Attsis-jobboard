@@ -32,6 +32,7 @@
   .navbtn{background:var(--card);border:1px solid var(--edge);color:var(--ink);padding:7px 12px;border-radius:8px;font-size:13px;cursor:pointer}
   .navbtn:hover{border-color:var(--hi)}
   .wrap{max-width:1020px;margin:0 auto;padding:18px 24px 60px}
+  .wrap.wide{max-width:1400px}   /* JB-72: List + map needs room for two columns */
   .card,.bar,.panel{background:var(--card);border:1px solid var(--edge);border-radius:12px}
   .panel{padding:22px 24px;margin-bottom:16px}
   .panel h2{margin:0 0 6px;font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:-0.02em}
@@ -142,8 +143,64 @@
 <script>try{if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}catch(e){}</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- JB-72: marker clustering (docs/design/DESIGN_map_v2.md D3). If this CDN fails the map renders unclustered. -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
 <style>
-  #map{height:520px;border-radius:12px;border:1px solid var(--edge);box-shadow:0 0 0 1px var(--edge-soft) inset}
+  /* JB-72 Map v2: layout modes List · List + map · Map (DESIGN_map_v2.md D2) */
+  .modebar{display:flex;gap:4px;padding:3px;border-radius:999px;background:var(--card);border:1px solid var(--edge)}
+  .modebar button{display:flex;align-items:center;gap:6px;background:transparent;color:var(--dim);border:1px solid transparent;padding:5px 12px;border-radius:999px;font-family:var(--font-mono);font-size:12px;cursor:pointer}
+  .modebar button:hover{color:var(--ink)}
+  .modebar button.on{background:var(--hi-soft);color:var(--hi);border-color:var(--hi-line)}
+  .boardtop{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 2px 10px}
+  #boardSplit.mode-list #mapView{display:none}
+  #boardSplit.mode-map #listView{display:block}
+  #boardSplit.mode-map #listView > :not(.filterbar){display:none}
+  #boardSplit.mode-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,46%);gap:20px;align-items:start}
+  #boardSplit.mode-split #mapView{position:sticky;top:96px}
+  #boardSplit.mode-split #map{height:calc(100vh - 210px);min-height:420px}
+  #boardSplit.mode-map #map{height:72vh}
+  .mapcard{background:var(--card);border:1px solid var(--edge);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+  .maptools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-bottom:1px solid var(--edge)}
+  .maptools .lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--subtle)}
+  .pillbtn{display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--dim);border:1px solid var(--edge);padding:4px 10px;border-radius:999px;font-family:var(--font-mono);font-size:12px;cursor:pointer}
+  .pillbtn:hover{color:var(--ink);border-color:var(--hi-line)}
+  .pillbtn.on{background:var(--hi-soft);color:var(--hi);border-color:var(--hi-line)}
+  .movechk{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12px;color:var(--dim);border:1px solid var(--edge);border-radius:999px;padding:4px 10px;cursor:pointer;user-select:none}
+  .movechk input{margin:0;accent-color:var(--hi)}
+  .mapfoot{display:flex;gap:6px 16px;flex-wrap:wrap;align-items:center;padding:10px 12px;border-top:1px solid var(--edge);font-family:var(--font-mono);font-size:11px;color:var(--subtle)}
+  .mapfoot .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+  .mapfoot .dash{display:inline-block;width:14px;border-top:1px dashed var(--hi);margin-right:5px;vertical-align:middle}
+  .mapfoot .right{margin-left:auto}
+  .placechip{display:inline-flex;align-items:center;gap:6px;background:var(--hi-soft);border:1px solid var(--hi-line);color:var(--hi);padding:3px 8px 3px 10px;border-radius:999px;font-family:var(--font-mono);font-size:12px;cursor:pointer}
+  /* pins (DESIGN_map_v2.md D1/D8) */
+  .pin{transform:translate(-50%,-100%);transform-origin:50% 100%;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;padding:4px 10px;border-radius:999px;font:700 12px var(--font-mono);box-shadow:0 2px 8px rgba(0,0,0,.55);cursor:pointer;transition:transform 120ms,box-shadow 120ms}
+  .pin .more{font-weight:500;opacity:.85}
+  .pin.t-strong{background:#00E87A;color:#0A0E1A;border:1px solid #00E87A}
+  .pin.t-good{background:#00D4FF;color:#0A0E1A;border:1px solid #00D4FF}
+  .pin.t-low{background:#1A2540;color:#A8B8D8;border:1px solid #2A3A5C}
+  .pin.cl{transform:translate(-50%,-50%);border-radius:999px;padding:6px 11px}
+  .pin.hl,.leaflet-marker-icon.hl .pin{transform:translate(-50%,-100%) scale(1.18);box-shadow:0 0 0 3px #E8F0FF,0 0 20px #00D4FF;z-index:1000}
+  .leaflet-marker-icon.hl .pin.cl{transform:translate(-50%,-50%) scale(1.18)}
+  .homepin{transform:translate(-50%,35%);display:inline-flex;width:max-content;align-items:center;gap:6px;white-space:nowrap;padding:4px 10px 4px 6px;border-radius:999px;background:#E8F0FF;color:#0A0E1A;font:700 12px var(--font-body);box-shadow:0 0 0 4px rgba(0,212,255,.25)}
+  .homepin i{width:10px;height:10px;border-radius:50%;background:#00D4FF;display:inline-block}
+  .ringlbl{transform:translate(-50%,-50%);font:600 10px var(--font-mono);letter-spacing:.08em;color:#00D4FF;background:#0A0E1A;padding:1px 5px;border-radius:4px;white-space:nowrap}
+  .offdot{transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;border:1.5px dashed #7A8BB0;background:#0A0E1A}
+  .job.hl{border-color:var(--hi);box-shadow:0 0 0 1px var(--hi) inset}
+  .leaflet-container{background:#0F1628;font-family:var(--font-body)}
+  .leaflet-tooltip{background:#141D35;color:#E8F0FF;border:1px solid #2A3A5C;box-shadow:none;font-size:12px}
+  .leaflet-tooltip-top:before{border-top-color:#2A3A5C}
+  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#141D35;color:#E8F0FF}
+  .leaflet-popup-content a{color:var(--hi)}
+  .leaflet-control-attribution{background:rgba(10,14,26,0.7)!important;color:#7A8BB0!important}
+  .leaflet-control-attribution a{color:#A8B8D8!important}
+  .leaflet-bar a{background:#141D35!important;color:#E8F0FF!important;border-color:#2A3A5C!important}
+  @media (max-width:1099px){
+    #boardSplit.mode-split{display:flex;flex-direction:column}
+    #boardSplit.mode-split #mapView{position:static;margin-bottom:14px;order:-1}
+    #boardSplit.mode-split #map{height:45vh;min-height:300px}
+  }
+  #map{height:520px}
   .viewtabs{display:flex;gap:6px;margin-bottom:10px}
   .viewtabs button{background:var(--card);border:1px solid var(--edge);color:var(--dim);padding:8px 16px;border-radius:999px;font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:all 200ms}
   .viewtabs button:hover{color:var(--ink);border-color:var(--hi)}
@@ -232,24 +289,33 @@
   <!-- BOARD VIEW -->
   <div id="boardView" style="display:none">
     <div id="demoBanner" class="banner" style="display:none">Showing <b>demo data</b> — sample roles to preview the board. Live roles populate when the fetcher runs (GitHub Action or <code>python build_board.py</code>).</div>
-    <div class="viewtabs"><button id="tabList" class="on">☰ List</button><button id="tabMap">🗺 Map</button></div>
-    <div class="bar" style="padding:12px 14px;margin-bottom:6px">
-      <div class="row searchrow">
-        <div class="fld grow"><label for="q">Search (company · title · skill)</label><input type="search" id="q" placeholder="e.g. embedded, Altium, ZTR…"></div>
+    <div class="boardtop">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="count" id="count" style="margin:0"></div>
+        <button class="placechip" id="placeChip" style="display:none" title="Clear location filter"></button></div>
+      <div class="modebar" role="group" aria-label="Layout">
+        <button id="modeList" data-mode="list">☰ List</button>
+        <button id="modeSplit" data-mode="split">◧ List + map</button>
+        <button id="modeMap" data-mode="map">🗺 Map</button>
       </div>
-      <div class="row">
-        <div class="fld"><label for="arrangement">Work arrangement</label><select id="arrangement"><option value="">Any</option><option value="onsite">On-site</option><option value="hybrid">Hybrid</option><option value="remote">Remote</option></select></div>
-        <div class="fld"><label for="country">Country</label><select id="country"><option value="">Any</option></select></div>
-        <div class="fld"><label for="industry">Industry</label><select id="industry"><option value="">Any</option></select></div>
-        <div class="fld"><label for="minScore">Min score</label><select id="minScore"><option value="0">Show all</option><option value="4">4+</option><option value="6">6+</option><option value="7">7+ (strong)</option><option value="8">8+</option></select></div>
-        <div class="fld"><label for="ring">Distance</label><select id="ring"><option value="">Any distance</option><option value="0">Ring 0 · nearest</option><option value="1">Ring 1</option><option value="2">Ring 2</option><option value="3">Ring 3</option><option value="4">Ring 4 · farthest</option></select></div>
-        <div class="fld"><label for="sortBy">Sort by</label><select id="sortBy"><option value="score">Score</option><option value="distance">Distance (nearest)</option><option value="salary">Salary (highest)</option></select></div>
-        <div class="fld"><label for="perCo">Per company</label><select id="perCo"><option value="8">Top 8</option><option value="3">Top 3</option><option value="5">Top 5</option><option value="0">All</option></select></div>
-        <div class="fld"><label>&nbsp;</label><button class="navbtn" type="button" style="font-size:12px;padding:6px 10px" onclick="resetFilters()" title="Clear saved filters">Reset filters</button></div>
-      </div>
-      <div class="hint">Every role kept — filter by distance, sort by score/distance/salary, and set how many per company (top 8 by default, or All).</div>
     </div>
+    <div id="boardSplit" class="mode-list">
     <div id="listView">
+    <div class="bar filterbar" style="padding:12px 14px;margin-bottom:10px">
+        <div class="row searchrow">
+          <div class="fld grow"><label for="q">Search (company · title · skill)</label><input type="search" id="q" placeholder="e.g. embedded, Altium, ZTR…"></div>
+        </div>
+        <div class="row">
+          <div class="fld"><label for="arrangement">Work arrangement</label><select id="arrangement"><option value="">Any</option><option value="onsite">On-site</option><option value="hybrid">Hybrid</option><option value="remote">Remote</option></select></div>
+          <div class="fld"><label for="country">Country</label><select id="country"><option value="">Any</option></select></div>
+          <div class="fld"><label for="industry">Industry</label><select id="industry"><option value="">Any</option></select></div>
+          <div class="fld"><label for="minScore">Min score</label><select id="minScore"><option value="0">Show all</option><option value="4">4+</option><option value="6">6+</option><option value="7">7+ (strong)</option><option value="8">8+</option></select></div>
+          <div class="fld"><label for="ring">Distance</label><select id="ring"><option value="">Any distance</option><option value="0">Ring 0 · nearest</option><option value="1">Ring 1</option><option value="2">Ring 2</option><option value="3">Ring 3</option><option value="4">Ring 4 · farthest</option></select></div>
+          <div class="fld"><label for="sortBy">Sort by</label><select id="sortBy"><option value="score">Score</option><option value="distance">Distance (nearest)</option><option value="salary">Salary (highest)</option></select></div>
+          <div class="fld"><label for="perCo">Per company</label><select id="perCo"><option value="8">Top 8</option><option value="3">Top 3</option><option value="5">Top 5</option><option value="0">All</option></select></div>
+          <div class="fld"><label>&nbsp;</label><button class="navbtn" type="button" style="font-size:12px;padding:6px 10px" onclick="resetFilters()" title="Clear saved filters">Reset filters</button></div>
+        </div>
+        <div class="hint">Every role kept — filter by distance, sort by score/distance/salary, and set how many per company (top 8 by default, or All).</div>
+      </div>
       <details class="bar jdtool" style="padding:12px 14px;margin-bottom:10px">
         <summary style="cursor:pointer;font-size:13px">Check any job description — free gap analysis vs your CV</summary>
         <div class="row" style="margin-top:10px"><div class="fld grow"><label>Paste a job description</label>
@@ -257,22 +323,28 @@
         <div style="margin-top:8px"><button class="btn ghost" id="jdBtn">Analyze JD</button></div>
         <div id="jdOut"></div>
       </details>
-      <div class="count" id="count"></div>
       <div id="matches"></div>
     </div>
-    <div id="mapView" style="display:none">
-      <div class="maplegend">
-        <span><b style="background:#16a34a"></b>Hiring — fits your CV</span>
-        <span><b style="background:#f39c12"></b>Open roles (weaker fit)</span>
-        <span><b style="background:#94a3b8"></b>No matching roles</span>
-        <span><b style="background:#ffffff;border:1px solid #94a3b8"></b>ATS not resolved</span>
-        <span><b style="background:#2563eb"></b>You (home)</span>
-        <span><b style="background:transparent;border:3px solid #a855f7;width:9px;height:9px"></b>Multi-city roles (nearest shown)</span>
+    <div id="mapView">
+      <div class="mapcard">
+        <div class="maptools">
+          <span class="lbl">Pins</span>
+          <button class="pillbtn on" id="pinScore" data-pin="score">Fit score</button>
+          <button class="pillbtn" id="pinSalary" data-pin="salary">Salary</button>
+          <button class="pillbtn" id="offToggle" title="Companies we track with no matching role right now">◌ Not hiring a match · <span id="offCount">0</span></button>
+          <label class="movechk"><input type="checkbox" id="moveToggle"> Search as I move the map</label>
+        </div>
+        <div id="map"></div>
+        <div class="mapfoot">
+          <span><span class="dash"></span>50 · 100 · 200 km from home</span>
+          <span><span class="dot" style="background:#00E87A"></span>8+</span>
+          <span><span class="dot" style="background:#00D4FF"></span>7</span>
+          <span><span class="dot" style="background:#1A2540;border:1px solid #2A3A5C"></span>6 and under</span>
+          <span><span class="dot" style="border:1.5px dashed #7A8BB0"></span>Not hiring a match</span>
+          <span class="right" id="mapNote"></span>
+        </div>
       </div>
-      <div class="fld" style="max-width:230px;margin-bottom:8px"><label for="mapStatus">Show</label>
-        <select id="mapStatus"><option value="">All companies</option><option value="fit">Hiring — fits CV</option><option value="open">Any open roles</option><option value="unknown">Unresolved (to check)</option></select></div>
-      <div id="map"></div>
-      <div class="hint" id="mapNote"></div>
+    </div>
     </div>
   </div>
 
@@ -498,7 +570,7 @@ function jobCard(j,bucket,i){
   const jkey=jobKey(j); const saved=isTracked(jkey);
   const savedLbl=saved?'✓ In tracker':'+ Save to tracker';
   const savedCls=saved?' saved':'';
-  return `<div class="job"><div class="score ${sc(j.score)}">${j.score}</div><div>
+  return `<div class="job" data-gk="${hasGeo(j)?geoKey(j.lat,j.lng):''}"><div class="score ${sc(j.score)}">${j.score}</div><div>
     <div class="title">${link}</div>
     <div class="subl">${j.company} · ${j.location_near||j.location}${j.n_locations>1?` <span title="${(j.location||'').replace(/"/g,'&quot;')}" style="text-decoration:underline dotted;cursor:help">+${j.n_locations-1} more</span>`:''}${ring?' · '+ring:''}${km}${posted?' · '+posted:''}</div>
     ${j.snippet?`<div class="snip">${j.snippet}</div>`:''}
@@ -534,6 +606,10 @@ function renderBoard(){
   const sortBy=$('#sortBy').value,perCo=+($('#perCo').value||0);
   const f=listFilter();
   let m=POOL.filter(f);
+  // JB-72: location filters from the map (pin click / search-as-I-move)
+  let pc=null;
+  if(PLACE) m=m.filter(j=>hasGeo(j)&&geoKey(j.lat,j.lng)===PLACE.key);
+  else if(MOVE&&MAP&&mapVisible()){ const b=boundsOf(MAP); pc=placeCounts(m,b); m=m.filter(j=>inBounds(j,b)); }
   if(perCo>0){                                   // keep top N per company
     const cnt={}; m=[...m].sort((a,b)=>b.score-a.score).filter(j=>{cnt[j.company]=(cnt[j.company]||0)+1;return cnt[j.company]<=perCo;});
   }
@@ -543,7 +619,8 @@ function renderBoard(){
   window.VIS={m};
   $('#matches').innerHTML=m.length?m.map((j,i)=>jobCard(j,'m',i)).join(''):`<div class="empty">No roles for these filters. Loosen a filter, lower Min score, or set Per company → All.</div>`;
   const strong=m.filter(j=>j.score>=7).length;
-  $('#count').textContent=`${m.length} role${m.length!==1?'s':''} shown · ${strong} strong (7+)`+(perCo?` · ≤${perCo}/company`:' · all per company');
+  $('#count').textContent=`${m.length} role${m.length!==1?'s':''} shown · ${strong} strong (7+)`+(perCo?` · ≤${perCo}/company`:' · all per company')
+    +(pc?` · in map view (${pc.outside} outside, ${pc.unplaced} with no location)`:'');
 }
 const VIEW_IDS=['boardView','trackerView','prepView','tailorView','setupView'];
 const TAB_TO_VIEW={roles:'boardView',tracker:'trackerView',prep:'prepView',tailor:'tailorView',profile:'setupView'};
@@ -551,8 +628,9 @@ function showTab(name){
   const viewId=TAB_TO_VIEW[name]||'boardView';
   VIEW_IDS.forEach(id=>{const el=$('#'+id); if(el) el.style.display=(id===viewId)?'block':'none';});
   document.querySelectorAll('#topTabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===name));
+  { const w=document.querySelector('.wrap'); if(w) w.classList.toggle('wide',name==='roles'&&!!LAYOUT&&LAYOUT!=='list'); }
   if(name==='tracker') renderTracker();
-  if(name==='roles' && PROFILE){ rescore(); renderBoard(); if($('#mapView').style.display==='block') renderMap(); }
+  if(name==='roles' && PROFILE){ rescore(); renderBoard(); if(mapVisible()) renderMap(); }
   window.scrollTo(0,0);
 }
 function showBoard(){
@@ -567,6 +645,7 @@ function showBoard(){
   if(JOBS.mode==='demo')$('#demoBanner').style.display='block';
   rescore();renderBoard();
   showTab('roles');
+  if(!LAYOUT) initLayout(); else if(mapVisible()) renderMap();
 }
 function showSetup(){
   const who=(PROFILE&&(PROFILE.initials||PROFILE.person))||'';
@@ -734,83 +813,165 @@ $('#editKwsBtn').onclick=()=>{if(!PROFILE)return;draft={titles:[...PROFILE.title
 $('#clearProfileBtn').onclick=()=>{if(!confirm('Clear your saved CV/keywords? This browser will forget your profile.'))return;PROFILE=null;try{localStorage.removeItem('jobboard_profile');}catch(e){}rescore();showSetup();};
 $('#jdBtn').onclick=()=>{const t=$('#jdIn').value.trim();$('#jdOut').innerHTML=t?gapHtml(gapAnalysis(t)):'<div class="hint">Paste a job description first.</div>';};
 /* JB-8: remember filter + min-score choices per browser */
-const FKEYS=['q','arrangement','country','industry','minScore','ring','sortBy','perCo','mapStatus'];
+const FKEYS=['q','arrangement','country','industry','minScore','ring','sortBy','perCo'];
 function saveFilters(){try{const o={};FKEYS.forEach(id=>{const el=$('#'+id);if(el)o[id]=el.value;});localStorage.setItem('jobboard_filters',JSON.stringify(o));}catch(e){}}
 function restoreFilters(){let o=null;try{o=JSON.parse(localStorage.getItem('jobboard_filters')||'null');}catch(e){}
   if(!o)return;FKEYS.forEach(id=>{const el=$('#'+id);if(!el||o[id]==null)return;el.value=o[id];if(el.value!==o[id])el.value='';});}
 function resetFilters(){try{localStorage.removeItem('jobboard_filters');}catch(e){}
   FKEYS.forEach(id=>{const el=$('#'+id);if(el)el.value=el.tagName==='SELECT'?el.options[0].value:'';});renderBoard();if(MAP)renderMap();}
-FKEYS.filter(id=>id!=='mapStatus').forEach(id=>$('#'+id).addEventListener('input',()=>{saveFilters();renderBoard();if($('#mapView').style.display==='block')renderMap();}));
+FKEYS.forEach(id=>$('#'+id).addEventListener('input',()=>{saveFilters();renderBoard();if(mapVisible())renderMap();}));
 
-/* ---------- map view (JB-26) ---------- */
-let MAP=null;
-const STATUS_COLOR={fit:'#16a34a',open:'#f39c12',none:'#94a3b8',unknown:'#ffffff'};
-// recompute each company's hiring status from the CV-rescored pool, so the map
-// reflects YOUR fit (green) rather than the server's base-model scoring.
+/* ---------- map view v2 (JB-72 · docs/design/DESIGN_map_v2.md) ----------
+   Pins = one per LOCATION showing the best fit score there (D1); List · List+map · Map
+   layouts (D2); clustering via Leaflet.markercluster with an unclustered fallback (D3);
+   dark Esri tiles (D4); opt-in "search as I move the map" with honest counts (D5);
+   two-way hover/click sync between cards and pins (D6); optional overlay of tracked
+   companies with no matching role (D7). */
+/* MAPV2-PURE-BEGIN */
+function geoKey(lat,lng){return (+lat).toFixed(2)+','+(+lng).toFixed(2);}
+function hasGeo(j){return !!j&&j.lat!=null&&j.lng!=null&&isFinite(j.lat)&&isFinite(j.lng);}
+function groupByLocation(jobs){
+  const g={};
+  (jobs||[]).forEach(j=>{ if(!hasGeo(j)) return; const k=geoKey(j.lat,j.lng);
+    (g[k]=g[k]||{key:k,lat:+j.lat,lng:+j.lng,place:j.location_near||j.location||'',jobs:[]}).jobs.push(j); });
+  return Object.values(g).map(x=>{x.jobs.sort((a,b)=>(b.score||0)-(a.score||0)); x.best=x.jobs[0].score||0; return x;});
+}
+function pinTier(s){return s>=8?'strong':s>=7?'good':'low';}
+function inBounds(j,b){return hasGeo(j)&&j.lat>=b.s&&j.lat<=b.n&&j.lng>=b.w&&j.lng<=b.e;}
+function placeCounts(jobs,b){
+  const r={inside:0,outside:0,unplaced:0};
+  (jobs||[]).forEach(j=>{ if(!hasGeo(j)) r.unplaced++; else if(inBounds(j,b)) r.inside++; else r.outside++; });
+  return r;
+}
+function salShort(s){
+  s=String(s||'');
+  const nums=(s.match(/\d[\d,\.]*\s*k?/gi)||[]).map(x=>{let v=parseFloat(x.replace(/,/g,''));if(/k/i.test(x))v*=1000;return v;}).filter(v=>v>0);
+  if(!nums.length) return '';
+  if(/hour|\/hr|per hr/i.test(s)) return '$'+Math.round(nums[0])+'/h';
+  const k=nums.map(v=>Math.round(v/1000));
+  return k.length>1&&k[1]!==k[0]?`$${k[0]}–${k[1]}k`:`$${k[0]}k`;
+}
+/* MAPV2-PURE-END */
+let MAP=null, CLUSTER=null, MARKERS={}, PLACE=null, MOVE=false, PINMODE='score', SHOWOFF=false, MAP_FITTED=false, LAYOUT=null, HL=null;
+const HOME_FALLBACK=[42.9849,-81.2453];   // London, ON — build_board.py doesn't write home_coords yet (Phase B)
+function escH(t){return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function mapVisible(){const v=$('#boardView'),b=$('#boardSplit');return !!(v&&b&&v.style.display!=='none'&&/mode-(split|map)/.test(b.className));}
+function boundsOf(m){const b=m.getBounds();return {s:b.getSouth(),n:b.getNorth(),w:b.getWest(),e:b.getEast()};}
+function homeCoords(){return JOBS.home_coords||HOME_FALLBACK;}
+// company → role counts from the CV-rescored pool (filters applied, no per-company cap)
 function poolCompanyCounts(){
   const m={}, f=listFilter();
   (typeof POOL!=='undefined'?POOL:[]).filter(f).forEach(j=>{
     const k=(j.company||'').trim(); if(!k) return;
-    const e=m[k]||(m[k]={fit:0,any:0,multi:0}); e.any++; if(j.score>=7) e.fit++; if((j.n_locations||1)>1) e.multi++;
+    const e=m[k]||(m[k]={fit:0,any:0}); e.any++; if(j.score>=7) e.fit++;
   });
   return m;
 }
+function clusterIcon(cl){
+  let best=0,n=0; cl.getAllChildMarkers().forEach(mk=>{best=Math.max(best,mk.options.best||0); n+=mk.options.n||1;});
+  return L.divIcon({className:'',iconSize:[0,0],html:`<div class="pin cl t-${pinTier(best)}">${best}<span class="more">· ${n}</span></div>`});
+}
 function renderMap(){
-  const filt=$('#mapStatus').value, home=JOBS.home_coords||[42.9849,-81.2453];
+  if(typeof L==='undefined'){ $('#mapNote').textContent='Map library failed to load — check your connection.'; return; }
+  const home=homeCoords();
   if(!MAP){
     MAP=L.map('map',{scrollWheelZoom:true}).setView(home,8);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Tiles © Esri'}).addTo(MAP);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Tiles © Esri'}).addTo(MAP);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:16}).addTo(MAP);
+    [50,100,200].forEach(km=>{
+      L.circle(home,{radius:km*1000,color:'#00D4FF',weight:1,opacity:0.45,dashArray:'4 6',fill:false,interactive:false}).addTo(MAP);
+      L.marker([home[0]+km/111,home[1]],{interactive:false,icon:L.divIcon({className:'',iconSize:[0,0],html:`<div class="ringlbl">${km} KM</div>`})}).addTo(MAP);
+    });
+    L.marker(home,{zIndexOffset:2000,interactive:false,icon:L.divIcon({className:'',iconSize:[0,0],
+      html:`<div class="homepin"><i></i>${escH((PROFILE&&PROFILE.home)||JOBS.home||'Home')}</div>`})}).addTo(MAP);
+    MAP.on('moveend',()=>{ if(MOVE&&!PLACE) renderBoard(); });
   }
-  if(MAP._coLayer) MAP.removeLayer(MAP._coLayer);
-  const counts = poolCompanyCounts();   // same roles as the list (filters applied, no per-company cap)
-  const layer=L.layerGroup(), pts=[];
-  // Home marker — always drawn, prominent, permanently labelled
-  const hm=L.circleMarker(home,{radius:12,color:'#ffffff',weight:3,fillColor:'#2563eb',fillOpacity:1})
-    .bindPopup('<b>🏠 Home</b><br>'+(JOBS.home||'home'));
-  hm.bindTooltip('🏠 Home',{permanent:true,direction:'top',className:'hometip',offset:[0,-10]});
-  hm.addTo(layer); pts.push(home);
-  let greens=0, shownCos=0, withRoles=0;
-  (JOBS.companies||[]).forEach(c=>{
-    const pc = counts[(c.name||'').trim()] || {fit:0,any:0,multi:0};
-    const roles=pc.any, fit=pc.fit;
-    const status = fit ? 'fit' : (roles ? 'open' : (c.resolved?'none':'unknown'));
-    if(filt && status!==filt) return;
-    if(status==='fit') greens++;
-    shownCos++; if(roles) withRoles++;
-    const hollow = status==='unknown';
-    const col=STATUS_COLOR[status]||'#94a3b8';
-    const stroke = hollow ? '#94a3b8' : '#ffffff';
-    const roleTxt = status==='fit'?`<b style="color:#16a34a">${fit} strong (7+) of ${roles} role(s)</b>`
-      : status==='open'?`${roles} role(s) match your filters, none 7+`
-      : status==='none'?'no roles match your filters now' : 'ATS not resolved — worth checking';
-    const multiTxt = pc.multi?`<br><span style="color:#a855f7">◎ ${pc.multi} of ${roles} role(s) list several cities — dot shows the nearest</span>`:'';
-    const listLink = roles?`<br><a href="#" onclick="showCompany(decodeURIComponent('${encodeURIComponent(c.name)}'));return false;">▸ show these ${roles} role(s) in the list</a>`:'';
-    if(pc.multi) L.circleMarker([c.lat,c.lng],{radius:14,color:'#a855f7',weight:3,fill:false,interactive:false}).addTo(layer);  // JB-36 multi-city ring
-    L.circleMarker([c.lat,c.lng],{radius:hollow?6:9,color:stroke,weight:2,fillColor:col,fillOpacity:hollow?0.5:0.95})
-      .bindPopup(`<b>${c.name}</b><br>${c.city} · ${c.industry}<br>${roleTxt}${multiTxt}${listLink}<br><a href="${c.careers_url}" target="_blank" rel="noopener">careers ↗</a>`)
-      .addTo(layer);
-    if(!hollow) pts.push([c.lat,c.lng]);   // hollow (unresolved) don't drag the zoom out
+  if(MAP._pinLayer) MAP.removeLayer(MAP._pinLayer);
+  const useCluster=typeof L.markerClusterGroup==='function';
+  const layer=useCluster?L.markerClusterGroup({showCoverageOnHover:false,maxClusterRadius:48,spiderfyOnMaxZoom:true,iconCreateFunction:clusterIcon}):L.layerGroup();
+  MARKERS={};
+  const roles=(typeof POOL!=='undefined'?POOL:[]).filter(listFilter());
+  const groups=groupByLocation(roles);
+  groups.forEach(g=>{
+    const n=g.jobs.length, best=g.best;
+    let label=String(best);
+    if(PINMODE==='salary'){ const sal=g.jobs.map(j=>j.salary).filter(Boolean).sort((a,b)=>salVal(b)-salVal(a))[0]; label=(sal&&salShort(sal))||'—'; }
+    const sel=PLACE&&PLACE.key===g.key;
+    const html=`<div class="pin t-${pinTier(best)}${sel?' hl':''}">${escH(label)}${n>1?`<span class="more">+${n-1}</span>`:''}</div>`;
+    const tip=`<b>${escH(g.place)} · ${n} role${n>1?'s':''}</b><br>`
+      +g.jobs.slice(0,4).map(j=>`${j.score} · ${escH(j.company)} — ${escH(j.title)}`).join('<br>')
+      +(n>4?`<br>+${n-4} more · click to list them`:'<br>click to list them');
+    const mk=L.marker([g.lat,g.lng],{zIndexOffset:sel?1000:best*10,icon:L.divIcon({className:'',iconSize:[0,0],html}),best,n});
+    mk.bindTooltip(tip,{direction:'top',offset:[0,-28]});
+    mk.on('click',()=>selectPlace(g)).on('mouseover',()=>cardHL(g.key,true)).on('mouseout',()=>cardHL(g.key,false));
+    layer.addLayer(mk); MARKERS[g.key]=mk;
   });
-  layer.addTo(MAP); MAP._coLayer=layer;
-  $('#mapNote').textContent=`The map shows COMPANIES; the list shows ROLES. Both use the same filters above — `
-    +`${shownCos} companies shown, ${withRoles} with matching roles, ${greens} with a strong (7+) fit`
-    +(PROFILE?' for your CV. ':'. Load your CV to score against it. ')
-    +'Map counts every role (the list shows top N per company). Tap a company → "show these roles in the list".';
-  setTimeout(()=>{MAP.invalidateSize(); if(pts.length>1){try{MAP.fitBounds(pts,{padding:[40,40],maxZoom:9});}catch(e){}}},60);
+  // D7: tracked companies with no role matching the current filters
+  const counts=poolCompanyCounts(), offLayer=L.layerGroup(); let off=0;
+  (JOBS.companies||[]).forEach(c=>{
+    if(c.lat==null||c.lng==null) return;
+    if((counts[(c.name||'').trim()]||{any:0}).any) return;
+    off++; if(!SHOWOFF) return;
+    L.marker([c.lat,c.lng],{zIndexOffset:-100,icon:L.divIcon({className:'',iconSize:[0,0],html:'<div class="offdot"></div>'})})
+      .bindPopup(`<b>${escH(c.name)}</b><br>${escH(c.city||'')}${c.industry?' · '+escH(c.industry):''}<br>`
+        +(c.resolved?'No role matches your filters right now':'Careers system not tracked yet')
+        +(c.careers_url?`<br><a href="${escH(c.careers_url)}" target="_blank" rel="noopener">careers ↗</a>`:''))
+      .addTo(offLayer);
+  });
+  const grp=L.layerGroup([layer,offLayer]).addTo(MAP);
+  MAP._pinLayer=grp; CLUSTER=useCluster?layer:null;
+  $('#offCount').textContent=off;
+  const placed=groups.reduce((a,g)=>a+g.jobs.length,0), unplaced=roles.length-placed;
+  $('#mapNote').textContent=`${unplaced} role${unplaced!==1?'s':''} not on the map (no location)`;
+  if(!MAP_FITTED) setTimeout(fitPins,80);
 }
-function showCompany(name){
-  $('#q').value=name; saveFilters(); showView('list'); renderBoard(); window.scrollTo(0,0);
+// first view: frame the pins near home (≤250 km), not the whole world — US/India pins would zoom us out to nothing
+function fitPins(){
+  if(!MAP) return; MAP.invalidateSize();
+  const home=L.latLng(homeCoords()), pts=Object.values(MARKERS).map(mk=>mk.getLatLng());
+  const near=pts.filter(p=>MAP.distance(home,p)<=250000), use=near.length>=3?near:pts;
+  if(use.length){ try{MAP.fitBounds(L.latLngBounds(use.concat([home])),{padding:[30,30],maxZoom:10});}catch(e){} }
+  MAP_FITTED=true;
 }
-function showView(which){
-  const map=which==='map';
-  $('#listView').style.display=map?'none':'block';
-  $('#mapView').style.display=map?'block':'none';
-  $('#tabMap').classList.toggle('on',map); $('#tabList').classList.toggle('on',!map);
-  if(map) renderMap();
+function selectPlace(g){
+  PLACE={key:g.key,label:g.place||'this location'};
+  const c=$('#placeChip'); c.textContent='📍 '+PLACE.label+' ✕'; c.style.display='inline-flex';
+  if(LAYOUT==='map') setMode('split'); else { renderBoard(); renderMap(); }
+  const lv=$('#listView'); if(lv&&LAYOUT!=='split') lv.scrollIntoView({behavior:'smooth'});
 }
-$('#tabList').onclick=()=>showView('list');
-$('#tabMap').onclick=()=>showView('map');
-$('#mapStatus').addEventListener('input',()=>{saveFilters();renderMap();});
+function clearPlace(){ PLACE=null; $('#placeChip').style.display='none'; renderBoard(); if(mapVisible()) renderMap(); }
+function cardHL(key,on){ document.querySelectorAll(`#matches .job[data-gk="${key}"]`).forEach(el=>el.classList.toggle('hl',on)); }
+function setPinHL(key,on){
+  if(!key||!MAP||!mapVisible()) return; const mk=MARKERS[key]; if(!mk) return;
+  const vis=CLUSTER?CLUSTER.getVisibleParent(mk):mk; const el=vis&&vis._icon; if(el) el.classList.toggle('hl',on);
+}
+function hlPin(key){ if(HL===key) return; setPinHL(HL,false); HL=key; setPinHL(key,true); }
+function setMode(mode){
+  if(!['list','split','map'].includes(mode)) mode='list';
+  LAYOUT=mode; try{localStorage.setItem('jobboard_layout',mode);}catch(e){}
+  $('#boardSplit').className='mode-'+mode;
+  const w=document.querySelector('.wrap'); if(w) w.classList.toggle('wide',mode!=='list');
+  document.querySelectorAll('.modebar button').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
+  renderBoard();
+  if(mode!=='list'){ renderMap(); setTimeout(()=>{ if(!MAP) return; MAP.invalidateSize(); if(!MAP_FITTED) fitPins(); },80); }
+}
+function initLayout(){
+  let m=null; try{m=localStorage.getItem('jobboard_layout');}catch(e){}
+  if(!['list','split','map'].includes(m)) m=window.innerWidth>=1100?'split':'list';
+  setMode(m);
+}
+function showCompany(name){ $('#q').value=name; saveFilters(); renderBoard(); if(mapVisible()) renderMap(); window.scrollTo(0,0); }
+document.querySelectorAll('.modebar button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+['pinScore','pinSalary'].forEach(id=>$('#'+id).onclick=()=>{
+  PINMODE=$('#'+id).dataset.pin;
+  $('#pinScore').classList.toggle('on',PINMODE==='score'); $('#pinSalary').classList.toggle('on',PINMODE==='salary');
+  renderMap();
+});
+$('#offToggle').onclick=()=>{ SHOWOFF=!SHOWOFF; $('#offToggle').classList.toggle('on',SHOWOFF); renderMap(); };
+$('#moveToggle').onchange=e=>{ MOVE=e.target.checked; if(MOVE&&PLACE){ PLACE=null; $('#placeChip').style.display='none'; renderMap(); } renderBoard(); };
+$('#placeChip').onclick=clearPlace;
+$('#matches').addEventListener('mouseover',e=>{ const c=e.target.closest('.job'); hlPin(c&&c.dataset.gk||null); });
+$('#matches').addEventListener('mouseleave',()=>hlPin(null));
 
 /* ---------- JB-62: tenant region filter + brand overlay ----------
    ?tenant=<slug> fetches site/data/tenants/<slug>.json and (if valid)
