@@ -12,7 +12,12 @@ on:
       - ".github/workflows/sweep.yml"
   schedule:
     - cron: "39 12 * * 1-5"   # 08:39 America/Toronto (12:39 UTC), weekdays
-  workflow_dispatch: {}         # manual "Run" button
+  workflow_dispatch:            # manual "Run" button
+    inputs:
+      allow_regression:         # JB-83: deploy even if the health gate sees a >30% drop
+        description: "Deploy even if total roles / companies dropped >30% (intended change)"
+        type: boolean
+        default: false
 concurrency:                    # JB-41: never run two sweeps at once; the newest wins
   group: job-sweep
   cancel-in-progress: true
@@ -32,6 +37,16 @@ jobs:
       - run: pip install -r engine/requirements.txt
       - name: Fetch all ATS + build board
         run: cd engine && python build_board.py
+      # JB-83: a severe drop (>30% fewer roles or companies) blocks the deploy, so yesterday's
+      # data stays live and the run fails (GitHub emails the owner).
+      - name: Health gate (block deploy on a severe regression)
+        run: python tools/sweep_gate.py site/data/jobs.json --block-severe
+        env:
+          ALLOW_REGRESSION: ${{ github.event.inputs.allow_regression || 'false' }}
       - uses: actions/upload-pages-artifact@v3
         with: {path: site}
       - uses: actions/deploy-pages@v4
+      # JB-83: smaller alerts (a source went to 0, errors rose, fewer strong matches) still
+      # deploy, but fail the run so they are seen instead of buried as warnings.
+      - name: Health report
+        run: python tools/sweep_gate.py site/data/jobs.json --report
