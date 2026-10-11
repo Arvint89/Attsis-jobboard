@@ -28,7 +28,10 @@ import sys
 
 
 EXPECTED_TITLE_SUBSTRING = "Attsis Job Board"
-BOARD_SELECTOR = ".job, #quickstartPanel, #uploadPanel"
+# ":visible" on each part: Playwright waits for the FIRST element matching a
+# selector list, so without it a hidden #quickstartPanel (JB-74: the board now
+# shows first, setup is hidden) blocks the wait even when .job cards are visible.
+BOARD_SELECTOR = ".job:visible, #quickstartPanel:visible, #uploadPanel:visible"
 WAIT_TIMEOUT_MS = 15000
 
 
