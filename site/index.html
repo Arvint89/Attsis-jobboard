@@ -241,6 +241,44 @@
   .maplegend{display:flex;flex-wrap:wrap;gap:14px;margin:8px 2px;font-family:var(--font-mono);font-size:11px;color:var(--dim);letter-spacing:.04em}
   .maplegend b{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle}
   .leaflet-popup-content{font:13px -apple-system,Segoe UI,sans-serif}
+  /* JB-75 job card v2 */
+  .job{display:block;padding:0;overflow:hidden}
+  .jobhead{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:16px;padding:16px 18px;cursor:pointer;align-items:start}
+  .score{width:56px;height:56px;flex-direction:column;line-height:1}
+  .score b{font-size:22px}.score small{font-size:10px;opacity:.75;margin-top:3px;font-weight:500}
+  .s-mid{background:rgba(0,212,255,0.12);color:var(--hi);border:1px solid var(--hi-line);box-shadow:none}
+  .jobmain .title{font-family:var(--font-body);font-weight:600;font-size:17px;letter-spacing:-0.005em}
+  .jobmain .title a{border-bottom:none}
+  .jobmain .subl{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;margin:4px 0 8px;color:var(--dim);font-size:14px}
+  .subl .mono{font-family:var(--font-mono);font-size:12px;color:var(--subtle)}
+  .subl .more{text-decoration:underline dotted;cursor:help}
+  .checks{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-family:var(--font-mono);font-size:12px}
+  .ck.ok{color:var(--good)}.ck.q{color:var(--subtle)}
+  .jobmain .why{font-style:normal;font-size:13px;color:var(--dim);margin-top:8px}
+  .why .lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--subtle);margin-right:8px}
+  .jobside{display:flex;gap:6px}
+  .iconbtn{width:36px;height:36px;border-radius:50%;border:1px solid var(--edge);background:transparent;color:var(--dim);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
+  .iconbtn:hover{border-color:var(--hi-line);color:var(--ink)}
+  .iconbtn.saved{color:var(--good);border-color:#1f6b4a}
+  .chev .ico{transition:transform 200ms}.job.open .chev .ico{transform:rotate(180deg)}
+  .job.open{border-color:var(--hi-line)}
+  .jobbody{display:none;border-top:1px solid var(--edge);padding:18px 18px 18px 98px}
+  .job.open .jobbody{display:block}
+  .bodygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:24px}
+  .sectlbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--subtle);margin-bottom:10px}
+  .jobbody > .sect{margin-top:18px}
+  .jobbody .hint{margin:8px 0}
+  .reasons{margin:10px 0 0;padding:0;list-style:none;font-family:var(--font-mono);font-size:12px;color:var(--dim)}
+  .reasons li{margin:3px 0}.reasons li::before{content:'› ';color:var(--hi)}
+  .jobbody .jobactions{margin-top:18px;align-items:center}
+  .jobactions .btnlink.primary{background:var(--hi);color:#04101f;border-color:var(--hi);font-weight:600}
+  .btn.sm{padding:6px 12px;font-size:13px}
+  @media (max-width:700px){
+    .jobhead{grid-template-columns:44px minmax(0,1fr) auto;gap:10px;padding:12px}
+    .score{width:44px;height:44px}.score b{font-size:17px}
+    .jobbody{padding:14px 12px}
+    .iconbtn{width:32px;height:32px}
+  }
 </style>
 </head>
 <body>
@@ -331,7 +369,7 @@
       </div>
       <div class="herocard">
         <h3>Rank these against your profile</h3>
-        <p>Scores below use a general profile until you add yours.</p>
+        <p>Scores below use a sample engineering profile until you add yours.</p>
         <div class="srcgrid">
           <button type="button" id="heroCv"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg><span>CV</span></button>
           <button type="button" id="heroCover"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg><span>Cover letter</span></button>
@@ -612,28 +650,73 @@ window.gap=function(bucket,i){const j=(window.VIS&&window.VIS[bucket]&&window.VI
 
 /* ---------- render ---------- */
 const sc=s=>s>=8?'s-hi':s>=7?'s-mid':'s-lo';
+/* JB-75 job card v2 (docs/design/DESIGN_jb75_job_card.md) */
+/* CARD-PURE-BEGIN */
+function relAge(iso,now){
+  if(!iso) return ''; const t=Date.parse(iso); if(isNaN(t)) return '';
+  const d=Math.floor(((now==null?Date.now():now)-t)/864e5);
+  if(d<=0) return 'today'; if(d===1) return 'yesterday'; if(d<7) return d+' days ago';
+  if(d<14) return '1 week ago'; if(d<60) return Math.round(d/7)+' weeks ago'; return Math.round(d/30)+' months ago';
+}
+function distLabel(j){ if(!j) return ''; if(j.ring===0) return 'in your city'; if(j.km!=null&&isFinite(j.km)) return Math.round(j.km)+' km away'; return ''; }
+function distCheck(j){ if(!j||j.km==null||!isFinite(j.km)) return ''; return j.km<=50?'Within 50 km':j.km<=100?'Within 100 km':j.km<=200?'Within 200 km':''; }
+function sampleWhy(e){
+  let t=String(e||'').replace(/^Score \d+\/10 \([^)]*\):\s*/,'').replace(/\s*\([+-][^)]*\)/g,'')
+    .replace(/your CV lists/g,'the sample profile has').replace(/a role you target/g,'a target role in the sample profile')
+    .replace(/your profile keywords/g,'the sample profile keywords').replace(/your inner commute rings/g,'the inner commute rings')
+    .replace(/\byour CV skills\b/g,"the sample profile's skills").replace(/\byour (embedded )?profile\b/g,'the sample $1profile')
+    .replace(/\byour CV\b/g,'the sample profile');
+  return t.length>220?t.slice(0,217).replace(/\s+\S*$/,'')+'…':t;
+}
+/* CARD-PURE-END */
+const OPEN_CARDS=new Set();
+function whyLine(j){ return PROFILE?(j.reasons||[]).join(' · '):(j.explanation?sampleWhy(j.explanation):''); }
 function jobCard(j,bucket,i){
   const arr={onsite:'On-site',hybrid:'Hybrid',remote:'Remote'}[j.arrangement]||'';
-  const facet=[arr?`<span class="chip arr">${arr}</span>`:'',j.country&&j.country!=='?'?`<span class="chip">${j.country}</span>`:'',j.industry&&j.industry!=='other'?`<span class="chip ind">${j.industry}</span>`:'',j.sponsorship==='yes'?`<span class="chip spon">sponsors visas</span>`:''].join('');
-  const skills=(j.matched||[]).slice(0,6).map(s=>`<span class="chip sk">${s}</span>`).join('');
-  const ring=j.ring!=null?`Ring ${j.ring}`:'';const km=j.km!=null?` · ${j.km} km`:'';const bySal=($('#sortBy')||{}).value==='salary';const sal=j.salary?`<span class="chip sal">${j.salary}</span>`:(bySal?'<span class="chip nosal">no salary listed</span>':'');
-  const posted=j.posted?new Date(j.posted).toLocaleDateString('en-CA'):'';
-  const link=j.url?`<a href="${j.url}" target="_blank" rel="noopener">${j.title}</a>`:j.title;
-  const jkey=jobKey(j); const saved=isTracked(jkey);
-  const savedLbl=saved?'✓ In tracker':'+ Save to tracker';
-  const savedCls=saved?' saved':'';
-  return `<div class="job" data-gk="${hasGeo(j)?geoKey(j.lat,j.lng):''}"><div class="score ${sc(j.score)}">${j.score}</div><div>
-    <div class="title">${link}</div>
-    <div class="subl">${j.company} · ${j.location_near||j.location}${j.n_locations>1?` <span title="${(j.location||'').replace(/"/g,'&quot;')}" style="text-decoration:underline dotted;cursor:help">+${j.n_locations-1} more</span>`:''}${ring?' · '+ring:''}${km}${posted?' · '+posted:''}</div>
-    ${j.snippet?`<div class="snip">${j.snippet}</div>`:''}
-    <div class="chips">${sal}<span class="chip src">${j.source||'ats'}</span>${facet}${skills}</div>
-    <div class="why">why: ${(j.reasons||[]).join(' · ')}</div>
-    <div class="jobactions">
-      <button onclick="gap('${bucket}',${i})">▾ Gap check</button>
-      <button class="save${savedCls}" onclick="saveToTracker('${bucket}',${i})">${savedLbl}</button>
-      ${_tailorPayReady()?`<button onclick="openTailor('${bucket}',${i})">✎ Tailor CV</button>`:`<button disabled title="Coming soon — payment integration pending">✎ Tailor CV</button>`}
+  const jkey=jobKey(j), saved=isTracked(jkey), open=OPEN_CARDS.has(jkey);
+  const more=j.n_locations>1?` <span class="more" title="${escH(j.location)}">+${j.n_locations-1} more</span>`:'';
+  const dl=distLabel(j), age=relAge(j.posted), dc=distCheck(j), why=whyLine(j);
+  const chips=[
+    j.salary?`<span class="chip sal">${escH(j.salary)}</span>`:'<span class="chip nosal">Salary not listed</span>',
+    arr?`<span class="chip arr">${arr}</span>`:'',
+    j.industry&&j.industry!=='other'?`<span class="chip ind">${escH(j.industry)}</span>`:'',
+    j.sponsorship==='yes'?'<span class="chip spon">sponsors visas</span>':'',
+    j.country&&j.country!=='?'&&j.country!=='Canada'?`<span class="chip">${escH(j.country)}</span>`:''].join('');
+  const checks=[dc?`<span class="ck ok">✓ ${dc}</span>`:'',j.arrangement==='remote'?'<span class="ck ok">✓ Remote</span>':''].join('');   // salary already shown as a chip — no duplicate check
+  const link=j.url?`<a href="${escH(j.url)}" target="_blank" rel="noopener">${escH(j.title)}</a>`:escH(j.title);
+  return `<div class="job${open?' open':''}" data-gk="${hasGeo(j)?geoKey(j.lat,j.lng):''}" data-key="${encodeURIComponent(jkey)}" data-b="${bucket}" data-i="${i}">
+  <div class="jobhead">
+    <div class="score ${sc(j.score)}"><b>${j.score}</b><small>/10</small></div>
+    <div class="jobmain">
+      <div class="title">${link}</div>
+      <div class="subl"><span>${escH(j.company)}</span><span class="loc">📍 ${escH(j.location_near||j.location||'')}${more}</span>${dl?`<span class="mono">${dl}</span>`:''}${age?`<span class="mono">${age}</span>`:''}</div>
+      <div class="chips">${chips}</div>
+      ${checks?`<div class="checks">${checks}</div>`:''}
+      ${why?`<div class="why"><span class="lbl">Why</span>${escH(why)}</div>`:''}
     </div>
-    <div class="gapbox" id="${bucket}gap${i}" style="display:none;padding:0"></div></div></div>`;
+    <div class="jobside">
+      <button class="iconbtn save${saved?' saved':''}" title="${saved?'In tracker':'Save to tracker'}" onclick="saveToTracker('${bucket}',${i})">${saved?'✓':'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'}</button>
+      <button class="iconbtn chev" title="Details" aria-expanded="${open}"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    </div>
+  </div>
+  <div class="jobbody">${open?cardBody(j,bucket,i):''}</div>
+</div>`;
+}
+function cardBody(j,bucket,i){
+  const skills=j.matched||[], reasons=PROFILE?(j.reasons||[]):[];
+  let fits=skills.length?`<div class="chips">${skills.slice(0,10).map(x=>`<span class="chip sk">${escH(x)}</span>`).join('')}</div>`:'';
+  if(reasons.length) fits+=`<ul class="reasons">${reasons.map(r=>`<li>${escH(r)}</li>`).join('')}</ul>`;
+  if(!PROFILE) fits+=`<p class="hint">${escH(j.explanation?sampleWhy(j.explanation):'Scored against the sample profile.')}</p>`;
+  let gaps;
+  if(PROFILE&&(PROFILE.skills||[]).length){
+    const g=gapAnalysis(j.text||j.snippet||'');
+    gaps=`<p class="gapline">${escH(g.line.replace(/ in this JD\.$/,'.'))}</p><div class="chips">${g.missing.length?g.missing.map(x=>`<span class="chip miss">${escH(x)}</span>`).join(''):'<span class="chip">none obvious</span>'}</div>`;
+  } else gaps=`<p class="hint">Add your CV to see which of this role's key terms you're missing.</p><button class="btn ghost sm" type="button" onclick="openUpload('#cvText')">Add your CV →</button>`;
+  const about=j.snippet?`<div class="sect"><div class="sectlbl">About the role</div><p class="snip">${escH(j.snippet)}</p></div>`:'';
+  return `<div class="bodygrid"><div class="sect"><div class="sectlbl">Why it fits</div>${fits||'<p class="hint">—</p>'}</div><div class="sect"><div class="sectlbl">Gaps to address</div>${gaps}</div></div>${about}
+    <div class="jobactions">${j.url?`<a class="btnlink primary" href="${escH(j.url)}" target="_blank" rel="noopener">Open posting ↗</a>`:''}
+      ${_tailorPayReady()?`<button onclick="openTailor('${bucket}',${i})">✎ Tailor CV</button>`:`<button disabled title="Coming soon — payment integration pending">✎ Tailor CV</button>`}
+      <span class="chip src">via ${escH(j.source||'ats')}</span></div>`;
 }
 function rescore(){
   POOL=[...JOBS.matches,...JOBS.below];
@@ -1048,6 +1131,18 @@ $('#moveToggle').onchange=e=>{ MOVE=e.target.checked; if(MOVE&&PLACE){ PLACE=nul
 $('#placeChip').onclick=clearPlace;
 $('#matches').addEventListener('mouseover',e=>{ const c=e.target.closest('.job'); hlPin(c&&c.dataset.gk||null); });
 $('#matches').addEventListener('mouseleave',()=>hlPin(null));
+/* JB-75: click a card header to expand in place; links/buttons inside keep their own action */
+$('#matches').addEventListener('click',e=>{
+  const t=e.target;
+  if(t.closest('a,textarea,input,select')||(t.closest('button')&&!t.closest('.chev'))) return;
+  const head=t.closest('.jobhead'); if(!head) return;
+  const card=head.closest('.job'), k=decodeURIComponent(card.dataset.key), open=!OPEN_CARDS.has(k);
+  if(open) OPEN_CARDS.add(k); else OPEN_CARDS.delete(k);
+  card.classList.toggle('open',open); const cv=card.querySelector('.chev'); if(cv) cv.setAttribute('aria-expanded',open);
+  const body=card.querySelector('.jobbody'), b=card.dataset.b, i=+card.dataset.i;
+  const j=window.VIS&&window.VIS[b]&&window.VIS[b][i];
+  body.innerHTML=open&&j?cardBody(j,b,i):'';
+});
 
 /* ---------- JB-62: tenant region filter + brand overlay ----------
    ?tenant=<slug> fetches site/data/tenants/<slug>.json and (if valid)
