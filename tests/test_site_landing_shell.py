@@ -46,3 +46,7 @@ def test_below_roles_refresh_without_profile():
     h = _html()
     assert "if(PROFILE){rescore(); if($('#boardView').style.display==='block')renderBoard();}" not in h
     assert "rescore(); if($('#boardView').style.display!=='none'){ renderBoard(); renderHero();" in h
+
+
+def test_inline_favicon_prevents_404():
+    assert '<link rel="icon" href="data:image/svg+xml' in _html()
