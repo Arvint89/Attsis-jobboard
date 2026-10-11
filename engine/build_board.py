@@ -511,7 +511,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         "generated": datetime.now(timezone.utc).isoformat(),
         "mode": "demo" if demo else "live",
         "person": person, "initials": initials, "home": home,
-        "home_coords": list(geo.coords_of(home)) if geo.coords_of(home)[0] else None,
+        "home_coords": list(geo.home_coords(home)) if geo.home_coords(home)[0] is not None else None,   # JB-81
         "flag_legend": FLAG_LEGEND,
         "facets": facet_opts,
         "min_score": min_score,
