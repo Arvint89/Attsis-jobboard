@@ -541,17 +541,50 @@ function extractName(cv){
   }
   return {name:'', initials:''};
 }
+/* JB-79 (#195): CV skills = canonical DB matches first, then terms frequent WITHIN a
+   separator-bounded chunk. N-grams never cross , ; • | / ( ) or line breaks, and the
+   person's name is dropped. 1–2 letter alphabetic DB forms (go, es, ad…) are skipped:
+   too many false hits in prose. */
+/* EXTRACT-PURE-BEGIN */
+function extractSkills(text, dbForms, dropWords){
+  const low=String(text||'').toLowerCase();
+  const drop=new Set((dropWords||[]).map(w=>String(w).toLowerCase()).filter(Boolean));
+  const STOPX=new Set(['the','and','for','with','from','that','this','have','has','was','were','are','you','your','our','will','into','over',
+    'using','used','use','work','worked','working','team','teams','years','year','experience','skills','skill','senior','junior','lead',
+    'engineer','engineering','developer','manager','responsible','including','based','role','roles','company','ontario','canada',
+    'london','toronto','waterloo','kitchener','email','phone','linkedin','github','references','available','request']);
+  const found={};
+  (dbForms||[]).forEach(f=>{
+    f=String(f||'').toLowerCase().trim(); if(!f||found[f]) return;
+    if(f.length<=2&&/^[a-z]+$/.test(f)) return;
+    const esc=f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    let n=0;
+    try{ n=(low.match(new RegExp('(?<![a-z0-9])'+esc+'(?![a-z0-9+#])','g'))||[]).length; }
+    catch(e){ n=low.split(f).length-1; }
+    if(n) found[f]=n;
+  });
+  const keys=Object.keys(found);
+  keys.forEach(k=>{ if(keys.some(o=>o!==k&&o.length>k.length&&o.includes(k))) delete found[k]; });
+  const kept=Object.keys(found);
+  const freq={};
+  low.split(/[\n\r,;•|·()\/]+/).forEach(chunk=>{
+    const t=(chunk.match(/[a-z][a-z0-9+#.\-]{1,}/g)||[]).map(w=>w.replace(/[.\-]+$/,'')).filter(w=>w.length>2&&!STOPX.has(w)&&!drop.has(w));
+    t.forEach(w=>freq[w]=(freq[w]||0)+1);
+    for(let i=0;i<t.length-1;i++){const bg=t[i]+' '+t[i+1]; freq[bg]=(freq[bg]||0)+1;}
+  });
+  const db=Object.entries(found).sort((a,b)=>b[1]-a[1]||b[0].length-a[0].length).map(x=>x[0]);
+  const extra=Object.entries(freq).filter(([k,v])=>v>=2&&!found[k]&&!kept.some(f=>f.includes(k)||k.includes(f)))
+    .sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+  return [...new Set([...db,...extra])].slice(0,40);
+}
+/* EXTRACT-PURE-END */
 function extract(cv, cl){
   const text=(cv+"\n"+cl);
-  const toks=tokens(text);
-  const freq={}; toks.forEach(w=>freq[w]=(freq[w]||0)+1);
-  // bigrams
-  for(let i=0;i<toks.length-1;i++){const bg=toks[i]+" "+toks[i+1]; freq[bg]=(freq[bg]||0)+1.5;}
-  const ranked=Object.entries(freq).filter(([k,v])=>v>=2||k.includes(" ")).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
-  const skills=[...new Set(ranked)].slice(0,28);
+  const nm=extractName(cv||'');
+  const skills=extractSkills(text, DB_SKILLS, (nm.name||'').split(/\s+/));   // JB-79
   // titles: phrases ending in a role word, from CV first
   const titles=new Set();
-  const re=new RegExp("([a-z]+\\s)?([a-z]+\\s)?("+ROLE_WORDS.join("|")+")","g");
+  const re=new RegExp("([a-z]+[ \\t])?([a-z]+[ \\t])?("+ROLE_WORDS.join("|")+")","g");   // JB-79: titles must not span line breaks
   let m; const low=cv.toLowerCase();
   while((m=re.exec(low))){const p=m[0].trim(); if(p.split(" ").length<=3) titles.add(p);}
   ROLE_WORDS.forEach(r=>{if(low.includes(r))titles.add(r);});
