@@ -241,6 +241,21 @@
   .maplegend{display:flex;flex-wrap:wrap;gap:14px;margin:8px 2px;font-family:var(--font-mono);font-size:11px;color:var(--dim);letter-spacing:.04em}
   .maplegend b{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:middle}
   .leaflet-popup-content{font:13px -apple-system,Segoe UI,sans-serif}
+  /* JB-77 profile v2 */
+  .pagesub{font-size:17px;line-height:1.6;color:var(--dim);max-width:640px;margin:12px 0 0}
+  .profgrid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:20px;align-items:start}
+  .profright{position:sticky;top:96px}
+  .profright .panel{border-color:var(--hi-line)}
+  .profright h3,.srccard h3{font-family:var(--font-display);font-size:20px;margin:0 0 6px;letter-spacing:-0.01em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .srccard{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px;margin-bottom:12px}
+  .srcico{width:44px;height:44px;border-radius:10px;border:1px solid var(--edge);background:var(--bg-elev);display:flex;align-items:center;justify-content:center;color:var(--hi)}
+  .srcico .ico{width:20px;height:20px}
+  .srcbody .sub{margin:0 0 10px}
+  .badge{font:600 10px var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--hi);border:1px solid var(--hi-line);background:var(--hi-soft);padding:2px 8px;border-radius:999px}
+  .badge.opt{color:var(--subtle);border-color:var(--edge);background:transparent}
+  #reviewPanel.noid .row .fld{display:none}
+  .analyzebar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 20px}
+  @media (max-width:900px){ .profgrid{grid-template-columns:1fr} .profright{position:static} }
   /* JB-76 tracker v2 */
   .pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin:10px 0 22px}
   .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--subtle)}
@@ -315,14 +330,17 @@
 
   <!-- SETUP VIEW -->
   <div id="setupView" style="display:none">
-    <!-- JB-67: quickstart visible by default so cold boots paint something before jobs.json
-         fetch resolves (3.6MB, 2-6s on slow network). renderSavedProfile() hides this if a
-         saved PROFILE is found after init(). Without this, new browsers see a blank page
-         for the duration of the fetch, which is why the board worked for BT (cached) but
-         appeared broken for first-time visitors. -->
-    <div class="panel" id="quickstartPanel">
-      <h2>Welcome to Attsis Job Board</h2>
-      <p class="sub">Add your name and home city to see roles ranked near you — takes 10 seconds. Your CV stays private, add it later for sharper matches.</p>
+    <!-- JB-77 profile v2 (docs/design/DESIGN_jb77_profile.md): sources left, live keywords right -->
+    <div class="pagehead"><div>
+      <div class="eyebrow">Your profile · read in your browser</div>
+      <h2 class="pagetitle">What should we match you on?</h2>
+      <p class="pagesub">Add as many sources as you have. We pull keywords from each, merge them, and you decide what stays.</p>
+    </div></div>
+    <div class="profgrid">
+      <div class="profleft">
+    <div class="panel srccard" id="quickstartPanel"><div class="srcico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></div><div class="srcbody">
+      <h3>Welcome to Attsis Job Board <span class="badge">Start here</span></h3>
+      <p class="sub">Your name and home city. Home sets the distance rings and "in your city". Add a CV below for sharper matches.</p>
       <div class="row">
         <div class="fld grow"><label for="qsName">Your name</label><input type="search" id="qsName" placeholder="e.g. Priya Patel"></div>
         <div class="fld grow"><label for="qsHome">Home city</label><input type="search" id="qsHome" placeholder="e.g. London" value="London"></div>
@@ -332,9 +350,48 @@
         <button class="btn ghost" id="qsCvBtn">Paste CV for personalized matching</button>
       </div>
       <div class="hint" style="margin-top:12px">Only your name + home are stored in this browser. Nothing is uploaded.</div>
+    </div></div>
+    <div id="uploadPanel">
+      <div class="panel srccard"><div class="srcico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></div><div class="srcbody">
+        <h3>CV / résumé <span class="badge">Best signal</span></h3>
+        <p class="sub">Your work history: titles, tools, domains. Paste the text or upload .docx / .pdf / .txt.</p>
+        <textarea id="cvText" placeholder="Paste your CV text here…"></textarea>
+        <input type="file" id="cvFile" accept=".txt,.md,.text,.docx,.pdf">
+      </div></div>
+      <div class="panel srccard"><div class="srcico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></div><div class="srcbody">
+        <h3>Cover letter <span class="badge opt">Optional</span></h3>
+        <p class="sub">Adds what you want next, not only what you've done.</p>
+        <textarea id="clText" placeholder="Optional: paste a cover letter…" style="min-height:70px"></textarea>
+        <input type="file" id="clFile" accept=".txt,.md,.text,.docx,.pdf">
+      </div></div>
+      <div class="panel srccard"><div class="srcico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h4M14 14h4"/></svg></div><div class="srcbody">
+        <h3>LinkedIn <span class="badge opt">Optional</span></h3>
+        <p class="sub">On LinkedIn: your profile → Resources → <b>Save to PDF</b>, then upload it here. Profiles can't be read from a link.</p>
+        <input type="file" id="liFile" accept=".pdf,.txt"><span class="hint" id="liStatus"></span>
+        <textarea id="liText" style="display:none" aria-hidden="true"></textarea>
+      </div></div>
+      <div class="analyzebar"><button class="btn" id="analyzeBtn">Read my sources →</button>
+        <span class="hint">Everything is read in your browser; nothing is uploaded. Extraction is keyword-based, so review the list on the right.</span></div>
+    </div>
+      </div>
+      <div class="profright">
+    <div class="panel" id="reviewPanel" style="display:none">
+      <h3>What we'll match on</h3>
+      <p class="sub">Titles decide which roles count; skills confirm the fit. Remove noise, add anything missing. <b id="detected"></b></p>
+      <label class="fldlbl">Job titles you match (title triggers)</label>
+      <div class="kw" id="titleTags"></div>
+      <div class="kwadd"><input type="search" id="addTitle" placeholder="add a title keyword… (e.g. embedded engineer)"><button class="btn ghost" id="addTitleBtn">Add</button></div>
+      <label class="fldlbl">Skills / keywords (confirmers)</label>
+      <div class="kw" id="skillTags"></div>
+      <div class="kwadd"><input type="search" id="addSkill" placeholder="add a skill keyword… (e.g. altium)"><button class="btn ghost" id="addSkillBtn">Add</button></div>
+      <div class="row" style="margin-top:16px">
+        <div class="fld"><label>Your name</label><input type="search" id="yourName" placeholder="Your Name"></div>
+        <div class="fld"><label>Home city (for distance)</label><input type="search" id="homeCity" placeholder="London"></div>
+        <button class="btn" id="saveBtn">Save and re-rank roles →</button>
+      </div>
     </div>
     <div class="panel" id="savedProfilePanel" style="display:none">
-      <h2>Your saved profile</h2>
+      <h3>What we'll match on</h3>
       <p class="sub" id="savedProfileMeta"></p>
       <label class="fldlbl">Title triggers</label>
       <div class="kw" id="savedTitles"></div>
@@ -346,32 +403,6 @@
         <button class="btn ghost" id="clearProfileBtn" style="color:var(--warn);border-color:rgba(255,140,66,0.35)">✕ Clear profile</button>
       </div>
     </div>
-    <div class="panel" id="uploadPanel" style="display:none">
-      <h2>Set up your board</h2>
-      <p class="sub">Paste your CV (and optionally a cover letter). We extract keywords in your browser — nothing is uploaded — then rank the loaded roles against them. You can edit the keywords before saving.</p>
-      <label class="fldlbl">Your CV — paste text, or upload a file (.docx / .pdf / .txt)</label>
-      <textarea id="cvText" placeholder="Paste your CV text here…"></textarea>
-      <input type="file" id="cvFile" accept=".txt,.md,.text,.docx,.pdf">
-      <label class="fldlbl">Cover letter — optional</label>
-      <textarea id="clText" placeholder="Optional: paste a cover letter to add its keywords…" style="min-height:80px"></textarea>
-      <input type="file" id="clFile" accept=".txt,.md,.text,.docx,.pdf">
-      <div style="margin-top:14px"><button class="btn" id="analyzeBtn">Analyze →</button></div>
-      <div class="hint">Word (.docx) and PDF are read in your browser (needs internet for the reader); or paste the text. Extraction is keyword-frequency based (not semantic), so review the list below.</div>
-    </div>
-
-    <div class="panel" id="reviewPanel" style="display:none">
-      <h2>Review your keywords</h2>
-      <p class="sub">These drive your matches. Remove noise, add anything missing. <b id="detected"></b></p>
-      <label class="fldlbl">Job titles you match (title triggers)</label>
-      <div class="kw" id="titleTags"></div>
-      <div class="kwadd"><input type="search" id="addTitle" placeholder="add a title keyword… (e.g. embedded engineer)"><button class="btn ghost" id="addTitleBtn">Add</button></div>
-      <label class="fldlbl">Skills / keywords (confirmers)</label>
-      <div class="kw" id="skillTags"></div>
-      <div class="kwadd"><input type="search" id="addSkill" placeholder="add a skill keyword… (e.g. altium)"><button class="btn ghost" id="addSkillBtn">Add</button></div>
-      <div class="row" style="margin-top:16px">
-        <div class="fld"><label>Your name</label><input type="search" id="yourName" placeholder="Your Name"></div>
-        <div class="fld"><label>Home city (for distance)</label><input type="search" id="homeCity" placeholder="London"></div>
-        <button class="btn" id="saveBtn">Save &amp; see matches →</button>
       </div>
     </div>
   </div>
@@ -846,10 +877,13 @@ function showSetup(){
   if(PROFILE){ $('#topTabs').style.display='flex'; showTab('roles'); }
   else{ $('#topTabs').style.display='none'; VIEW_IDS.forEach(id=>{const el=$('#'+id); if(el) el.style.display=(id==='setupView')?'block':'none';}); }
 }
+function setSaveLabel(){ const b=$('#saveBtn'); if(!b) return; const n=(typeof POOL!=='undefined'&&POOL)?POOL.length:0;
+  b.textContent=n?('Save and re-rank '+n.toLocaleString('en-CA')+' roles →'):'Save and re-rank roles →'; }
 function renderSavedProfile(){
   const quick=$('#quickstartPanel'), saved=$('#savedProfilePanel'), upload=$('#uploadPanel'), review=$('#reviewPanel');
-  if(!PROFILE){ quick.style.display='block'; saved.style.display='none'; upload.style.display='none'; review.style.display='none'; return; }
-  quick.style.display='none'; saved.style.display='block'; upload.style.display='none'; review.style.display='none';
+  setSaveLabel();
+  if(!PROFILE){ quick.style.display=''; saved.style.display='none'; upload.style.display='block'; review.style.display='block'; review.classList.toggle('noid',!draft.fromSources); renderTags(); return; }
+  quick.style.display='none'; saved.style.display='block'; upload.style.display='block'; review.style.display='none'; review.classList.remove('noid');
   const who=PROFILE.person||'(unnamed)';
   $('#savedProfileMeta').innerHTML=`${who} · home <b>${PROFILE.home||'?'}</b>${PROFILE.years?` · ~${PROFILE.years} yrs`:''} · ${PROFILE.titles.length} titles · ${PROFILE.skills.length} skills · scored in your browser`;
   $('#savedTitles').innerHTML=PROFILE.titles.map(t=>`<span class="tag">${t}</span>`).join('')||'<span class="hint">no titles — add CV for personalized matching</span>';
@@ -994,7 +1028,7 @@ function requestTailor(tier){
 }
 
 /* ---------- setup interactions ---------- */
-let draft={titles:[],skills:[],home:'',years:null};
+let draft={titles:[],skills:[],home:'',years:null};   // JB-77: editable with or without a CV
 function chip(txt,onDel){const s=document.createElement('span');s.className='tag';s.innerHTML=`${txt} <b title="remove">✕</b>`;s.querySelector('b').onclick=onDel;return s;}
 function renderTags(){
   const tt=$('#titleTags');tt.innerHTML='';draft.titles.forEach((t,i)=>tt.appendChild(chip(t,()=>{draft.titles.splice(i,1);renderTags();})));
@@ -1007,23 +1041,26 @@ async function parseFile(f){
   return await f.text();
 }
 function hookFile(input,ta){input.addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;ta.value='Reading '+f.name+' …';try{ta.value=await parseFile(f);}catch(err){ta.value='';alert('Could not read '+f.name+': '+err.message+'\nYou can paste the text instead.');}});}
-hookFile($('#cvFile'),$('#cvText'));hookFile($('#clFile'),$('#clText'));
+hookFile($('#cvFile'),$('#cvText'));hookFile($('#clFile'),$('#clText'));hookFile($('#liFile'),$('#liText'));
+$('#liFile').addEventListener('change',()=>{const st=$('#liStatus'); if(st) st.textContent=' reading…'; setTimeout(()=>{ if(st) st.textContent=$('#liText').value.trim()?' ✓ read — press "Read my sources"':''; },1500);});
 $('#analyzeBtn').onclick=()=>{
-  const cv=$('#cvText').value.trim();if(!cv){alert('Paste your CV text first.');return;}
+  const cvOnly=$('#cvText').value.trim(), li=$('#liText').value.trim();   // JB-77: LinkedIn PDF text joins the CV
+  const cv=[cvOnly,li].filter(Boolean).join('\n');if(!cv&&!$('#clText').value.trim()){alert('Add a CV, LinkedIn PDF or cover letter first.');return;}
   const ex=extract(cv,$('#clText').value.trim());
   const nm=extractName(cv);
-  draft={titles:ex.titles,skills:ex.skills,home:ex.home,years:ex.years,name:nm.name,initials:nm.initials};
+  draft={titles:ex.titles,skills:ex.skills,home:ex.home,years:ex.years,name:nm.name,initials:nm.initials,fromSources:true};
+  $('#reviewPanel').classList.remove('noid');
   $('#homeCity').value=ex.home;
   $('#yourName').value=nm.name;
   $('#detected').textContent=`Detected: ${nm.name?nm.name+' — ':''}${ex.titles.length} titles, ${ex.skills.length} skills`+(ex.years?`, ~${ex.years} yrs`:'')+(ex.home?`, home ${ex.home}`:'');
-  renderTags();$('#reviewPanel').style.display='block';$('#reviewPanel').scrollIntoView({behavior:'smooth'});
+  renderTags();$('#savedProfilePanel').style.display='none';$('#reviewPanel').style.display='block';setSaveLabel();$('#reviewPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
 };
 $('#addTitleBtn').onclick=()=>{const v=$('#addTitle').value.trim().toLowerCase();if(v){draft.titles.push(v);$('#addTitle').value='';renderTags();}};
 $('#addSkillBtn').onclick=()=>{const v=$('#addSkill').value.trim().toLowerCase();if(v){draft.skills.push(v);$('#addSkill').value='';renderTags();}};
 $('#saveBtn').onclick=()=>{
   if(!draft.skills.length&&!draft.titles.length){alert('Add at least one keyword.');return;}
-  const home=$('#homeCity').value.trim()||draft.home;
-  const person=($('#yourName').value.trim()||draft.name||'');
+  const home=$('#homeCity').value.trim()||draft.home||(($('#qsHome')||{}).value||'').trim();
+  const person=($('#yourName').value.trim()||draft.name||(($('#qsName')||{}).value||'').trim());
   const initials=person?person.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,3):'';
   PROFILE={person,titles:draft.titles,skills:draft.skills,home,years:draft.years,initials};
   try{localStorage.setItem('jobboard_profile',JSON.stringify(PROFILE));}catch(e){}
@@ -1049,7 +1086,6 @@ function renderHero(){
 }
 function openUpload(focusId){
   showTab('profile');
-  ['#quickstartPanel','#savedProfilePanel','#reviewPanel'].forEach(id=>{const e=$(id); if(e) e.style.display='none';});
   $('#uploadPanel').style.display='block'; $('#uploadPanel').scrollIntoView({behavior:'smooth'});
   if(focusId){const f=$(focusId); if(f) setTimeout(()=>f.focus(),300);}
 }
@@ -1059,15 +1095,11 @@ $('#heroCover').onclick=()=>openUpload('#clText');
 $('#heroLinkedin').onclick=()=>openUpload('#cvText');
 $('#heroBuild').onclick=()=>openUpload('#cvText');
 $('#heroHome').onclick=e=>{ e.preventDefault(); showTab('profile'); };
-$('#qsCvBtn').onclick=()=>{
-  $('#quickstartPanel').style.display='none';
-  $('#uploadPanel').style.display='block';
-  $('#uploadPanel').scrollIntoView({behavior:'smooth'});
-};
+$('#qsCvBtn').onclick=()=>{ $('#uploadPanel').scrollIntoView({behavior:'smooth'}); setTimeout(()=>$('#cvText').focus(),300); };
 document.querySelectorAll('#topTabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 $('#tailorBasicBtn').onclick=()=>requestTailor('standard');
 $('#tailorProBtn').onclick=()=>requestTailor('reviewed');
-$('#reparseBtn').onclick=()=>{$('#savedProfilePanel').style.display='none';$('#uploadPanel').style.display='block';$('#cvText').value='';$('#clText').value='';$('#reviewPanel').style.display='none';$('#uploadPanel').scrollIntoView({behavior:'smooth'});};
+$('#reparseBtn').onclick=()=>{$('#cvText').value='';$('#clText').value='';$('#liText').value='';$('#uploadPanel').scrollIntoView({behavior:'smooth'});setTimeout(()=>$('#cvText').focus(),300);};
 $('#editKwsBtn').onclick=()=>{if(!PROFILE)return;draft={titles:[...PROFILE.titles],skills:[...PROFILE.skills],home:PROFILE.home,years:PROFILE.years,name:PROFILE.person};$('#savedProfilePanel').style.display='none';$('#uploadPanel').style.display='none';$('#reviewPanel').style.display='block';$('#homeCity').value=PROFILE.home||'';$('#yourName').value=PROFILE.person||'';$('#detected').textContent=`Editing your saved profile — ${PROFILE.titles.length} titles, ${PROFILE.skills.length} skills`;renderTags();$('#reviewPanel').scrollIntoView({behavior:'smooth'});};
 $('#clearProfileBtn').onclick=()=>{if(!confirm('Clear your saved CV/keywords? This browser will forget your profile.'))return;PROFILE=null;try{localStorage.removeItem('jobboard_profile');}catch(e){}rescore();showBoard();};
 $('#jdBtn').onclick=()=>{const t=$('#jdIn').value.trim();$('#jdOut').innerHTML=t?gapHtml(gapAnalysis(t)):'<div class="hint">Paste a job description first.</div>';};
