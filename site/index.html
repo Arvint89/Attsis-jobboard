@@ -82,6 +82,8 @@
   .chip.sal{color:#ffd479;border-color:#6b5a26;font-weight:700;font-size:12.5px}.chip.nosal{font-style:italic}
   .gapline{font-size:13px;color:var(--ink);margin:2px 0 4px}
   .jdtool{margin-bottom:14px}
+  footer a{color:var(--hi);text-decoration:none}
+  footer a:hover{text-decoration:underline}
   footer{max-width:1400px;margin:30px auto 0;padding:22px 24px 30px;border-top:1px solid var(--edge);display:flex;justify-content:space-between;gap:10px 24px;flex-wrap:wrap;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--subtle)}
   /* JB-74 shell (DESIGN_jb74_landing_shell.md) */
   .ico{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
@@ -256,6 +258,11 @@
   #reviewPanel.noid .row .fld{display:none}
   .analyzebar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 20px}
   @media (max-width:900px){ .profgrid{grid-template-columns:1fr} .profright{position:static} }
+  /* JB-82 votes */
+  .vote{display:flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--font-mono);font-size:12px;color:var(--subtle)}
+  .vbtn{background:transparent;border:1px solid var(--edge);border-radius:999px;padding:3px 10px;cursor:pointer;font-size:14px;line-height:1.2}
+  .vbtn:hover{border-color:var(--hi-line)}.vbtn.on{border-color:var(--hi);background:var(--hi-soft)}
+  .vthanks{color:var(--good)}
   /* JB-78 prep plan */
   #prepPlan{margin-bottom:6px}
   .planitem{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--edge)}
@@ -576,7 +583,7 @@
   </div>
 
 </div>
-<footer><span>Attsis Job Board · A GLOBAL ATTSIS PRODUCT</span><span>PULLED FROM EMPLOYER ATS · SCORED IN YOUR BROWSER · NO LLM IN THE LOOP · <span id="foot"></span></span></footer>
+<footer><span>Attsis Job Board · A GLOBAL ATTSIS PRODUCT · <a id="reportLink" href="https://github.com/Arvint89/Attsis-jobboard/issues/new?labels=type%3Abug&amp;title=Problem%20report&amp;body=What%20happened%3A%0A%0AWhat%20you%20expected%3A%0A%0APage%3A%20" target="_blank" rel="noopener">Report a problem</a></span><span>PULLED FROM EMPLOYER ATS · SCORED IN YOUR BROWSER · NO LLM IN THE LOOP · <span id="foot"></span></span></footer>
 <!-- JB-174: GoatCounter is a privacy-first (no cookies, GDPR-safe) pageview tracker.
      Free up to 100k pageviews/month. Setup: BT creates an account at goatcounter.com,
      adds a site called "attsis", then changes the data-goatcounter URL below to his
@@ -757,6 +764,17 @@ window.gap=function(bucket,i){const j=(window.VIS&&window.VIS[bucket]&&window.VI
 
 /* ---------- render ---------- */
 const sc=s=>s>=8?'s-hi':s>=7?'s-mid':'s-lo';
+/* JB-82 feedback + usage events (docs/design/DESIGN_jb82_feedback.md). GoatCounter custom
+   events: a no-op until BT creates the GoatCounter site. Never sends CV text, skills, name or home. */
+function track(path,title){
+  try{ if(window.goatcounter&&typeof window.goatcounter.count==='function') window.goatcounter.count({path:String(path).slice(0,200),title:title||String(path),event:true}); }catch(e){}
+}
+function slug(t){ return String(t||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)||'unknown'; }
+let VOTES={}; try{ VOTES=JSON.parse(localStorage.getItem('jobboard_votes')||'{}')||{}; }catch(e){ VOTES={}; }
+function voteRow(j){
+  const v=VOTES[jobKey(j)]||0;
+  return `<div class="vote"><span>Good match?</span><button type="button" class="vbtn${v===1?' on':''}" data-v="1" title="Good match">👍</button><button type="button" class="vbtn${v===-1?' on':''}" data-v="-1" title="Not a good match">👎</button><span class="vthanks">${v?'Thanks — noted.':''}</span></div>`;
+}
 /* JB-75 job card v2 (docs/design/DESIGN_jb75_job_card.md) */
 /* CARD-PURE-BEGIN */
 function relAge(iso,now){
@@ -821,6 +839,7 @@ function cardBody(j,bucket,i){
   } else gaps=`<p class="hint">Add your CV to see which of this role's key terms you're missing.</p><button class="btn ghost sm" type="button" onclick="openUpload('#cvText')">Add your CV →</button>`;
   const about=j.snippet?`<div class="sect"><div class="sectlbl">About the role</div><p class="snip">${escH(j.snippet)}</p></div>`:'';
   return `<div class="bodygrid"><div class="sect"><div class="sectlbl">Why it fits</div>${fits||'<p class="hint">—</p>'}</div><div class="sect"><div class="sectlbl">Gaps to address</div>${gaps}</div></div>${about}
+    ${voteRow(j)}
     <div class="jobactions">${j.url?`<a class="btnlink primary" href="${escH(j.url)}" target="_blank" rel="noopener">Open posting ↗</a>`:''}
       ${_tailorPayReady()?`<button onclick="openTailor('${bucket}',${i})">✎ Tailor CV</button>`:`<button disabled title="Coming soon — payment integration pending">✎ Tailor CV</button>`}
       <span class="chip src">via ${escH(j.source||'ats')}</span></div>`;
@@ -1118,6 +1137,7 @@ $('#saveBtn').onclick=()=>{
   const initials=person?person.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,3):'';
   PROFILE={person,titles:draft.titles,skills:draft.skills,home,years:draft.years,initials};
   try{localStorage.setItem('jobboard_profile',JSON.stringify(PROFILE));}catch(e){}
+  track('setup/profile','setup completed (profile)');
   showBoard();
 };
 $('#qsGoBtn').onclick=()=>{
@@ -1126,6 +1146,7 @@ $('#qsGoBtn').onclick=()=>{
   const initials=person?person.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,3):'';   // JB-74: name optional
   PROFILE={person,titles:[],skills:[],home,years:null,initials};
   try{localStorage.setItem('jobboard_profile',JSON.stringify(PROFILE));}catch(e){}
+  track('setup/quickstart','setup completed (quick start)');
   rescore();showBoard();
 };
 /* JB-74: hero + CTA */
@@ -1148,6 +1169,7 @@ $('#heroCv').onclick=()=>openUpload('#cvText');
 $('#heroCover').onclick=()=>openUpload('#clText');
 $('#heroLinkedin').onclick=()=>openUpload('#cvText');
 $('#heroBuild').onclick=()=>openUpload('#cvText');
+{ const rl=$('#reportLink'); if(rl) rl.addEventListener('click',()=>{ rl.href=rl.href.split('Page%3A%20')[0]+'Page%3A%20'+encodeURIComponent(location.href); }); }
 $('#heroHome').onclick=e=>{ e.preventDefault(); showTab('profile'); };
 $('#qsCvBtn').onclick=()=>{ $('#uploadPanel').scrollIntoView({behavior:'smooth'}); setTimeout(()=>$('#cvText').focus(),300); };
 document.querySelectorAll('#topTabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -1299,7 +1321,8 @@ function setMode(mode){
   const w=document.querySelector('.wrap'); if(w) w.classList.toggle('wide',mode!=='list');
   document.querySelectorAll('.modebar button').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
   renderBoard();
-  if(mode!=='list'){ renderMap(); setTimeout(()=>{ if(!MAP) return; MAP.invalidateSize(); if(!MAP_FITTED) fitPins(); },80); }
+  if(mode!=='list'){ renderMap(); setTimeout(()=>{ if(!MAP) return; MAP.invalidateSize(); if(!MAP_FITTED) fitPins(); },80);
+    try{ if(!sessionStorage.getItem('jb_map_used')){ sessionStorage.setItem('jb_map_used','1'); track('map/used','map used'); } }catch(e){} }
 }
 function initLayout(){
   let m=null; try{m=localStorage.getItem('jobboard_layout');}catch(e){}
@@ -1318,6 +1341,21 @@ $('#moveToggle').onchange=e=>{ MOVE=e.target.checked; if(MOVE&&PLACE){ PLACE=nul
 $('#placeChip').onclick=clearPlace;
 $('#matches').addEventListener('mouseover',e=>{ const c=e.target.closest('.job'); hlPin(c&&c.dataset.gk||null); });
 $('#matches').addEventListener('mouseleave',()=>hlPin(null));
+/* JB-82: votes and posting clicks */
+$('#matches').addEventListener('click',e=>{
+  const card=e.target.closest('.job'); if(!card) return;
+  const b=card.dataset.b, i=+card.dataset.i, j=window.VIS&&window.VIS[b]&&window.VIS[b][i]; if(!j) return;
+  const vb=e.target.closest('.vbtn');
+  if(vb){
+    const k=jobKey(j), v=+vb.dataset.v, prev=VOTES[k]||0;
+    if(prev===v) delete VOTES[k]; else { VOTES[k]=v; track('vote/'+(v>0?'up':'down')+'/'+slug(j.company),'vote '+(v>0?'up':'down')); }
+    try{ localStorage.setItem('jobboard_votes',JSON.stringify(VOTES)); }catch(err){}
+    const row=vb.closest('.vote'); if(row) row.outerHTML=voteRow(j);
+    return;
+  }
+  const a=e.target.closest('a[href]');
+  if(a&&(a.closest('.title')||a.classList.contains('primary'))) track('click/'+slug(j.company),'open posting');
+});
 /* JB-75: click a card header to expand in place; links/buttons inside keep their own action */
 $('#matches').addEventListener('click',e=>{
   const t=e.target;
