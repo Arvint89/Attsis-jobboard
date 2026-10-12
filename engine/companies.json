@@ -2765,6 +2765,519 @@
       "industry": "ecommerce/api",
       "sponsors": null,
       "city": "Vancouver"
+    },
+    {
+      "name": "Avidbots",
+      "ring": 1,
+      "platform": "bamboohr",
+      "slug": "avidbots",
+      "careers_url": "https://avidbots.bamboohr.com/careers/878",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Artificial Intelligence (AI)",
+      "sponsors": null,
+      "city": "Kitchener"
+    },
+    {
+      "name": "BDC",
+      "ring": 4,
+      "platform": "workday",
+      "slug": "bdc",
+      "careers_url": "https://bdc.wd10.myworkdayjobs.com/BDC_Careers/job/Halton/ACCOUNT-MANAGER--VIRTUAL-BUSINESS-CENTER---Toronto--Halton--Mississauga-or-Ottawa_R-7944",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Advice",
+      "sponsors": null,
+      "city": "Montreal",
+      "tenant": "bdc",
+      "site": "BDC_Careers",
+      "dc": "wd10"
+    },
+    {
+      "name": "Clutch Canada",
+      "ring": 2,
+      "platform": "greenhouse",
+      "slug": "clutch",
+      "careers_url": "https://job-boards.greenhouse.io/clutch/jobs/6206330004",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Application Software",
+      "sponsors": null,
+      "city": "Mississauga"
+    },
+    {
+      "name": "CoLab Software",
+      "ring": 4,
+      "platform": "greenhouse",
+      "slug": "colabsoftware",
+      "careers_url": "https://job-boards.greenhouse.io/colabsoftware/jobs/5434019008",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Industrial Design",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Doxim",
+      "ring": 4,
+      "platform": "greenhouse",
+      "slug": "doxim",
+      "careers_url": "https://job-boards.greenhouse.io/doxim/jobs/4432966009",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Analytics",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Fellow.app",
+      "ring": 4,
+      "platform": "ashby",
+      "slug": "fellowai",
+      "careers_url": "https://jobs.ashbyhq.com/fellowai/6003bc3c-828c-40ec-a1cb-b421bfb13387",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Software",
+      "sponsors": null,
+      "city": "Ottawa"
+    },
+    {
+      "name": "FISPAN",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "fispan",
+      "careers_url": "https://fispan.bamboohr.com/careers/448",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Analytics",
+      "sponsors": null,
+      "city": "Vancouver"
+    },
+    {
+      "name": "Flosonics",
+      "ring": 2,
+      "platform": "bamboohr",
+      "slug": "flosonicsmedical",
+      "careers_url": "https://flosonicsmedical.bamboohr.com/careers/94",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Health Care",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "FluidAI",
+      "ring": 1,
+      "platform": "rippling",
+      "slug": "fluidai-medical-careers",
+      "careers_url": "https://ats.rippling.com/fluidai-medical-careers/jobs/83033c4a-5bbe-4dec-b82f-7d49a50d88f6",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Artificial Intelligence (AI)",
+      "sponsors": null,
+      "city": "Kitchener"
+    },
+    {
+      "name": "Forma",
+      "ring": 2,
+      "platform": "greenhouse",
+      "slug": "formaaiinc",
+      "careers_url": "https://job-boards.greenhouse.io/formaaiinc/jobs/4694569005",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Artificial Intelligence (AI)",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Interac",
+      "ring": 2,
+      "platform": "workday",
+      "slug": "interac",
+      "careers_url": "https://interac.wd3.myworkdayjobs.com/Interac/job/Toronto/Platform---Infrastructure-Lead_REQ-2356-1",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Banking",
+      "sponsors": null,
+      "city": "Toronto",
+      "tenant": "interac",
+      "site": "Interac",
+      "dc": "wd3"
+    },
+    {
+      "name": "Invinity Energy Systems Plc",
+      "ring": 4,
+      "platform": "lever",
+      "slug": "invinity",
+      "careers_url": "https://jobs.lever.co/invinity/6c92fef2-d04a-40ce-99f5-cc5caebd13dd",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Batteries",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Jane App",
+      "ring": 4,
+      "platform": "ashby",
+      "slug": "jane",
+      "careers_url": "https://jobs.ashbyhq.com/jane/b160979b-218a-4dff-bbf0-ae515e8e51be",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Application Software",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Jobber",
+      "ring": 2,
+      "platform": "ashby",
+      "slug": "jobber",
+      "careers_url": "https://jobs.ashbyhq.com/jobber/d32bf400-95b3-4c75-96f6-2992beaf9863",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Analytics",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Litmus Automation",
+      "ring": 2,
+      "platform": "ashby",
+      "slug": "litmus",
+      "careers_url": "https://jobs.ashbyhq.com/litmus/9b644f12-4c10-4f40-8573-827940681209",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Artificial Intelligence (AI)",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Maple",
+      "ring": 2,
+      "platform": "lever",
+      "slug": "getmaple",
+      "careers_url": "https://jobs.lever.co/getmaple/bd3efbfb-4eef-4a72-8124-d5d0507882d1",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Clinics/Outpatient Services",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "MaRS Discovery District",
+      "ring": 2,
+      "platform": "bamboohr",
+      "slug": "marsdd",
+      "careers_url": "https://Marsdd.bamboohr.com/careers/124",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Accelerator",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Medchart",
+      "ring": 2,
+      "platform": "lever",
+      "slug": "Medchart",
+      "careers_url": "https://jobs.lever.co/Medchart/e1033d75-088a-493f-879b-541af0837cb8",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Diagnostic Imaging",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Neo Financial",
+      "ring": 4,
+      "platform": "ashby",
+      "slug": "neofinancial",
+      "careers_url": "https://jobs.ashbyhq.com/neofinancial/5ae5e1a5-b988-4c95-9a5a-e08024ce931a",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Accounting",
+      "sponsors": null,
+      "city": "Calgary"
+    },
+    {
+      "name": "Nesto",
+      "ring": 4,
+      "platform": "rippling",
+      "slug": "nesto",
+      "careers_url": "https://ats.rippling.com/nesto/jobs/b8dd354e-ce8c-4e2a-9a0e-af8455265467",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Financial Services",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Noibu",
+      "ring": 4,
+      "platform": "ashby",
+      "slug": "noibu",
+      "careers_url": "https://jobs.ashbyhq.com/noibu/ab592de1-dffc-4b9a-8ad1-66bffe47ea50",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Bug Detection",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Nuclear Promise X",
+      "ring": 4,
+      "platform": "ashby",
+      "slug": "NPX",
+      "careers_url": "https://jobs.ashbyhq.com/NPX/9fa13a29-13e8-4305-880b-ab004a828122",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Administrative Services",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Nureva Inc.",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "nureva",
+      "careers_url": "https://nureva.bamboohr.com/careers/191",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Audio",
+      "sponsors": null,
+      "city": "Calgary"
+    },
+    {
+      "name": "PointClickCare",
+      "ring": 4,
+      "platform": "lever",
+      "slug": "pointclickcare",
+      "careers_url": "https://jobs.lever.co/pointclickcare/ccdecc93-aef2-4b2b-a981-6843f3c16221",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Elderly Care",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Poka",
+      "ring": 4,
+      "platform": "greenhouse",
+      "slug": "poka",
+      "careers_url": "https://job-boards.greenhouse.io/poka/jobs/6204970004",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Apps",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Pontosense Inc",
+      "ring": 2,
+      "platform": "bamboohr",
+      "slug": "pontosense",
+      "careers_url": "https://pontosense.bamboohr.com/careers/128",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "AI",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Promise Robotics",
+      "ring": 4,
+      "platform": "lever",
+      "slug": "promiserobotics",
+      "careers_url": "https://jobs.lever.co/promiserobotics/53d7a028-3507-4dde-8e70-e040da0a258e",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Artificial Intelligence (AI)",
+      "sponsors": null,
+      "city": "Calgary"
+    },
+    {
+      "name": "Purefacts Financial Solutions",
+      "ring": 2,
+      "platform": "rippling",
+      "slug": "purefacts_jobs",
+      "careers_url": "https://ats.rippling.com/purefacts_jobs/jobs/f56eae8b-c87f-4037-a8b1-98233e9de4fb",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "AI",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Ranovus",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "ranovus",
+      "careers_url": "https://ranovus.bamboohr.com/careers/45",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Application Specific Semiconductors",
+      "sponsors": null,
+      "city": "Ottawa"
+    },
+    {
+      "name": "Signal 1",
+      "ring": 2,
+      "platform": "bamboohr",
+      "slug": "signal1",
+      "careers_url": "https://signal1.bamboohr.com/careers/37",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Artificial Intelligence (AI)",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Solink",
+      "ring": 4,
+      "platform": "ashby",
+      "slug": "solink",
+      "careers_url": "https://jobs.ashbyhq.com/solink/de5241d1-5af0-491f-b4df-2f9357359cde",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Administrative Services",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Stay22",
+      "ring": 4,
+      "platform": "greenhouse",
+      "slug": "stay22",
+      "careers_url": "https://job-boards.greenhouse.io/stay22/jobs/4341764009",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Accommodation",
+      "sponsors": null,
+      "city": "Montreal HQ"
+    },
+    {
+      "name": "SWTCH",
+      "ring": 2,
+      "platform": "workable",
+      "slug": "swtch-energy",
+      "careers_url": "https://apply.workable.com/swtch-energy/j/C6A80BA341/",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Automotive",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "TrackTik",
+      "ring": 4,
+      "platform": "lever",
+      "slug": "tracktik",
+      "careers_url": "https://jobs.lever.co/tracktik/4229b2d4-e7b0-44d6-8ba6-22649517594a",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Business And Industrial",
+      "sponsors": null,
+      "city": "Montreal"
+    },
+    {
+      "name": "University Health Network",
+      "ring": 2,
+      "platform": "smartrecruiters",
+      "slug": "UniversityHealthNetwork",
+      "careers_url": "https://jobs.smartrecruiters.com/UniversityHealthNetwork/744000152821809",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Data & Analytics",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Varicent Software",
+      "ring": 2,
+      "platform": "greenhouse",
+      "slug": "varicent",
+      "careers_url": "https://job-boards.greenhouse.io/varicent/jobs/5412323008",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Business And Industrial",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "VersaPay",
+      "ring": 4,
+      "platform": "lever",
+      "slug": "versapay",
+      "careers_url": "https://jobs.lever.co/versapay/35b29712-6361-4dae-8e0f-67587b906d0c",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Accounting Software",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Visier",
+      "ring": 4,
+      "platform": "greenhouse",
+      "slug": "visiersolutionsinc",
+      "careers_url": "https://job-boards.greenhouse.io/visiersolutionsinc/jobs/4712473006",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Administrative Services",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Vive Crop Protection",
+      "ring": 2,
+      "platform": "bamboohr",
+      "slug": "vivecrop",
+      "careers_url": "https://vivecrop.bamboohr.com/careers/82",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Agriculture",
+      "sponsors": null,
+      "city": "MISSISSAUGA"
     }
   ]
 }
