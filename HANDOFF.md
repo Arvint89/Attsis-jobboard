@@ -43,6 +43,13 @@ It is **deployed and working**. The current work is **not** new features — it 
 | #204 | 👍/👎, Report a problem, GoatCounter events (no-op until signup) | #203 |
 | #206 | Sweep health gate: block deploy on >30 % drop; fail loudly on regressions | #205 |
 
+| #209 | Faster first paint: first card 8.8 s → 5.6 s (median, throttled phone); fixed a race that could drop the below-threshold roles | #208 |
+| #212 | 39 verified companies promoted into the registry (`tools/promote_discovered.py`, report `docs/status/PROMOTION_2026-10-12.md`) | #211 |
+| #213 | Accessibility: axe-core 0 violations on Roles/Profile/Tracker | — |
+| #214 | Phone header: one-row tabs (the mobile CSS had been dead since #192) | — |
+
+**Scoring evidence for #197:** today a firmware CV and a data-science CV get an **identical** top 50 (50/50 overlap). CV-only scoring gives 9/50, but nothing reaches 9+. Recommendation: weighted (option C) plus tuning. Needs BT's decision.
+
 Every PR has a spec with options/tradeoffs in `docs/design/` and before/after screenshots in `docs/design/screenshots/`. Tests: 367 passing.
 
 **Needs BT:**
