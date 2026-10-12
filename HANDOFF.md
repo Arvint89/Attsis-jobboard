@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-10-11** — strategy session: job board is the focus product; Map v2 (#180) + Design parity (#181) are P0 in parallel; observability after design; `DISTRIBUTION.md` tonight. **Read §0.1 first.**_
+_Last updated: **2026-10-12 00:15** — overnight build (see §0.2). Earlier 2026-10-11 — strategy session: job board is the focus product; Map v2 (#180) + Design parity (#181) are P0 in parallel; observability after design; `DISTRIBUTION.md` tonight. **Read §0.1 first.**_
 _Previous update: **2026-10-01 (overnight autonomous run)** — JB-61 quickstart onboarding removes the forced CV gate (name + home city enough); release PR #148 shipped 41 commits main → production; back-merge PR #149 reconciled the JB-49 double-promotion history divergence. Then while BT slept: **JB-62** sweep-hang diagnostic + bounded Getro pagination (#150), **commercialization risks catalog** (#151 — 6-section doc + 7-item pre-launch checklist), **JB-63** user-grade `score_explanation()` helper wired into every row in `jobs.json` (#152). Earlier evening: 5-tab shell + design tokens + registry 176 → 209 + 10 ATS promotions. See §2 for the lift-expectations list._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
@@ -21,6 +21,41 @@ It is **deployed and working**. The current work is **not** new features — it 
 > **Tip:** open this folder in **VS Code** while you work. Its Source Control panel shows
 > branches, staged vs unstaged files, and diffs visually — that is the fastest way to build
 > a mental model of git. Use the chat to drive, VS Code to see.
+
+---
+
+## 0.2 Overnight 2026-10-11 → 10-12: what shipped (all on `main`, NOT yet on production)
+
+> **Nothing below is live until BT merges the `main → production` release.** ✅ The live header still says "Job Board".
+
+| PR | What | Issue |
+|---|---|---|
+| #184 | Map v2: List + map split, score pins, clustering, search as I move, rings, dark tiles | #180 |
+| #185 | `docs/research/DISTRIBUTION.md` (launch gate, competitors to verify, channels, drafts) | — |
+| #186 | Design parity gap audit (`docs/design/DESIGN_parity_v6.md`) | #181 |
+| #192 + #193 | Landing without a name gate, hero, icon nav, CTA, footer, favicon; preprod smoke fix | #187 |
+| #194 | Job card v2 (expand in place, why it fits / gaps; "sample profile" wording) | #188 |
+| #196 | CV extraction fix (canonical skills, no cross-comma bigrams) | #195 |
+| #198 | Tracker v2 (stats, "Needs your answer" nudges) | #189 |
+| #199 | Profile v2 (sources + sticky "What we'll match on", LinkedIn PDF) | #190 |
+| #201 | Geocoding Phase B: 70 % → 80 % of roles placeable (simulated); fixed Cambridge MA→ON / Vancouver WA→BC mis-plots; `home_coords` | #200 |
+| #202 | Prep plan from your gaps + canonical-skill gap analysis | #191 |
+| #204 | 👍/👎, Report a problem, GoatCounter events (no-op until signup) | #203 |
+| #206 | Sweep health gate: block deploy on >30 % drop; fail loudly on regressions | #205 |
+
+Every PR has a spec with options/tradeoffs in `docs/design/` and before/after screenshots in `docs/design/screenshots/`. Tests: 367 passing.
+
+**Needs BT:**
+- Release `main → production`.
+- GoatCounter signup (site `attsis`).
+- Decide #197 (scoring counts all JD skills, not your CV).
+- Decide `DESIGN_parity_v6.md` §4 (mock interviewer, numerology, Queue/Learn).
+- Make `smoke` a required check (auto-merge ignores it; see #192/#193).
+
+**Other repos the same night:**
+- ai-empire CI is green for the first time in 100+ runs (#316: ddgs, ledger guard, lp_attributes, section test, psutil).
+- The pytest-never-ran bug (`scripts/smoke_test.py` → `sys.exit`) is fixed in planner/template/shorts/etsy/fashion.
+- signal PR left open: its suite is red.
 
 ---
 
