@@ -370,18 +370,18 @@
         <h3>CV / résumé <span class="badge">Best signal</span></h3>
         <p class="sub">Your work history: titles, tools, domains. Paste the text or upload .docx / .pdf / .txt.</p>
         <textarea id="cvText" placeholder="Paste your CV text here…"></textarea>
-        <input type="file" id="cvFile" accept=".txt,.md,.text,.docx,.pdf">
+        <input type="file" id="cvFile" aria-label="Upload your CV (.docx, .pdf or .txt)" accept=".txt,.md,.text,.docx,.pdf">
       </div></div>
       <div class="panel srccard"><div class="srcico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></div><div class="srcbody">
         <h3>Cover letter <span class="badge opt">Optional</span></h3>
         <p class="sub">Adds what you want next, not only what you've done.</p>
         <textarea id="clText" placeholder="Optional: paste a cover letter…" style="min-height:70px"></textarea>
-        <input type="file" id="clFile" accept=".txt,.md,.text,.docx,.pdf">
+        <input type="file" id="clFile" aria-label="Upload a cover letter (.docx, .pdf or .txt)" accept=".txt,.md,.text,.docx,.pdf">
       </div></div>
       <div class="panel srccard"><div class="srcico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h4M14 14h4"/></svg></div><div class="srcbody">
         <h3>LinkedIn <span class="badge opt">Optional</span></h3>
         <p class="sub">On LinkedIn: your profile → Resources → <b>Save to PDF</b>, then upload it here. Profiles can't be read from a link.</p>
-        <input type="file" id="liFile" accept=".pdf,.txt"><span class="hint" id="liStatus"></span>
+        <input type="file" id="liFile" aria-label="Upload your LinkedIn profile PDF" accept=".pdf,.txt"><span class="hint" id="liStatus"></span>
         <textarea id="liText" style="display:none" aria-hidden="true"></textarea>
       </div></div>
       <div class="analyzebar"><button class="btn" id="analyzeBtn">Read my sources →</button>
