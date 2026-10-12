@@ -114,14 +114,20 @@
     .hero{grid-template-columns:1fr;gap:18px}
     .herotitle{font-size:38px}
     .herosub{font-size:16px}
-    .tabbar{margin:6px 0 0;order:3;width:100%}
-    .tabbar button{padding:6px 10px}
+    .cta{padding:8px 10px}
+    .cta #ctaLabel{display:none}   /* icon-only on phones; title attribute carries the text */
   }
   /* Top-level tabs (Roles/Tracker/Prep/Profile/Tailor) */
   .tabbar{display:flex;gap:4px;flex-wrap:wrap;margin:0 0 0 24px}
   .tabbar button{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid transparent;color:var(--dim);padding:8px 14px;border-radius:999px;font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all 200ms}
   .tabbar button:hover{border-color:var(--hi);color:var(--ink);background:var(--hi-soft)}
   .tabbar button.on{background:rgba(232,240,255,0.04);color:var(--ink);border-color:var(--edge)}
+  /* phones: must come AFTER the base .tabbar rules above, or they win (equal specificity) */
+  @media (max-width:900px){
+    .tabbar{margin:6px 0 0;order:3;width:100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .tabbar::-webkit-scrollbar{display:none}
+    .tabbar button{padding:6px 10px;flex:none}
+  }
   /* Tracker kanban */
   .kboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
   .kcol{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:12px;min-height:200px}
@@ -338,7 +344,7 @@
     <button data-tab="tailor"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Tailor</span></button>
     <button data-tab="profile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg><span>Profile</span></button>
   </div>
-  <button class="cta" id="ctaProfile" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg><span id="ctaLabel">Build profile</span></button>
+  <button class="cta" id="ctaProfile" type="button" title="Build profile" aria-label="Build profile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg><span id="ctaLabel">Build profile</span></button>
 </header>
 <div class="wrap">
 
@@ -1154,6 +1160,7 @@ function renderHero(){
   const h=$('#hero'); if(!h) return;
   h.style.display=PROFILE?'none':'grid';
   const lbl=$('#ctaLabel'); if(lbl) lbl.textContent=PROFILE?((PROFILE.initials||'My')+' · Profile'):'Build profile';
+  { const c=$('#ctaProfile'); if(c){ const t=PROFILE?'Your profile':'Build profile'; c.title=t; c.setAttribute('aria-label',t); } }
   const pool=(typeof POOL!=='undefined'?POOL:[]), cos=new Set(pool.map(j=>(j.company||'').trim()).filter(Boolean));
   const d=JOBS&&JOBS.generated?new Date(JOBS.generated):null;
   $('#heroStats').textContent=(d&&!isNaN(d)?'Updated '+d.toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'})+' · ':'')
