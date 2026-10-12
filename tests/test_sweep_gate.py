@@ -65,3 +65,8 @@ def test_auto_promote_notices_never_fail(tmp_path, monkeypatch):
     assert sweep_gate.main([f, "--report"]) == 0
     sev, oth, info = sweep_gate.split([notice, "fetch errors rose 4 -> 9"])
     assert sev == [] and oth == ["fetch errors rose 4 -> 9"] and info == [notice]
+
+
+def test_discovered_fell_is_informational():
+    sev, oth, info = sweep_gate.split(["discovered companies fell 111 -> 74 (>30%)"])
+    assert sev == [] and oth == [] and info == ["discovered companies fell 111 -> 74 (>30%)"]

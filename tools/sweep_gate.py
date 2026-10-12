@@ -29,7 +29,9 @@ _REGRESSION = re.compile(r" fell \d| rose \d|went from \d+ kept roles to 0")
 
 def split(alerts: list) -> tuple[list, list, list]:
     """-> (severe, regressions_other, info)."""
-    regs = [a for a in alerts if _REGRESSION.search(a)]
+    # "discovered companies fell" is expected when companies get promoted into the registry
+    # (tools/promote_discovered.py, JB-86): they stop being "discovered". Informational only.
+    regs = [a for a in alerts if _REGRESSION.search(a) and not a.startswith("discovered companies fell")]
     severe = [a for a in regs if a.startswith(SEVERE_PREFIXES)]
     other = [a for a in regs if a not in severe]
     info = [a for a in alerts if a not in regs]
