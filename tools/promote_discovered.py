@@ -118,6 +118,7 @@ def build_entry(cand: dict, det: dict, pool: list) -> dict:
     for k in ("tenant", "site", "dc"):
         if det.get(k):
             e[k] = det[k]
+    e["careers_url"] = ats.board_url(e) or e["careers_url"]   # JB-88: the board, not one posting
     return e
 
 
