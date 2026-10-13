@@ -3343,6 +3343,425 @@
       "industry": "other",
       "sponsors": null,
       "city": "Toronto"
+    },
+    {
+      "name": "Anvil",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "anvil",
+      "careers_url": "https://anvil.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Analytics",
+      "sponsors": null,
+      "city": "Ottawa"
+    },
+    {
+      "name": "Ayrton Energy",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "ayrtonenergy",
+      "careers_url": "https://ayrtonenergy.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Calgary"
+    },
+    {
+      "name": "ChargeSpot",
+      "ring": 2,
+      "platform": "breezy",
+      "slug": "chargespot",
+      "careers_url": "https://chargespot.breezy.hr/",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Dialogue",
+      "ring": 4,
+      "platform": "rippling",
+      "slug": "dialogue-en",
+      "careers_url": "https://ats.rippling.com/dialogue-en/jobs",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Montréal"
+    },
+    {
+      "name": "Friendlier",
+      "ring": 2,
+      "platform": "bamboohr",
+      "slug": "friendlier",
+      "careers_url": "https://friendlier.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Mississauga"
+    },
+    {
+      "name": "Giatec",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "giatecscientific",
+      "careers_url": "https://giatecscientific.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Ottawa"
+    },
+    {
+      "name": "Ground",
+      "ring": 4,
+      "platform": "ashby",
+      "slug": "groundnews",
+      "careers_url": "https://jobs.ashbyhq.com/groundnews",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Growcer Inc.",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "growcer",
+      "careers_url": "https://growcer.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Ottawa"
+    },
+    {
+      "name": "IMAX",
+      "ring": 2,
+      "platform": "workday",
+      "slug": "imax",
+      "careers_url": "https://imax.wd10.myworkdayjobs.com/IMAX-Careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Mississauga",
+      "tenant": "imax",
+      "site": "IMAX-Careers",
+      "dc": "wd10"
+    },
+    {
+      "name": "Loop Financial",
+      "ring": 2,
+      "platform": "rippling",
+      "slug": "loop-careers",
+      "careers_url": "https://ats.rippling.com/loop-careers/jobs",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "LumiQ",
+      "ring": 4,
+      "platform": "lever",
+      "slug": "lumiq-learn",
+      "careers_url": "https://jobs.lever.co/lumiq-learn",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "MakerKids",
+      "ring": 2,
+      "platform": "breezy",
+      "slug": "makerkids",
+      "careers_url": "https://makerkids.breezy.hr/",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Mississauga"
+    },
+    {
+      "name": "MineSense Technologies",
+      "ring": 4,
+      "platform": "lever",
+      "slug": "minesense",
+      "careers_url": "https://jobs.lever.co/minesense",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Analytics",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Nix Sensor",
+      "ring": 1,
+      "platform": "bamboohr",
+      "slug": "nix",
+      "careers_url": "https://nix.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Hamilton"
+    },
+    {
+      "name": "OTI Lumionics",
+      "ring": 2,
+      "platform": "lever",
+      "slug": "otilumionics",
+      "careers_url": "https://jobs.lever.co/otilumionics",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Mississauga"
+    },
+    {
+      "name": "Peak Power Inc",
+      "ring": 2,
+      "platform": "rippling",
+      "slug": "peak-power-careers",
+      "careers_url": "https://ats.rippling.com/peak-power-careers/jobs",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Practice Better",
+      "ring": 4,
+      "platform": "greenhouse",
+      "slug": "practicebetter",
+      "careers_url": "https://job-boards.greenhouse.io/practicebetter",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Pulsemedica",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "pulsemedica",
+      "careers_url": "https://pulsemedica.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Edmonton"
+    },
+    {
+      "name": "Smarter Alloys",
+      "ring": 1,
+      "platform": "bamboohr",
+      "slug": "smarteralloys",
+      "careers_url": "https://smarteralloys.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Cambridge"
+    },
+    {
+      "name": "Solace",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "solace",
+      "careers_url": "https://solace.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Ottawa"
+    },
+    {
+      "name": "StackAdapt",
+      "ring": 4,
+      "platform": "greenhouse",
+      "slug": "stackadapt",
+      "careers_url": "https://job-boards.greenhouse.io/stackadapt",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Ad Retargeting",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Statflo",
+      "ring": 2,
+      "platform": "bamboohr",
+      "slug": "statflo",
+      "careers_url": "https://statflo.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Toronto"
+    },
+    {
+      "name": "Taiga Motors",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "taigamotors",
+      "careers_url": "https://taigamotors.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Montréal"
+    },
+    {
+      "name": "Tali AI",
+      "ring": 4,
+      "platform": "lever",
+      "slug": "tali-ai",
+      "careers_url": "https://jobs.lever.co/tali-ai",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "TandemLaunch",
+      "ring": 4,
+      "platform": "greenhouse",
+      "slug": "tandemlaunch",
+      "careers_url": "https://job-boards.greenhouse.io/tandemlaunch",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Acoustics",
+      "sponsors": null,
+      "city": "Montréal"
+    },
+    {
+      "name": "Texada Software",
+      "ring": 4,
+      "platform": "breezy",
+      "slug": "texada-software",
+      "careers_url": "https://texada-software.breezy.hr/",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "TextNow",
+      "ring": 1,
+      "platform": "greenhouse",
+      "slug": "textnowinc",
+      "careers_url": "https://job-boards.greenhouse.io/textnowinc",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Advertising",
+      "sponsors": null,
+      "city": "Waterloo"
+    },
+    {
+      "name": "ThoughtExchange",
+      "ring": 4,
+      "platform": "greenhouse",
+      "slug": "thoughtexchange",
+      "careers_url": "https://job-boards.greenhouse.io/thoughtexchange",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": ""
+    },
+    {
+      "name": "Transoft Solutions",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "transoftsolutions",
+      "careers_url": "https://transoftsolutions.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Vancouver"
+    },
+    {
+      "name": "Trusscore",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "trusscore",
+      "careers_url": "https://trusscore.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Palmerston"
+    },
+    {
+      "name": "Vendasta Technologies",
+      "ring": 4,
+      "platform": "bamboohr",
+      "slug": "vendasta",
+      "careers_url": "https://vendasta.bamboohr.com/careers",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Saskatoon"
+    },
+    {
+      "name": "Zensurance",
+      "ring": 2,
+      "platform": "lever",
+      "slug": "zensurance",
+      "careers_url": "https://jobs.lever.co/zensurance",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Toronto"
     }
   ]
 }

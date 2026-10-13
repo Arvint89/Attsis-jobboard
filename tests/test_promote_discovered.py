@@ -49,3 +49,31 @@ def test_city_falls_back_to_the_fetched_board():
     fetched = [{"location": "Squamish, BC, Canada"}, {"location": "Squamish, BC, Canada"}, {"location": "Remote"}]
     assert pd.city_from_jobs(fetched) == "Squamish"
     assert pd.city_from_jobs([{"location": "Remote"}, {"location": "Multiple Countries"}]) == ""
+
+
+def test_country_is_not_an_hq_city():
+    # JB-90: StackAdapt's pool rows said "United States" -> stored as its HQ "city"
+    pool = [{"company": "StackAdapt", "location_near": "United States", "industry": "other"}]
+    e = pd.build_entry({"name": "StackAdapt", "sample": "https://job-boards.greenhouse.io/stackadapt/jobs/1"},
+                       {"platform": "greenhouse", "slug": "stackadapt"}, pool)
+    assert e["city"] == ""
+    pool = [{"company": "Giatec", "location_near": "Ottawa, ON", "industry": "other"}]
+    e = pd.build_entry({"name": "Giatec", "sample": "https://giatecscientific.bamboohr.com/careers/1"},
+                       {"platform": "bamboohr", "slug": "giatecscientific"}, pool)
+    assert e["city"] == "Ottawa"
+
+
+def test_region_is_not_an_hq_city():
+    # JB-90 dry run: StackAdapt -> "Alberta", Texada -> "ON" (from "Alberta, Canada" / "ON, CA")
+    assert pd.city_from_jobs([{"location": "Alberta, Canada"}, {"location": "Alberta, Canada"}, {"location": "Toronto, ON"}]) == "Toronto"
+    assert pd.city_from_jobs([{"location": "ON, CA"}]) == ""
+    assert pd.city_from_jobs([{"location": "Texas, US"}, {"location": "United States, Remote"}]) == ""
+
+
+def test_bare_remote_is_neutral_in_the_canada_share():
+    # JB-90: Business Wire (San Francisco) passed only because 2 bare "Remote" jobs count as Canada
+    assert pd.canada_share([{"location": "Remote"}, {"location": "Remote"}, {"location": "San Francisco, CA/Hybrid"}]) == 0.0
+    # RateHub: 9 Remote + 2 Toronto -> 100% of the jobs that name a place
+    assert pd.canada_share([{"location": "Remote"}] * 9 + [{"location": "Toronto, ON, Canada"}] * 2) == 1.0
+    assert pd.canada_share([{"location": "Remote - Canada"}, {"location": "n/a"}, {"location": "2 Locations"}]) == 1.0
+    assert pd.canada_share([{"location": "Remote"}]) == 0.0      # nothing named -> not evidence of Canada
