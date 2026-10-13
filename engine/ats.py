@@ -268,6 +268,76 @@ def fetch_breezy(company, slug, **_):
     return out
 
 
+# JB-87: JazzHR has no public JSON API (its API needs the employer's key). The public board
+# https://{slug}.applytojob.com/apply lists title + URL + location; each job page embeds a
+# schema.org JobPosting (JSON-LD) with the full description and datePosted.
+JAZZHR_MAX_DETAILS = 60   # bound the per-company request count (1 listing + N detail pages)
+_JZ_LINK = re.compile(r'<a href="(https://[a-z0-9-]+\.applytojob\.com/apply/[A-Za-z0-9]+/[^"]*)"[^>]*>(.*?)</a>', re.S)
+_JZ_LOC = re.compile(r"fa-map-marker[^>]*></i>\s*([^<]+)<")
+_JSONLD = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
+
+
+def _jsonld_jobposting(page: str) -> dict:
+    import json
+    for m in _JSONLD.finditer(page or ""):
+        try:
+            d = json.loads(m.group(1))
+        except ValueError:
+            continue
+        if isinstance(d, dict) and d.get("@type") == "JobPosting":
+            return d
+    return {}
+
+
+def _jsonld_location(jp: dict) -> str:
+    loc = jp.get("jobLocation")
+    loc = loc[0] if isinstance(loc, list) and loc else loc
+    addr = (loc or {}).get("address") if isinstance(loc, dict) else None
+    if not isinstance(addr, dict):
+        return ""
+    return ", ".join(x for x in [addr.get("addressLocality"), addr.get("addressRegion"),
+                                 addr.get("addressCountry") if isinstance(addr.get("addressCountry"), str) else ""] if x)
+
+
+def _jazzhr_html_description(page: str) -> str:
+    """Some JazzHR job pages carry no JobPosting JSON-LD (✅ seen on Carbon Engineering,
+    2026-10-12). The description is then div#job-description, which ends where the
+    apply/share widgets (class="resumator-...") begin."""
+    i = (page or "").find('id="job-description"')
+    if i < 0:
+        return ""
+    start = page.find(">", i) + 1
+    end = page.find('class="resumator-', start)
+    return page[start:end if end > 0 else start + 20000]
+
+
+def fetch_jazzhr(company, slug, **_):
+    listing = _get(f"https://{slug}.applytojob.com/apply").text
+    out = []
+    items = listing.split('<li class="list-group-item">')[1:]   # one chunk per job
+    for i, item in enumerate(items):
+        link = _JZ_LINK.search(item)
+        if not link:
+            continue
+        url = link.group(1)
+        title = html.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", link.group(2)))).strip()
+        loc = _JZ_LOC.search(item)
+        location = html.unescape(loc.group(1)).strip() if loc else ""
+        description, posted = "", None
+        if i < JAZZHR_MAX_DETAILS:
+            try:   # the job page carries the description + date; a failure keeps title + location
+                page = _get(url).text
+                jp = _jsonld_jobposting(page)
+                description = jp.get("description") or _jazzhr_html_description(page)
+                posted = jp.get("datePosted") or None
+                location = location or _jsonld_location(jp)
+                title = title or (jp.get("title") or "")
+            except Exception:
+                pass
+        out.append(_norm(company, title, location or "n/a", url, posted, description, "jazzhr"))
+    return out
+
+
 def fetch_rippling(company, slug, **_):
     # Rippling ATS public board API.
     url = f"https://api.rippling.com/platform/api/ats/v1/board/{slug}/jobs"
@@ -429,6 +499,7 @@ FETCHERS = {
     "workable": fetch_workable,
     "bamboohr": fetch_bamboohr,
     "breezy": fetch_breezy,
+    "jazzhr": fetch_jazzhr,
     "rippling": fetch_rippling,
     "workday": fetch_workday,
     "dayforce": fetch_dayforce,
