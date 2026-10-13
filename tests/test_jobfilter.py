@@ -180,32 +180,47 @@ def test_tokens_for_matches_classify_signal():
 
 
 # --- JB-66: classify-loop perf fix (regex cache + tokenize-and-intersect) ---
-def test_jb66_classify_perf_under_budget():
-    """200 jobs through classify() must stay under 2.5s (12.5ms/job).
-    Pre-fix was ~363ms/job -> 72s. Post-fix ~13ms/job. Budget leaves 2x
-    headroom for CI noise but will trip if the regex cache ever regresses."""
+def _best_of(fn, job, n=200, repeats=3):
+    """#179: best-of-N timing. One wall-clock sample flaked in the full suite (GC, other
+    tests, antivirus); the MINIMUM of a few runs measures the code, not the machine's
+    noise, and a real regression is still slow in every run."""
     import time
+    best = float("inf")
+    for _ in range(repeats):
+        t0 = time.perf_counter()
+        for _ in range(n):
+            fn(job)
+        best = min(best, time.perf_counter() - t0)
+    return best
+
+
+PERF_BUDGET_S = 4.0   # for 200 jobs = 20ms/job. Pre-JB-66 was ~363ms/job; post-fix ~13ms/job.
+
+
+def test_jb66_classify_perf_under_budget():
+    """200 jobs through classify() must stay under PERF_BUDGET_S (best of 3).
+    Trips if the regex cache ever regresses (pre-fix was 72s for 200 jobs)."""
     j = {"title": "Senior Firmware Engineer",
          "description": "ARM Cortex-M, FreeRTOS, Altium, PCB, SPI, I2C, Python " * 20,
          "location": "London, ON", "posted": "2026-09-15"}
-    t0 = time.time()
-    for _ in range(200):
-        jf.classify(j)
-    elapsed = time.time() - t0
-    assert elapsed < 4.0, f"classify perf regressed: {elapsed:.2f}s for 200 jobs (budget 4s = 20ms/job)"
+    elapsed = _best_of(jf.classify, j)
+    assert elapsed < PERF_BUDGET_S, f"classify perf regressed: {elapsed:.2f}s for 200 jobs (budget {PERF_BUDGET_S}s = 20ms/job)"
 
 
 def test_jb66_tokens_for_perf_under_budget():
-    """200 jobs through tokens_for() must stay under 2.5s. Same reasoning
-    as classify perf test."""
-    import time
+    """200 jobs through tokens_for() must stay under PERF_BUDGET_S (best of 3)."""
     j = {"title": "Senior Firmware Engineer",
          "description": "ARM Cortex-M, FreeRTOS, Altium, PCB, SPI, I2C, Python " * 20}
-    t0 = time.time()
-    for _ in range(200):
-        jf.tokens_for(j)
-    elapsed = time.time() - t0
-    assert elapsed < 4.0, f"tokens_for perf regressed: {elapsed:.2f}s for 200 jobs (budget 4s = 20ms/job)"
+    elapsed = _best_of(jf.tokens_for, j)
+    assert elapsed < PERF_BUDGET_S, f"tokens_for perf regressed: {elapsed:.2f}s for 200 jobs (budget {PERF_BUDGET_S}s = 20ms/job)"
+
+
+def test_best_of_still_catches_a_real_slowdown():
+    """#179 acceptance: an artificial 50ms/job slowdown must still fail the budget."""
+    import time
+    n = 10                                         # scaled down so the suite stays fast
+    elapsed = _best_of(lambda j: time.sleep(0.05), {}, n=n, repeats=2)
+    assert elapsed > PERF_BUDGET_S * n / 200, elapsed   # 10 x 50ms = 0.5s > 0.2s scaled budget
 
 
 def test_jb66_has_preserves_input_order():
