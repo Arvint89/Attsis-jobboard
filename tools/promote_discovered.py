@@ -68,16 +68,31 @@ def parse_alerts(alerts: list) -> list:
     return out
 
 
+_NO_PLACE = re.compile(r"(?i)(remote|hybrid|n/a|anywhere)?")
+
+
 def canada_share(jobs: list) -> float:
     """Share of a board's live-fetched jobs located in Canada (facets.country, same rule as
     the board). JB-87: the pool-based share was 0 for companies with no roles in the current
     pool (Carbon Engineering, Squamish BC), which wrongly held them back as "foreign"."""
-    if not jobs:
-        return 0.0
-    return round(sum(1 for j in jobs if facets.country(j.get("location")) == "Canada") / len(jobs), 2)
+    # JB-90: a bare "Remote" / "n/a" / unplaceable location is neutral (facets counts bare
+    # "Remote" as Canada, which let a San Francisco company through on 2 remote jobs).
+    named = [facets.country(j.get("location")) for j in jobs or []
+             if not _NO_PLACE.fullmatch((j.get("location") or "").strip())]
+    named = [c for c in named if c != "?"]
+    return round(sum(1 for c in named if c == "Canada") / len(named), 2) if named else 0.0
 
 
 _NOT_A_CITY = re.compile(r"remote|multiple|anywhere|various|hybrid|north america|canada|united states", re.I)
+
+
+def _is_region(name: str) -> bool:
+    """A province / state / country, not a city ("Alberta", "ON", "Texas", "United States")."""
+    low = name.lower()
+    return (re.fullmatch(r"[A-Z]{2}", name) is not None
+            or geo._CA_PROV_NAMES.fullmatch(low) is not None
+            or geo._US_STATE_NAMES.fullmatch(low) is not None
+            or geo.locate(name)[2] == "country")
 
 
 def city_from_jobs(jobs: list) -> str:
@@ -89,7 +104,7 @@ def city_from_jobs(jobs: list) -> str:
         if "," not in loc:
             continue
         city = loc.split(",")[0].strip()
-        if city and not _NOT_A_CITY.search(city):
+        if city and not _NOT_A_CITY.search(city) and not _is_region(city):
             c[city] += 1
     return c.most_common(1)[0][0] if c else ""
 
@@ -109,8 +124,9 @@ def _company_facts(pool: list, name: str) -> tuple[str, str, int]:
 
 def build_entry(cand: dict, det: dict, pool: list) -> dict:
     city, industry, _ = _company_facts(pool, cand["name"])
-    if city and geo.coords_of(city)[0] is None and geo.home_coords(city)[0] is None:
-        city = ""   # "Remote", "North America", "Canada"... aren't places; leave the HQ city unknown
+    if city and ((geo.coords_of(city)[0] is None and geo.home_coords(city)[0] is None)
+                 or _is_region(city)):
+        city = ""   # "Remote", "North America", "United States"... aren't places; leave the HQ city unknown
     ring, _, _ = geo.ring_for("London", city) if city else (None, None, None)
     e = {"name": cand["name"], "ring": ring if ring is not None else 4, "platform": det["platform"], "slug": det.get("slug", ""),
          "careers_url": cand["sample"].split("?")[0], "flags": ["auto-promoted"], "industry": industry,
