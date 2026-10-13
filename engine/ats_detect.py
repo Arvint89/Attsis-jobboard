@@ -9,7 +9,7 @@ from urllib.parse import urlparse, parse_qs
 
 SUPPORTED = {"greenhouse", "lever", "ashby", "smartrecruiters", "recruitee",
              "workable", "bamboohr", "breezy", "rippling", "workday",
-             "dayforce", "dayforce_shared"}   # must equal set(ats.FETCHERS)
+             "dayforce", "dayforce_shared", "jazzhr"}   # must equal set(ats.FETCHERS)
 
 _LOCALE = re.compile(r"^[a-z]{2}-[A-Z]{2}$")
 _URL = re.compile(r'https?://[^\s"\'<>)]+')
@@ -58,6 +58,8 @@ def detect_ats(url: str) -> dict | None:
         return _res("bamboohr", host.split(".")[0])
     if host.endswith(".breezy.hr"):
         return _res("breezy", host.split(".")[0])
+    if host.endswith(".applytojob.com"):                # JB-87 JazzHR (not applytojobs.ca)
+        return _res("jazzhr", host.split(".")[0])
     if host == "ats.rippling.com":
         return _res("rippling", first)
     m = re.match(r"^([a-z0-9-]+)\.(wd\d+)\.myworkdayjobs\.com$", host)

@@ -3278,6 +3278,71 @@
       "industry": "Agriculture",
       "sponsors": null,
       "city": "MISSISSAUGA"
+    },
+    {
+      "name": "Carbon Engineering",
+      "ring": 4,
+      "platform": "jazzhr",
+      "slug": "carbonengineering",
+      "careers_url": "https://carbonengineering.applytojob.com/apply/BBZM0uwXyM/Plant-Operator-Temporary-Contract",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Squamish"
+    },
+    {
+      "name": "Intellijoint Surgical",
+      "ring": 1,
+      "platform": "jazzhr",
+      "slug": "intellijointsurgical",
+      "careers_url": "https://intellijointsurgical.applytojob.com/apply/jWcDAFF117/Software-Development-Manager",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Biotechnology",
+      "sponsors": null,
+      "city": "Kitchener"
+    },
+    {
+      "name": "Myant",
+      "ring": 2,
+      "platform": "jazzhr",
+      "slug": "myant",
+      "careers_url": "https://myant.applytojob.com/apply/WmsIhQNNeD/RD-Electrical-Engineer-OnSite",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "Artificial Intelligence",
+      "sponsors": null,
+      "city": "Mississauga"
+    },
+    {
+      "name": "Parity",
+      "ring": 4,
+      "platform": "jazzhr",
+      "slug": "parity",
+      "careers_url": "https://parity.applytojob.com/apply/qJCHAV1oJz/Building-Intelligence-Engineer-DMV",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "New York"
+    },
+    {
+      "name": "RateHub.ca",
+      "ring": 2,
+      "platform": "jazzhr",
+      "slug": "ratehubinc",
+      "careers_url": "https://ratehubinc.applytojob.com/apply/iZcZmoaqao/Junior-IT-Operations-Support",
+      "flags": [
+        "auto-promoted"
+      ],
+      "industry": "other",
+      "sponsors": null,
+      "city": "Toronto"
     }
   ]
 }

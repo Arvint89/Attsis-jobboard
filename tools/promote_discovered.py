@@ -28,6 +28,7 @@ ROOT = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, os.path.join(ROOT, "engine"))
 import ats  # noqa: E402
 import ats_detect  # noqa: E402
+import facets  # noqa: E402
 import geo  # noqa: E402
 
 RX = re.compile(r"AUTO-PROMOTE: '(.+?)' seen in (\d+) sweeps via (.+?) -- add to engine/companies.json \(sample: (.+)\)$")
@@ -67,6 +68,37 @@ def parse_alerts(alerts: list) -> list:
     return out
 
 
+def canada_share(jobs: list) -> float:
+    """Share of a board's live-fetched jobs located in Canada (facets.country, same rule as
+    the board). JB-87: the pool-based share was 0 for companies with no roles in the current
+    pool (Carbon Engineering, Squamish BC), which wrongly held them back as "foreign"."""
+    if not jobs:
+        return 0.0
+    return round(sum(1 for j in jobs if facets.country(j.get("location")) == "Canada") / len(jobs), 2)
+
+
+_NOT_A_CITY = re.compile(r"remote|multiple|anywhere|various|hybrid|north america|canada|united states", re.I)
+
+
+def city_from_jobs(jobs: list) -> str:
+    """Most common "City, Region..." on the company's own board. JB-87: fallback HQ city for
+    companies with no roles in the current pool (Carbon Engineering -> Squamish)."""
+    c = collections.Counter()
+    for j in jobs or []:
+        loc = (j.get("location") or "").strip()
+        if "," not in loc:
+            continue
+        city = loc.split(",")[0].strip()
+        if city and not _NOT_A_CITY.search(city):
+            c[city] += 1
+    return c.most_common(1)[0][0] if c else ""
+
+
+def report_name(day: str, platform: str | None) -> str:
+    """JB-87: a per-platform run must not overwrite the day's full report."""
+    return f"PROMOTION_{day}{'_' + platform if platform else ''}.md"
+
+
 def _company_facts(pool: list, name: str) -> tuple[str, str, int]:
     rows = [j for j in pool if (j.get("company") or "").strip().lower() == name.strip().lower()]
     cities = collections.Counter((j.get("location_near") or "").split(",")[0].strip() for j in rows if j.get("location_near"))
@@ -96,6 +128,7 @@ def main(argv=None) -> int:
     ap.add_argument("--min-sweeps", type=int, default=3)
     ap.add_argument("--min-canada", type=float, default=0.5, help="share of the company's on-board roles in Canada")
     ap.add_argument("--max-jobs", type=int, default=150, help="bigger boards go to review instead of auto-add")
+    ap.add_argument("--only-platform", default=None, help="consider only this ATS platform (e.g. jazzhr)")
     a = ap.parse_args(argv)
     if a.file:
         payload = json.load(open(a.file, encoding="utf-8"))
@@ -117,6 +150,8 @@ def main(argv=None) -> int:
         det = ats_detect.detect_ats(c["sample"])
         if not det or det.get("platform") not in ats.FETCHERS:
             rows["unsupported"].append(c); continue
+        if a.only_platform and det["platform"] != a.only_platform:
+            continue
         if not name_matches_slug(c["name"], det.get("slug", "") or det.get("tenant", "")):
             rows["parent_board"].append({**c, "slug": det.get("slug") or det.get("tenant")}); continue
         entry = build_entry(c, det, pool)
@@ -124,9 +159,12 @@ def main(argv=None) -> int:
         if err or not jobs:
             rows["fetch_failed"].append({**c, "err": err or "0 jobs"}); continue
         _, _, on_board = _company_facts(pool, c["name"])
-        mine = [j for j in pool if (j.get("company") or "").strip().lower() == c["name"].strip().lower()]
-        ca = sum(1 for j in mine if j.get("country") == "Canada") / len(mine) if mine else 0.0
-        row = {**c, "entry": entry, "fetched": len(jobs), "on_board_now": on_board, "canada_share": round(ca, 2)}
+        if not entry["city"]:                      # JB-87: no roles in the pool -> use its own board
+            entry["city"] = city_from_jobs(jobs)
+            ring, _, _ = geo.ring_for("London", entry["city"]) if entry["city"] else (None, None, None)
+            entry["ring"] = ring if ring is not None else 4
+        ca = canada_share(jobs)
+        row = {**c, "entry": entry, "fetched": len(jobs), "on_board_now": on_board, "canada_share": ca}
         # Relevance guard: a Canadian-focused board, and not a giant global board that would bloat
         # the pool (e.g. Rippling 612 jobs mostly Bangalore; Georgia.gov). Those go to review.
         if ca < a.min_canada or len(jobs) > a.max_jobs:
@@ -142,7 +180,7 @@ def main(argv=None) -> int:
         e = r["entry"]
         lines.append(f"| {r['name']} | {e['platform']}/{e['slug']} | {e['city'] or '?'} | {r['sweeps']} | {r['fetched']} | {r['on_board_now']} |")
     lines += ["", f"## Review: big (> {a.max_jobs} jobs) or mostly outside Canada (not promoted)", "",
-              "| Company | Platform/slug | Jobs on own board ✅ | Canada share of our roles |", "|---|---|---|---|"]
+              "| Company | Platform/slug | Jobs on own board ✅ | Canada share of those jobs |", "|---|---|---|---|"]
     for r in sorted(rows["review_big_or_foreign"], key=lambda r: -r["fetched"]):
         lines.append(f"| {r['name']} | {r['entry']['platform']}/{r['entry']['slug']} | {r['fetched']} | {r['canada_share']:.0%} |")
     lines += ["", f"Added total: {sum(r['fetched'] for r in rows['added'])} jobs fetched from {len(rows['added'])} boards (before scoring/filters).", ""]
@@ -150,7 +188,7 @@ def main(argv=None) -> int:
     lines += [f"- {r['name']} → `{r['slug']}`" for r in rows["parent_board"]]
     lines += ["", "## Fetch failed (not promoted)", ""] + [f"- {r['name']}: {r['err']}" for r in rows["fetch_failed"]]
     os.makedirs(os.path.join(ROOT, "docs", "status"), exist_ok=True)
-    out = os.path.join(ROOT, "docs", "status", f"PROMOTION_{today}.md")
+    out = os.path.join(ROOT, "docs", "status", report_name(today, a.only_platform))
     open(out, "w", encoding="utf-8").write("\n".join(lines) + "\n")
     print({k: len(v) for k, v in rows.items()}, "->", out)
 
