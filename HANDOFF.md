@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-10-12 00:15** — overnight build (see §0.2). Earlier 2026-10-11 — strategy session: job board is the focus product; Map v2 (#180) + Design parity (#181) are P0 in parallel; observability after design; `DISTRIBUTION.md` tonight. **Read §0.1 first.**_
+_Last updated: **2026-10-13 00:45** — night 3: JazzHR, +37 companies, country fix (see §0.3). Before that 2026-10-12 00:15 — overnight build (see §0.2). Earlier 2026-10-11 — strategy session: job board is the focus product; Map v2 (#180) + Design parity (#181) are P0 in parallel; observability after design; `DISTRIBUTION.md` tonight. **Read §0.1 first.**_
 _Previous update: **2026-10-01 (overnight autonomous run)** — JB-61 quickstart onboarding removes the forced CV gate (name + home city enough); release PR #148 shipped 41 commits main → production; back-merge PR #149 reconciled the JB-49 double-promotion history divergence. Then while BT slept: **JB-62** sweep-hang diagnostic + bounded Getro pagination (#150), **commercialization risks catalog** (#151 — 6-section doc + 7-item pre-launch checklist), **JB-63** user-grade `score_explanation()` helper wired into every row in `jobs.json` (#152). Earlier evening: 5-tab shell + design tokens + registry 176 → 209 + 10 ATS promotions. See §2 for the lift-expectations list._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
@@ -23,6 +23,25 @@ It is **deployed and working**. The current work is **not** new features — it 
 > a mental model of git. Use the chat to drive, VS Code to see.
 
 ---
+
+## 0.3 Night 2026-10-12 → 10-13: coverage + data quality (all on `main`, NOT yet on production)
+
+| PR | What | Issue |
+|---|---|---|
+| #216 | Flaky perf test fixed (best-of-3 timing; a 50 ms/job slowdown still fails) | #179 |
+| #218 | **JazzHR adapter** (`*.applytojob.com`: listing + JobPosting JSON-LD, HTML fallback). ✅ 6/6 live boards, 42/42 jobs with descriptions. +5 companies: Myant, Intellijoint Surgical, RateHub, Carbon Engineering, Parity ⚠️ | #217 |
+| #220 | "careers ↗" links for auto-promoted companies now open the company's job board, not one posting (44 rewritten, ✅ 44/44 HTTP 200) | #219 |
+| #222 | **Country fix**: accents, full province/state names, ISO-3 codes, "UK". ✅ On 1,763 live roles: unknown country 274 → 224; **21 roles had the wrong country** ("London, UK" was Canada, "Remote - Michigan" was Canada); map-placed 1,195 → 1,231 | #221 |
+| #224 | **+32 verified companies** (Dialogue, TextNow, Solace, Vendasta, Taiga Motors, Giatec, …; 321 jobs on their own boards). The Canada share now treats a bare "Remote" as neutral | #223 |
+
+- Registry: 248 → **285** companies (81 auto-promoted, each live-fetched before adding). Reports: `docs/status/PROMOTION_2026-10-12_jazzhr.md`, `PROMOTION_2026-10-13.md`.
+- ❓ **Board impact not measured.** The local full build was stopped by Claude Code for low system memory. Measure after the next sweep.
+- Closed #81 (Workable adapter was already done; ✅ live-verified).
+- Other repos: attsis-signal #4 merged (6 TypeErrors: `watchlist.json` mixes strings and dicts; the data was not edited).
+
+**Needs BT (new tonight):**
+- Parity (#218) now scores 33% Canada under the stricter rule. Keep or remove?
+- 20 companies are held for review (`PROMOTION_2026-10-13.md`), including Canadian companies whose boards are mostly US: Magnet Forensics 43%, Waabi 44%, Tailscale 44%. The 50% threshold is a judgement call.
 
 ## 0.2 Overnight 2026-10-11 → 10-12: what shipped (all on `main`, NOT yet on production)
 
