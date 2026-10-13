@@ -11,11 +11,18 @@ Pure functions, no I/O, no LLM. Kept separate from jobfilter (which scores) so t
 matching model and the facets evolve independently.
 """
 from __future__ import annotations
+import unicodedata
+
 import geo
 
 _COUNTRY_NAME = {"us": "US", "ca": "Canada", "in": "India", "rs": "Serbia",
                  "ch": "Switzerland", "de": "Germany", "gb": "UK", "es": "Spain",
                  "fr": "France", "nl": "Netherlands", "ie": "Ireland"}
+
+
+def _fold(s: str) -> str:
+    """Strip accents: "Montréal, Québec" -> "Montreal, Quebec" (JB-89)."""
+    return "".join(c for c in unicodedata.normalize("NFKD", s or "") if not unicodedata.combining(c))
 
 # JD keyword fallback for industry when the registry doesn't say
 _INDUSTRY_KEYWORDS = {
@@ -44,8 +51,9 @@ def arrangement(location: str, body: str) -> str:
 
 
 def country(location: str) -> str:
-    t = (location or "").lower()
-    code = geo._country_in(t)                       # explicit country name in the string
+    raw = _fold(location)
+    t = raw.lower()
+    code = geo._country_in(t, raw)                  # country name / code / province / state in the string
     if not code:                                    # else infer from a known city
         ck = geo._city_in(t)
         if ck:

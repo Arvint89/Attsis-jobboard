@@ -136,6 +136,26 @@ _COUNTRY_TOKENS = [(re.compile(r"\b(?:usa|u\.s\.?a?)\b|\bu\.s\b"), "us"), (re.co
 _CA_PROV = re.compile(r"(?:,|\s-)\s*(?:ON|QC|BC|AB|MB|SK|NS|NB|NL|PE)\b")
 _US_STATE = re.compile(r"(?:,|\s-)\s*(?:AL|AK|AZ|AR|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b")
 
+# JB-89: more unambiguous country signals (read in _country_in, before the 2-letter codes)
+_ISO3 = {"CAN": "ca", "USA": "us", "GBR": "gb", "CHE": "ch", "THA": "th", "DEU": "de", "FRA": "fr",
+         "IND": "in", "IRL": "ie", "ESP": "es", "NLD": "nl", "POL": "pl", "SGP": "sg", "TWN": "tw",
+         "MYS": "my", "CHN": "cn", "MEX": "mx", "JPN": "jp", "KOR": "kr", "AUS": "au", "ISR": "il",
+         "SWE": "se", "PHL": "ph", "VNM": "vn", "BRA": "br", "ROU": "ro", "CZE": "cz", "PRT": "pt",
+         "ITA": "it", "LTU": "lt", "COL": "co", "LKA": "lk", "SRB": "rs"}
+# only the clear forms: "Maidenhead (GBR)", "GBR - Bristol", "GBR -Stansted"
+_ISO3_RX = re.compile(r"\((" + "|".join(_ISO3) + r")\)|^\s*(" + "|".join(_ISO3) + r")\s*-")
+_PROV_CA = re.compile(r"(?:^|,)\s*(?:ON|QC|BC|AB|MB|SK|NS|NB|NL|PE),\s*CA\b")     # "ON, CA" = Canada, not California
+_UK = re.compile(r"\buk\b")                                                       # "London, UK" (no dots)
+_CA_PROV_NAMES = re.compile(r"\b(?:ontario|quebec|british columbia|alberta|manitoba|saskatchewan|nova scotia|"
+                            r"new brunswick|newfoundland|prince edward island|yukon|nunavut|northwest territories)\b")
+# "georgia" left out on purpose (the country); "washington" kept (state or DC, US either way)
+_US_STATE_NAMES = re.compile(r"\b(?:alabama|alaska|arizona|arkansas|california|colorado|connecticut|delaware|florida|"
+                             r"hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maine|maryland|"
+                             r"massachusetts|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|"
+                             r"new hampshire|new jersey|new mexico|new york|north carolina|north dakota|ohio|"
+                             r"oklahoma|oregon|pennsylvania|rhode island|south carolina|south dakota|tennessee|"
+                             r"texas|utah|vermont|virginia|washington|west virginia|wisconsin|wyoming)\b")
+
 CITY_COORDS = _C   # backward-compat alias (cv_parse iterates the city names)
 
 RING_BANDS = [(30, 0), (120, 1), (250, 2), (500, 3)]  # km -> ring; else 4
@@ -158,9 +178,19 @@ def _country_in(t, raw=""):
     for rx, code in _COUNTRY_TOKENS:
         if rx.search(t):
             return code
-    if raw and _CA_PROV.search(raw):
+    if _UK.search(t):
+        return "gb"
+    if raw:
+        m = _ISO3_RX.search(raw)
+        if m:
+            return _ISO3[m.group(1) or m.group(2)]
+        if _PROV_CA.search(raw) or _CA_PROV.search(raw):
+            return "ca"
+        if _US_STATE.search(raw):
+            return "us"
+    if _CA_PROV_NAMES.search(t):
         return "ca"
-    if raw and _US_STATE.search(raw):
+    if _US_STATE_NAMES.search(t):
         return "us"
     return None
 
@@ -198,7 +228,8 @@ def locate(location):
     # on the map. Require a country/state qualifier before matching, and ROUTE to the right
     # coord entry when a qualifier is present. Home resolution in _ring_single uses
     # _city_in directly, so a bare "London" home still works via that path.
-    if ck in _AMBIGUOUS and country is None:
+    # JB-89: route even when a country was found ("London, UK" now yields country=gb)
+    if ck in _AMBIGUOUS:
         routed = None
         for qualifiers, target in _AMBIGUOUS[ck]:
             if any(q in t for q in qualifiers):
