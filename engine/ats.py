@@ -507,6 +507,35 @@ FETCHERS = {
 }
 
 
+_BOARD_URL = {   # JB-88: the public job BOARD per platform (what "careers ↗" should open)
+    "greenhouse": "https://job-boards.greenhouse.io/{slug}",
+    "lever": "https://jobs.lever.co/{slug}",
+    "ashby": "https://jobs.ashbyhq.com/{slug}",
+    "smartrecruiters": "https://jobs.smartrecruiters.com/{slug}",
+    "recruitee": "https://{slug}.recruitee.com/",
+    "workable": "https://apply.workable.com/{slug}/",
+    "bamboohr": "https://{slug}.bamboohr.com/careers",
+    "breezy": "https://{slug}.breezy.hr/",
+    "jazzhr": "https://{slug}.applytojob.com/apply",
+    "rippling": "https://ats.rippling.com/{slug}/jobs",
+    "workday": "https://{tenant}.{dc}.myworkdayjobs.com/{site}",
+    "dayforce": "https://{slug}.dayforcehcm.com/CandidatePortal/en-US/{slug}",
+    "dayforce_shared": "https://jobs.dayforcehcm.com/en-US/{slug}/{site}",
+}
+
+
+def board_url(entry: dict) -> str:
+    """The company's public job board for a registry entry ("" if unknown / incomplete)."""
+    tpl = _BOARD_URL.get(entry.get("platform") or "")
+    if not tpl or not entry.get("slug"):
+        return ""
+    vals = {"slug": entry["slug"], "tenant": entry.get("tenant") or entry["slug"],
+            "dc": entry.get("dc") or "wd1", "site": entry.get("site") or ""}
+    if "{site}" in tpl and not vals["site"]:
+        return ""
+    return tpl.format(**vals)
+
+
 def fetch_company(entry: dict):
     """Fetch one registry entry. Returns (jobs, error_or_None)."""
     if entry.get("skip"):
