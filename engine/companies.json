@@ -252,11 +252,12 @@
     {
       "name": "Profound Medical",
       "ring": 2,
-      "platform": "resolve",
-      "slug": "",
-      "careers_url": "https://profoundmedical.com/careers",
+      "platform": "bamboohr",
+      "slug": "profoundmedical",
+      "careers_url": "https://profoundmedical.bamboohr.com/careers",
       "flags": [
-        "relocation"
+        "relocation",
+        "slug-probed"
       ],
       "industry": "medical",
       "sponsors": null,
@@ -345,12 +346,13 @@
     {
       "name": "LMI Technologies",
       "ring": 4,
-      "platform": "resolve",
-      "slug": "",
-      "careers_url": "https://lmi3d.com/careers",
+      "platform": "bamboohr",
+      "slug": "lmitechnologies",
+      "careers_url": "https://lmitechnologies.bamboohr.com/careers",
       "flags": [
         "relocation",
-        "remote"
+        "remote",
+        "slug-probed"
       ],
       "industry": "machine vision",
       "sponsors": null,
@@ -2454,10 +2456,12 @@
     {
       "name": "Faire",
       "ring": 4,
-      "platform": "resolve",
-      "slug": "",
-      "careers_url": "https://www.faire.com/careers",
-      "flags": [],
+      "platform": "greenhouse",
+      "slug": "faire",
+      "careers_url": "https://job-boards.greenhouse.io/faire",
+      "flags": [
+        "slug-probed"
+      ],
       "note": "wholesale marketplace; Waterloo-region eng hub",
       "industry": "ecommerce",
       "sponsors": null,
@@ -2466,10 +2470,12 @@
     {
       "name": "Klue",
       "ring": 4,
-      "platform": "resolve",
-      "slug": "",
-      "careers_url": "https://klue.com/careers",
-      "flags": [],
+      "platform": "ashby",
+      "slug": "klue",
+      "careers_url": "https://jobs.ashbyhq.com/klue",
+      "flags": [
+        "slug-probed"
+      ],
       "note": "competitive-intel SaaS",
       "industry": "saas/competitive intel",
       "sponsors": null,
@@ -2478,10 +2484,12 @@
     {
       "name": "Loopio",
       "ring": 4,
-      "platform": "resolve",
-      "slug": "",
-      "careers_url": "https://loopio.com/careers",
-      "flags": [],
+      "platform": "ashby",
+      "slug": "loopio",
+      "careers_url": "https://jobs.ashbyhq.com/loopio",
+      "flags": [
+        "slug-probed"
+      ],
       "note": "RFP-response SaaS",
       "industry": "saas/rfp",
       "sponsors": null,
@@ -2562,10 +2570,12 @@
     {
       "name": "Later",
       "ring": 4,
-      "platform": "resolve",
-      "slug": "",
-      "careers_url": "https://later.com/careers",
-      "flags": [],
+      "platform": "greenhouse",
+      "slug": "later",
+      "careers_url": "https://job-boards.greenhouse.io/later",
+      "flags": [
+        "slug-probed"
+      ],
       "note": "social media scheduling",
       "industry": "social/saas",
       "sponsors": null,
@@ -2613,10 +2623,12 @@
     {
       "name": "Clearco",
       "ring": 4,
-      "platform": "resolve",
-      "slug": "",
-      "careers_url": "https://clear.co/careers",
-      "flags": [],
+      "platform": "ashby",
+      "slug": "clearco",
+      "careers_url": "https://jobs.ashbyhq.com/clearco",
+      "flags": [
+        "slug-probed"
+      ],
       "note": "ecommerce revenue financing",
       "industry": "fintech",
       "sponsors": null,
@@ -2637,10 +2649,12 @@
     {
       "name": "Trulioo",
       "ring": 4,
-      "platform": "resolve",
-      "slug": "",
-      "careers_url": "https://www.trulioo.com/careers",
-      "flags": [],
+      "platform": "ashby",
+      "slug": "trulioo",
+      "careers_url": "https://jobs.ashbyhq.com/trulioo",
+      "flags": [
+        "slug-probed"
+      ],
       "note": "identity verification",
       "industry": "fintech/kyc",
       "sponsors": null,
