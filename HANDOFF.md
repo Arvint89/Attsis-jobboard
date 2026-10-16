@@ -46,6 +46,15 @@ It is **deployed and working**. The current work is **not** new features — it 
 - ai-empire #320: tests no longer append to the tracked `logs/bot_actions.jsonl`.
 - ⚠️ **PC memory**: about 430 MB available, with a commit charge of 45.6 / 59.5 GB, while visible processes add up to only about 5.5 GB. Something (WSL / Docker?) holds a lot of memory. Full local builds were skipped. A reboot may help.
 
+**After 23:49 (to 00:20, 2026-10-16):**
+- ✅ **Release check on real data**: `main` code + live production data (1,763 roles) → `tools/csa_browser_check.py` **13/13**. #234 drops **0 of 1,763** real job links. `CHANGELOG.md` has an **Unreleased** section ready for the release notes (#240; suggests v0.12.0).
+- Spikes:
+  - #44 Job Bank: the open data has **no employer field**, and only 5% of postings are tech (London Region: 24 in a month). Recommend no adapter.
+  - #137 ONBIS (`docs/research/ONBIS.md`): no open registry has industry or size. Abandon. Closed.
+  - #87 Eluta (ADR-008, PROPOSED): robots.txt disallows `/search/` and `/rss`. Defer.
+- attsis-signal: the suite now **finishes in 71 s** (264 pass; the 3 methodology failures are BT's call) (#5, #3). ai-empire #321: the 17 skipped test files, classified.
+- ✅ Cross-repo audit: 8 repos' suites pass, and none of them modifies tracked files any more.
+
 **Needs BT (new):**
 - Check that the 10-16 sweep went green (#229).
 - #17: visual sign-off is the only thing left.
