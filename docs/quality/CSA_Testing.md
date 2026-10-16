@@ -50,17 +50,18 @@ Every run's result appended to AUDIT.md.
 
 ### Run 2026-10-15 (JB-17, nightly loop) — automated + security checklist
 Labels: ✅ verified (how) · ⚠️ partly · ❓ not run. Visual sign-off stays with BT.
+Re-run the browser half any time: `cd engine && python build_board.py --demo && cd .. && python tools/csa_browser_check.py` (10 checks, exit 0 = pass).
 
 | TC | Result | How |
 |---|---|---|
 | TC-1 | ✅ | `tests/test_ats.py` adapter tests (normalized keys, HTML stripped) |
 | TC-2 | ✅ | run by hand 2026-10-15: an adapter that raises → `fetch_company` returns `([], 'RuntimeError: ATS down')`, run continues. ⚠️ no dedicated pytest for the raise path (only empty-slug / resolve cases) |
-| TC-3 | ⚠️ | paste path ✅ (Edge, below); .pdf/.docx parsers load from cdnjs ✅ (SRI-verified), file upload itself ❓ not exercised tonight |
+| TC-3 | ✅ | `tools/csa_browser_check.py`: generated .docx and .pdf CVs uploaded in Edge → text in `#cvText` |
 | TC-4 | ✅ | smoke "strong role -> match"; pytest scorer tests |
 | TC-5 | ✅ | smoke "power role -> low score" |
-| TC-6 | ❓ | not run tonight |
-| TC-7 / TC-8 | ❓ | UI filters not exercised tonight |
-| TC-9 | ❓ | not run tonight |
+| TC-6 | ✅ | no profile → 20 cards on the demo board (csa_browser_check) |
+| TC-7 / TC-8 | ✅ | Min score 8+: 20 → 13 cards, lowest 8; Remote: only remote roles (csa_browser_check) |
+| TC-9 | ✅ | CV loaded + JD → have: C++, FreeRTOS, IEC 60601; gaps: Rust, Kubernetes (csa_browser_check) |
 | TC-10 | ✅ | Edge headless: CV pasted with a unique marker → marker in **0 of 41** requests, **0** non-GET requests, **0** requests after the paste/save |
 | TC-11 | ✅ | `git grep` for GitHub/OpenAI/AWS/Slack/Google key formats and private keys on `origin/main`: no matches |
 | TC-12 | ✅ | pytest 439 passed (CI green), smoke 26/26 |
