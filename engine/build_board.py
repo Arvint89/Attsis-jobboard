@@ -251,6 +251,7 @@ def gather(demo: bool):
             j["_reg_city"] = entry.get("city")   # JB-56: per-viewer ring fallback (registry.ring is BT-baked)
             j["_industry"] = entry.get("industry", "other")
             j["_sponsors"] = entry.get("sponsors")
+            j["_lmia"] = entry.get("lmia")                # JB-15
         jobs += got
     _say(f"[gather] registry fetch done in {_time.monotonic()-_t_reg:.1f}s "
          f"-> {len(jobs)} jobs, {len(errors)} errors, {len(unresolved)} unresolved")
@@ -272,6 +273,7 @@ def gather(demo: bool):
             j["_reg_city"] = entry.get("city")   # JB-56
             j["_industry"] = entry.get("industry", "other")
             j["_sponsors"] = entry.get("sponsors")
+            j["_lmia"] = entry.get("lmia")                # JB-15
         jobs += got
         known.add((entry["platform"], entry.get("slug", "")))
     _say(f"[gather] promoted-resolve fetch done in {_time.monotonic()-_t_prom:.1f}s "
@@ -315,6 +317,7 @@ def gather(demo: bool):
         j["_reg_city"] = match.get("city") if match else None
         j["_industry"] = (match.get("industry") if match else j.get("industry")) or "other"
         j["_sponsors"] = match.get("sponsors") if match else None
+        j["_lmia"] = match.get("lmia") if match else None   # JB-15
         j["_discovered"] = True                  # JB-55: fed to discovered.record()
     jobs += got
     LAST_RESOLVER["stats"] = dict(_r.stats)
@@ -326,6 +329,7 @@ def _defaults(j):
     j.setdefault("_reg_flags", [])
     j.setdefault("_industry", "other")
     j.setdefault("_sponsors", None)
+    j.setdefault("_lmia", None)
     return j
 
 
@@ -435,7 +439,8 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
         arrangement = j.get("arrangement") or facets.arrangement(j.get("location", ""), j.get("description", ""))
         country = facets.country(near)
         industry = facets.industry(j.get("_industry", ""), j.get("description", ""))
-        sponsor = facets.sponsorship(j.get("description", ""), j.get("_sponsors"))
+        sponsor = facets.sponsorship(j.get("description", ""), j.get("_sponsors"), j.get("_lmia"))
+        lq = (j.get("_lmia") or {}).get("quarters") or []
         snippet = (j.get("description") or "").strip().replace("\n", " ")
         snippet = (snippet[:180] + "\u2026") if len(snippet) > 180 else snippet
         # JB-69: text used to be 1500 chars (title + description) to let the browser
@@ -454,6 +459,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
             "score": res["score"], "flags": res["flags"],
             "arrangement": arrangement, "country": country,
             "industry": industry, "sponsorship": sponsor,
+            **({"lmia_q": f"{lq[0]}\u2013{lq[-1]}" if len(lq) > 1 else lq[0]} if sponsor == "lmia" and lq else {}),
             # JB-71: reasons[] + matched[] dropped from payload. Browser's scoreJob()
             # recomputes both per-user during rescore(). Server-shipped values were
             # only ever a brief flash of BT's-profile reasoning before the browser

@@ -119,7 +119,14 @@
       "flags": [],
       "industry": "display/micro-LED",
       "sponsors": null,
-      "city": "Waterloo"
+      "city": "Waterloo",
+      "lmia": {
+        "quarters": [
+          "2025Q3"
+        ],
+        "positions": 1,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "BinSentry",
@@ -130,7 +137,14 @@
       "flags": [],
       "industry": "agtech",
       "sponsors": null,
-      "city": "Kitchener"
+      "city": "Kitchener",
+      "lmia": {
+        "quarters": [
+          "2025Q2"
+        ],
+        "positions": 1,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Nicoya Lifesciences",
@@ -247,7 +261,16 @@
       ],
       "industry": "aerospace/space",
       "sponsors": null,
-      "city": "Toronto"
+      "city": "Toronto",
+      "lmia": {
+        "quarters": [
+          "2025Q2",
+          "2025Q4",
+          "2026Q1"
+        ],
+        "positions": 3,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Profound Medical",
@@ -274,7 +297,17 @@
       ],
       "industry": "transportation/IoT",
       "sponsors": null,
-      "city": "Oakville"
+      "city": "Oakville",
+      "lmia": {
+        "quarters": [
+          "2025Q2",
+          "2025Q3",
+          "2025Q4",
+          "2026Q1"
+        ],
+        "positions": 5,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Synaptive Medical",
@@ -394,7 +427,15 @@
       "industry": "medical",
       "sponsors": null,
       "city": "Mississauga",
-      "note": "VitalOne diagnostics; resolve ATS"
+      "note": "VitalOne diagnostics; resolve ATS",
+      "lmia": {
+        "quarters": [
+          "2025Q2",
+          "2025Q4"
+        ],
+        "positions": 2,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "ecobee",
@@ -420,7 +461,14 @@
       "flags": [],
       "industry": "iot/connectivity",
       "sponsors": null,
-      "city": "Mississauga"
+      "city": "Mississauga",
+      "lmia": {
+        "quarters": [
+          "2025Q3"
+        ],
+        "positions": 2,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Generac",
@@ -465,7 +513,17 @@
       ],
       "industry": "telecom",
       "sponsors": null,
-      "city": "Ottawa"
+      "city": "Ottawa",
+      "lmia": {
+        "quarters": [
+          "2025Q2",
+          "2025Q3",
+          "2025Q4",
+          "2026Q1"
+        ],
+        "positions": 32,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Hitachi Energy",
@@ -785,7 +843,15 @@
       "flags": [],
       "industry": "software/media",
       "sponsors": null,
-      "city": "London"
+      "city": "London",
+      "lmia": {
+        "quarters": [
+          "2025Q2",
+          "2025Q3"
+        ],
+        "positions": 4,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Masco Canada Limited",
@@ -2391,7 +2457,17 @@
       "note": "Canadian e-commerce platform; check ATS",
       "industry": "ecommerce/saas",
       "sponsors": null,
-      "city": "Ottawa"
+      "city": "Ottawa",
+      "lmia": {
+        "quarters": [
+          "2025Q2",
+          "2025Q3",
+          "2025Q4",
+          "2026Q1"
+        ],
+        "positions": 10,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Wealthsimple",
@@ -2439,7 +2515,16 @@
       "note": "healthcare consumer platform",
       "industry": "healthtech",
       "sponsors": null,
-      "city": "Toronto"
+      "city": "Toronto",
+      "lmia": {
+        "quarters": [
+          "2025Q3",
+          "2025Q4",
+          "2026Q1"
+        ],
+        "positions": 6,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Wave Financial",
@@ -2465,7 +2550,16 @@
       "note": "wholesale marketplace; Waterloo-region eng hub",
       "industry": "ecommerce",
       "sponsors": null,
-      "city": "Kitchener"
+      "city": "Kitchener",
+      "lmia": {
+        "quarters": [
+          "2025Q2",
+          "2025Q3",
+          "2025Q4"
+        ],
+        "positions": 8,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Klue",
@@ -2618,7 +2712,14 @@
       "note": "airline/loyalty upgrades",
       "industry": "travel/saas",
       "sponsors": null,
-      "city": "Montreal"
+      "city": "Montreal",
+      "lmia": {
+        "quarters": [
+          "2025Q3"
+        ],
+        "positions": 1,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Clearco",
@@ -2670,7 +2771,14 @@
       "note": "SMB AP/AR payments",
       "industry": "fintech/payments",
       "sponsors": null,
-      "city": "Toronto"
+      "city": "Toronto",
+      "lmia": {
+        "quarters": [
+          "2025Q2"
+        ],
+        "positions": 1,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Rewind",
@@ -2730,7 +2838,14 @@
       "note": "user-generated storytelling",
       "industry": "media/community",
       "sponsors": null,
-      "city": "Toronto"
+      "city": "Toronto",
+      "lmia": {
+        "quarters": [
+          "2025Q4"
+        ],
+        "positions": 1,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Athennian",
@@ -2872,7 +2987,15 @@
       ],
       "industry": "Analytics",
       "sponsors": null,
-      "city": "Vancouver"
+      "city": "Vancouver",
+      "lmia": {
+        "quarters": [
+          "2025Q3",
+          "2026Q1"
+        ],
+        "positions": 2,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Flosonics",
@@ -2979,7 +3102,14 @@
       ],
       "industry": "Artificial Intelligence (AI)",
       "sponsors": null,
-      "city": "Toronto"
+      "city": "Toronto",
+      "lmia": {
+        "quarters": [
+          "2026Q1"
+        ],
+        "positions": 1,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Maple",
@@ -3031,7 +3161,17 @@
       ],
       "industry": "Accounting",
       "sponsors": null,
-      "city": "Calgary"
+      "city": "Calgary",
+      "lmia": {
+        "quarters": [
+          "2025Q2",
+          "2025Q3",
+          "2025Q4",
+          "2026Q1"
+        ],
+        "positions": 31,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Nesto",
@@ -3200,7 +3340,14 @@
       ],
       "industry": "Accommodation",
       "sponsors": null,
-      "city": "Montreal HQ"
+      "city": "Montreal HQ",
+      "lmia": {
+        "quarters": [
+          "2025Q2"
+        ],
+        "positions": 1,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "SWTCH",
@@ -3239,7 +3386,15 @@
       ],
       "industry": "Data & Analytics",
       "sponsors": null,
-      "city": "Toronto"
+      "city": "Toronto",
+      "lmia": {
+        "quarters": [
+          "2025Q2",
+          "2026Q1"
+        ],
+        "positions": 2,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Varicent Software",
@@ -3278,7 +3433,14 @@
       ],
       "industry": "Administrative Services",
       "sponsors": null,
-      "city": ""
+      "city": "",
+      "lmia": {
+        "quarters": [
+          "2025Q4"
+        ],
+        "positions": 2,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Vive Crop Protection",
@@ -3489,7 +3651,15 @@
       ],
       "industry": "other",
       "sponsors": null,
-      "city": "Toronto"
+      "city": "Toronto",
+      "lmia": {
+        "quarters": [
+          "2025Q3",
+          "2026Q1"
+        ],
+        "positions": 3,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "LumiQ",
@@ -3658,7 +3828,14 @@
       ],
       "industry": "other",
       "sponsors": null,
-      "city": "Montréal"
+      "city": "Montréal",
+      "lmia": {
+        "quarters": [
+          "2025Q2"
+        ],
+        "positions": 1,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Tali AI",
@@ -3749,7 +3926,14 @@
       ],
       "industry": "other",
       "sponsors": null,
-      "city": "Palmerston"
+      "city": "Palmerston",
+      "lmia": {
+        "quarters": [
+          "2025Q2"
+        ],
+        "positions": 1,
+        "source": "ESDC TFWP positive LMIA employers (open.canada.ca)"
+      }
     },
     {
       "name": "Vendasta Technologies",

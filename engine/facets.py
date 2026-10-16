@@ -77,7 +77,9 @@ def industry(registry_industry: str, body: str) -> str:
     return "other"
 
 
-def sponsorship(body: str, registry_sponsors) -> str:
+def sponsorship(body: str, registry_sponsors, lmia=None) -> str:
+    """yes | no | lmia | unknown. JB-15: "lmia" = the employer was issued positive LMIAs
+    (ESDC open data). Weaker than "yes": the JD's own wording wins over it."""
     if registry_sponsors is True:
         return "yes"
     if registry_sponsors is False:
@@ -89,6 +91,8 @@ def sponsorship(body: str, registry_sponsors) -> str:
     if "visa sponsorship" in low or "will sponsor" in low or "sponsorship available" in low \
        or "provide sponsorship" in low:
         return "yes"
+    if lmia:
+        return "lmia"
     return "unknown"
 
 
