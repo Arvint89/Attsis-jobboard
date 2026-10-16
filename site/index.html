@@ -812,6 +812,7 @@ function jobCard(j,bucket,i){
     arr?`<span class="chip arr">${arr}</span>`:'',
     j.industry&&j.industry!=='other'?`<span class="chip ind">${escH(j.industry)}</span>`:'',
     j.sponsorship==='yes'?'<span class="chip spon">sponsors visas</span>':'',
+    j.sponsorship==='lmia'?`<span class="chip spon" title="This employer was issued positive LMIAs${j.lmia_q?' ('+escH(j.lmia_q)+')':''} (ESDC open data). Not a promise this role is sponsored.">LMIA employer</span>`:'',
     j.country&&j.country!=='?'&&j.country!=='Canada'?`<span class="chip">${escH(j.country)}</span>`:''].join('');
   const checks=[dc?`<span class="ck ok">✓ ${dc}</span>`:'',j.arrangement==='remote'?'<span class="ck ok">✓ Remote</span>':''].join('');   // salary already shown as a chip — no duplicate check
   const link=j.url?`<a href="${escH(j.url)}" target="_blank" rel="noopener">${escH(j.title)}</a>`:escH(j.title);
