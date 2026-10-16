@@ -1,6 +1,6 @@
 # HANDOFF — read this first to resume
 
-_Last updated: **2026-10-13 00:45** — night 3: JazzHR, +37 companies, country fix (see §0.3). Before that 2026-10-12 00:15 — overnight build (see §0.2). Earlier 2026-10-11 — strategy session: job board is the focus product; Map v2 (#180) + Design parity (#181) are P0 in parallel; observability after design; `DISTRIBUTION.md` tonight. **Read §0.1 first.**_
+_Last updated: **2026-10-15 23:50** — night of 10-15: P0 sweep + red-main fixes, security pass, LMIA (see §0.4). Before that night 3: JazzHR, +37 companies, country fix (see §0.3). Before that 2026-10-12 00:15 — overnight build (see §0.2). Earlier 2026-10-11 — strategy session: job board is the focus product; Map v2 (#180) + Design parity (#181) are P0 in parallel; observability after design; `DISTRIBUTION.md` tonight. **Read §0.1 first.**_
 _Previous update: **2026-10-01 (overnight autonomous run)** — JB-61 quickstart onboarding removes the forced CV gate (name + home city enough); release PR #148 shipped 41 commits main → production; back-merge PR #149 reconciled the JB-49 double-promotion history divergence. Then while BT slept: **JB-62** sweep-hang diagnostic + bounded Getro pagination (#150), **commercialization risks catalog** (#151 — 6-section doc + 7-item pre-launch checklist), **JB-63** user-grade `score_explanation()` helper wired into every row in `jobs.json` (#152). Earlier evening: 5-tab shell + design tokens + registry 176 → 209 + 10 ATS promotions. See §2 for the lift-expectations list._
 _If you are BT returning after a break, or a fresh Claude session: read this file top to bottom, then open the file it sends you to._
 
@@ -23,6 +23,35 @@ It is **deployed and working**. The current work is **not** new features — it 
 > a mental model of git. Use the chat to drive, VS Code to see.
 
 ---
+
+## 0.4 Night 2026-10-15: two P0 fixes, security pass, LMIA (all on `main`; production NOT released)
+
+> 🚨 **Read first.** From 2026-10-12 to 10-15 **every scheduled sweep failed**, so ✅ the live site still shows **2026-10-09** data.
+> The cause was my own #206: the workflow file comes from `main`, but it builds `production` code, which doesn't have `tools/sweep_gate.py`.
+> Fixed in #229. ❓ Confirm that the **2026-10-16** scheduled sweep is green (Actions → job-sweep). I did not trigger a manual run, because that deploys live.
+
+| PR | What | Issue |
+|---|---|---|
+| #229 | **P0**: sweep gate steps skipped until production has the script, plus a test that any `tools/` step in sweep.yml is guarded | #228 |
+| #227 | **P0**: `main` was red from 2026-10-15. Fixed test/fixture dates had aged past the 30-day window. Tests now use relative dates; demo fixtures are re-aged at load | #226 |
+| #230 | JB-5c: `tools/probe_slugs.py` resolved 8 "resolve" companies (Faire, Later, Trulioo, Profound Medical, Loopio, Klue, Clearco, LMI) | #5 |
+| #231 | Tracker: thank-you nudge after an interview, and "heard back?" 7 days later (completes #11) | #11 |
+| #232 | **LMIA employer** chip from ESDC open data (2025Q2–2026Q1): 23 registry companies (Nokia, Neo, Shopify, Faire, Vital Biosciences…). It says "not a promise this role is sponsored", and the JD's own wording wins | #15 |
+| #234 | **Security**: `javascript:` URLs in job data rendered as clickable links (✅ reproduced); the tracker link was unescaped. Links are now http(s)-only | #233 |
+| #235 | SRI hashes on every CDN asset; GoatCounter pinned to `count.v5.js` | #17 |
+| #238 | **Content-Security-Policy**: the browser now *enforces* that CV text can't be sent anywhere except this site and GoatCounter (✅ exfiltration probe: fetch, beacon and img are all blocked) | #17 |
+| #236, #237 | CSA pass recorded (`docs/quality/CSA_Testing.md` §6); `tools/csa_browser_check.py` = 13 repeatable browser checks, all passing | #17 |
+
+- ✅ The 37 companies added on Oct 12–13 → 368 jobs, 273 in Canada, **25 matches** for the sample profile (live fetch + scorer; not a full build).
+- ai-empire #320: tests no longer append to the tracked `logs/bot_actions.jsonl`.
+- ⚠️ **PC memory**: about 430 MB available, with a commit charge of 45.6 / 59.5 GB, while visible processes add up to only about 5.5 GB. Something (WSL / Docker?) holds a lot of memory. Full local builds were skipped. A reboot may help.
+
+**Needs BT (new):**
+- Check that the 10-16 sweep went green (#229).
+- #17: visual sign-off is the only thing left.
+- Review the 2 LMIA address flags: Nokia (Kanata) and Neo Financial (Winnipeg).
+- #197 has more evidence: "Senior Accountant" and "Content Strategist" score 7 for the engineering profile.
+- The production release now carries the CSP, SRI, link-safety, LMIA and +45 companies. Run `tools/csa_browser_check.py` once on the release branch.
 
 ## 0.3 Night 2026-10-12 → 10-13: coverage + data quality (all on `main`, NOT yet on production)
 
