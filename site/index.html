@@ -987,7 +987,15 @@ function trackerNudges(items,now){
   (items||[]).forEach(t=>{
     if(t.snooze&&t.snooze>now) return;
     const since=t.moved||t.added; if(!since) return;
-    const days=Math.floor((now-since)/D); if(days<7) return;
+    const days=Math.floor((now-since)/D);
+    // JB-11: thank-you from day 1 after "Interviewing" (we don't store the interview date;
+    // "Later" snoozes); after a thank-you, ask "heard back?" at 7 days.
+    if(t.stage==='interviewing'){
+      if(!t.thanked&&days>=1) out.push({key:t.key,kind:'thankyou',days});
+      else if(t.thanked&&days>=7) out.push({key:t.key,kind:'interviewing',days});
+      return;
+    }
+    if(days<7) return;
     if(t.stage==='saved') out.push({key:t.key,kind:'saved',days});
     else if(t.stage==='applied') out.push({key:t.key,kind:'applied',days});
   });
@@ -1009,6 +1017,10 @@ function renderNudges(){
     const t=TRACKER.find(x=>x.key===n.key)||{}, k=encodeURIComponent(n.key).replace(/'/g,'%27');
     const what=`<b>${escH(t.company||'')}</b> — ${escH(t.title||'')}`;
     const B=(act,label,ghost)=>`<button class="btn sm${ghost?' ghost':''}" type="button" onclick="nudge('${k}','${act}')">${label}</button>`;
+    if(n.kind==='thankyou')
+      return `<div class="nudge"><div><div>Interview done with ${what}? Send a thank-you note within a day.</div><div class="nmeta">Interviewing · Send a thank-you</div></div><div class="nbtns">${B('thanked','Sent')}${B('later','Later',1)}</div></div>`;
+    if(n.kind==='interviewing')
+      return `<div class="nudge"><div><div>Heard back after the interview? ${what} · ${n.days} days</div><div class="nmeta">Interviewing · after 7 days</div></div><div class="nbtns">${B('offer','Offer')}${B('closed','Rejected',1)}${B('later','No reply yet',1)}</div></div>`;
     return n.kind==='saved'
       ? `<div class="nudge"><div><div>You saved ${what} ${n.days} days ago. Still interested?</div><div class="nmeta">Saved roles · weekly check</div></div><div class="nbtns">${B('applied','Mark applied')}${B('closed','Drop',1)}${B('later','Later',1)}</div></div>`
       : `<div class="nudge"><div><div>You applied to ${what} ${n.days} days ago. Heard back?</div><div class="nmeta">Applied roles · after 7 days</div></div><div class="nbtns">${B('interviewing','Interview booked')}${B('later','No reply yet',1)}${B('closed','Rejected',1)}</div></div>`;
@@ -1016,7 +1028,9 @@ function renderNudges(){
 }
 window.nudge=function(k,act){
   k=decodeURIComponent(k); const t=TRACKER.find(x=>x.key===k); if(!t) return;
-  if(act==='later') t.snooze=Date.now()+7*864e5; else { t.stage=act; t.moved=Date.now(); delete t.snooze; }
+  if(act==='later') t.snooze=Date.now()+(t.stage==='interviewing'&&!t.thanked?1:7)*864e5;   // thank-you: ask again tomorrow
+  else if(act==='thanked'){ t.thanked=Date.now(); delete t.snooze; }   // JB-11: keeps the stage
+  else { t.stage=act; t.moved=Date.now(); delete t.snooze; }
   saveTracker(); renderTracker();
 };
 const STAGE_VERB={saved:'Saved',applied:'Applied',interviewing:'Interviewing',offer:'Offer',closed:'Closed'};
