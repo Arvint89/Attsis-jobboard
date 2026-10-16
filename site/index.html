@@ -783,6 +783,8 @@ function voteRow(j){
 }
 /* JB-75 job card v2 (docs/design/DESIGN_jb75_job_card.md) */
 /* CARD-PURE-BEGIN */
+// JB-17 CSA: links built from job data must be http(s) only (a javascript: URL ran on click)
+function httpUrl(u){ u=String(u==null?'':u).trim(); return /^https?:\/\//i.test(u)?u:''; }
 function relAge(iso,now){
   if(!iso) return ''; const t=Date.parse(iso); if(isNaN(t)) return '';
   const d=Math.floor(((now==null?Date.now():now)-t)/864e5);
@@ -815,7 +817,7 @@ function jobCard(j,bucket,i){
     j.sponsorship==='lmia'?`<span class="chip spon" title="This employer was issued positive LMIAs${j.lmia_q?' ('+escH(j.lmia_q)+')':''} (ESDC open data). Not a promise this role is sponsored.">LMIA employer</span>`:'',
     j.country&&j.country!=='?'&&j.country!=='Canada'?`<span class="chip">${escH(j.country)}</span>`:''].join('');
   const checks=[dc?`<span class="ck ok">✓ ${dc}</span>`:'',j.arrangement==='remote'?'<span class="ck ok">✓ Remote</span>':''].join('');   // salary already shown as a chip — no duplicate check
-  const link=j.url?`<a href="${escH(j.url)}" target="_blank" rel="noopener">${escH(j.title)}</a>`:escH(j.title);
+  const link=httpUrl(j.url)?`<a href="${escH(httpUrl(j.url))}" target="_blank" rel="noopener">${escH(j.title)}</a>`:escH(j.title);
   return `<div class="job${open?' open':''}" data-gk="${hasGeo(j)?geoKey(j.lat,j.lng):''}" data-key="${encodeURIComponent(jkey)}" data-b="${bucket}" data-i="${i}">
   <div class="jobhead">
     <div class="score ${sc(j.score)}"><b>${j.score}</b><small>/10</small></div>
@@ -847,7 +849,7 @@ function cardBody(j,bucket,i){
   const about=j.snippet?`<div class="sect"><div class="sectlbl">About the role</div><p class="snip">${escH(j.snippet)}</p></div>`:'';
   return `<div class="bodygrid"><div class="sect"><div class="sectlbl">Why it fits</div>${fits||'<p class="hint">—</p>'}</div><div class="sect"><div class="sectlbl">Gaps to address</div>${gaps}</div></div>${about}
     ${voteRow(j)}
-    <div class="jobactions">${j.url?`<a class="btnlink primary" href="${escH(j.url)}" target="_blank" rel="noopener">Open posting ↗</a>`:''}
+    <div class="jobactions">${httpUrl(j.url)?`<a class="btnlink primary" href="${escH(httpUrl(j.url))}" target="_blank" rel="noopener">Open posting ↗</a>`:''}
       ${_tailorPayReady()?`<button onclick="openTailor('${bucket}',${i})">✎ Tailor CV</button>`:`<button disabled title="Coming soon — payment integration pending">✎ Tailor CV</button>`}
       <span class="chip src">via ${escH(j.source||'ats')}</span></div>`;
 }
@@ -1064,7 +1066,7 @@ function renderPrep(){
   plan.innerHTML=head
     +(g.missing.length?g.missing.slice(0,5).map(m=>item('warn',m,'In the posting, not in your CV. Expect a question on it.')).join(''):'<p class="hint">No obvious gaps between this posting and your CV.</p>')
     +(g.have.length?item('good','Lead with: '+g.have.slice(0,4).join(', '),'Your strongest overlap with this role. Open your answers with these.'):'')
-    +`<p class="hint" style="margin-top:12px">Keyword-based, from the ${n.toLocaleString('en-CA')} characters of the description we have (often only the start of the posting).${j.url?` <a href="${escH(j.url)}" target="_blank" rel="noopener">Read the full posting ↗</a>`:''}</p>`;
+    +`<p class="hint" style="margin-top:12px">Keyword-based, from the ${n.toLocaleString('en-CA')} characters of the description we have (often only the start of the posting).${httpUrl(j.url)?` <a href="${escH(httpUrl(j.url))}" target="_blank" rel="noopener">Read the full posting ↗</a>`:''}</p>`;
 }
 function renderTracker(){
   const board=$('#kboard'); if(!board) return;
@@ -1078,7 +1080,7 @@ function renderTracker(){
     const cards=items.length?items.map(t=>{
       const kesc=encodeURIComponent(t.key);
       const kesc2=t.key.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      const link=t.url?`<a href="${t.url}" target="_blank" rel="noopener">open ↗</a>`:'';
+      const link=httpUrl(t.url)?`<a href="${escH(httpUrl(t.url))}" target="_blank" rel="noopener">open ↗</a>`:'';
       const notes=(t.notes||'').replace(/</g,'&lt;');
       return `<div class="kcard">${t.score?`<span class="kscore ${sc(t.score)}">${t.score}</span>`:''}<div class="kco">${escH(t.company||'')}</div><div class="ktitle">${escH(t.title||'(untitled)')}</div>
         <div class="ksub">${t.location?escH(t.location)+' · ':''}${STAGE_VERB[t.stage]||'Saved'} ${fmtDate(t.moved||t.added)}</div>
@@ -1305,7 +1307,7 @@ function renderMap(){
     L.marker([c.lat,c.lng],{zIndexOffset:-100,icon:L.divIcon({className:'',iconSize:[0,0],html:'<div class="offdot"></div>'})})
       .bindPopup(`<b>${escH(c.name)}</b><br>${escH(c.city||'')}${c.industry?' · '+escH(c.industry):''}<br>`
         +(c.resolved?'No role matches your filters right now':'Careers system not tracked yet')
-        +(c.careers_url?`<br><a href="${escH(c.careers_url)}" target="_blank" rel="noopener">careers ↗</a>`:''))
+        +(httpUrl(c.careers_url)?`<br><a href="${escH(httpUrl(c.careers_url))}" target="_blank" rel="noopener">careers ↗</a>`:''))
       .addTo(offLayer);
   });
   const grp=L.layerGroup([layer,offLayer]).addTo(MAP);
