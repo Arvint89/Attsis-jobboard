@@ -47,3 +47,28 @@ Excludes: penetration testing of third-party ATS (out of our control; we only re
 Latest run 2026-09-16: **pytest 20/20 pass · smoke 11/11 pass.** TC-1..12 pass by construction;
 TC-3 (.pdf/.docx) verified via mammoth/pdf.js wiring; visual + accessibility = open (P2).
 Every run's result appended to AUDIT.md.
+
+### Run 2026-10-15 (JB-17, nightly loop) — automated + security checklist
+Labels: ✅ verified (how) · ⚠️ partly · ❓ not run. Visual sign-off stays with BT.
+
+| TC | Result | How |
+|---|---|---|
+| TC-1 | ✅ | `tests/test_ats.py` adapter tests (normalized keys, HTML stripped) |
+| TC-2 | ✅ | run by hand 2026-10-15: an adapter that raises → `fetch_company` returns `([], 'RuntimeError: ATS down')`, run continues. ⚠️ no dedicated pytest for the raise path (only empty-slug / resolve cases) |
+| TC-3 | ⚠️ | paste path ✅ (Edge, below); .pdf/.docx parsers load from cdnjs ✅ (SRI-verified), file upload itself ❓ not exercised tonight |
+| TC-4 | ✅ | smoke "strong role -> match"; pytest scorer tests |
+| TC-5 | ✅ | smoke "power role -> low score" |
+| TC-6 | ❓ | not run tonight |
+| TC-7 / TC-8 | ❓ | UI filters not exercised tonight |
+| TC-9 | ❓ | not run tonight |
+| TC-10 | ✅ | Edge headless: CV pasted with a unique marker → marker in **0 of 41** requests, **0** non-GET requests, **0** requests after the paste/save |
+| TC-11 | ✅ | `git grep` for GitHub/OpenAI/AWS/Slack/Google key formats and private keys on `origin/main`: no matches |
+| TC-12 | ✅ | pytest 439 passed (CI green), smoke 26/26 |
+
+Security & privacy checklist (§5):
+- ✅ CV never uploaded (TC-10 above). Profile lives in `localStorage` (`jobboard_profile`).
+- ✅ No secrets (TC-11).
+- ✅ External libs pinned **and** SRI-hashed (#235). GoatCounter was a floating `count.js` → now `count.v5.js` + SRI. Google Fonts CSS exempt (no stable hash; CSS only). pdf.js worker can't carry SRI (same pinned version).
+- ✅ Job text renders as text: an `<img onerror>` payload in every card field created 0 elements. **Fixed:** a `javascript:` posting URL used to render as a clickable link, and the tracker link was unescaped (#233 → #234).
+- ⚠️ Proposed, not done: a Content-Security-Policy (`connect-src 'self' https://attsis.goatcounter.com`) would make "the CV can't leave the browser" enforceable rather than just true today.
+
