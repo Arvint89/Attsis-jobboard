@@ -12,6 +12,8 @@ Standards habits: ISO 9001 §7.5 (doc control via Git), §9.3 (review), §10.2 (
 | R5 | Scorer divergence (Python vs browser) | — | inconsistent numbers | unified generic scorer | closed |
 | R6 | BT time squeezed by Kepler onboarding | High | slippage | AI does all build; BT only pushes/approves | managed |
 | R7 | Secrets/keys leakage | Low | security | none used; public endpoints; grep-checked | closed |
+| R8 | Script injection via third-party job data / CDN | Low | CV exfiltration | job text escaped (escH); links http(s)-only (httpUrl, #234); SRI on CDN assets + pinned GoatCounter (#235); CSP proposed | mitigated (2026-10-15) |
+| R9 | Time-dependent tests | Med | main red on a calendar date | relative dates + re-aged demo fixtures (#227) | closed |
 
 ## Monthly audit checklist (first Monday)
 - [ ] All docs have version + date (PDS, REQUIREMENTS, CSA_Testing, this file)
@@ -26,3 +28,4 @@ Standards habits: ISO 9001 §7.5 (doc control via Git), §9.3 (review), §10.2 (
 | Date | pytest | smoke | Notes |
 |---|---|---|---|
 | 2026-09-16 | 20 passed in 0.66s | ALL SMOKE CHECKS PASSED (11/11) | v0.5 unified scorer; repo assembled as Attsis-jobboard |
+| 2026-10-15 | 439 passed (CI green; 1–2 JB-66 perf tests fail only on the local PC under memory pressure) | ALL SMOKE CHECKS PASSED (26/26) | JB-17 CSA pass (automated + security checklist), see CSA_Testing.md §6. Fixed: javascript: links (#233/#234), no SRI + floating GoatCounter (#235), main red from fixed test dates (#226/#227). Visual sign-off: BT, open. |
