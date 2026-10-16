@@ -109,3 +109,35 @@
 - build_board emits a companies[] array (location + status) + home_coords; added a
   city to every company; added Vital Biosciences to the registry.
 - Builds on JB-25's lat/lng resolution. List/Map toggle on the board.
+
+> Entries for v0.10.x → v0.11.0 (released to production 2026-10-03) were not written here; see `git log` and HANDOFF.md §2.
+
+## Unreleased — on `main`, not yet on `production` (44 commits since the 2026-10-03 release)
+Suggested version on release: **v0.12.0** (MINOR: many features, no breaking data change). BT bumps `VERSION`.
+
+**What users will notice**
+- No sign-up gate: the board opens straight to roles, with a hero, icon navigation and a footer (#192, #193).
+- Map v2: list + map split, score pins, clustering, "search as I move", dark tiles (#184). About 80% of roles placeable (#201, #222).
+- Job card v2: scannable header, expand in place with "why it fits / gaps" (#194). Chip "LMIA employer" for 23 companies (#232).
+- Profile v2: sources plus a live "What we'll match on" panel; LinkedIn PDF as a source (#199). Cleaner CV skill extraction (#196).
+- Tracker v2: stats, "Needs your answer" nudges, thank-you and "heard back?" after interviews (#198, #231).
+- Prep plan from your gaps (#202). 👍/👎 and "Report a problem" (#204).
+- First card on a throttled phone: 8.8 s → 5.6 s (#209). Phone header fixed (#214). Accessibility: 0 axe violations (#213).
+- Tailor buttons greyed out until payments are live (#172). Name: "Attsis Job Board" (#173).
+
+**More jobs**
+- Registry 209 → 285 companies: 81 auto-promoted after a live fetch (#212, #218, #224), and 8 resolved by slug probe (#230).
+- New ATS: JazzHR (#218). Workable and Workday now fetch full descriptions (#176, #177).
+- "careers ↗" links open the company's job board (#220). The country facet has 21 wrong countries fixed (#222).
+
+**Privacy & security** (CSA pass, #17)
+- Content-Security-Policy: the browser enforces that page data can only go to this site + GoatCounter (#238).
+- SRI hashes on every CDN asset; GoatCounter pinned to `count.v5.js` (#235).
+- Links from job data are http(s) only; the tracker link is escaped (#234).
+- GoatCounter page views + events (#174, #204). These are a no-op until the `attsis` site is created.
+
+**Reliability**
+- Sweep health gate: a >30% drop blocks the deploy (#206). It starts working on production with this release; the workflow guard is in #229.
+- Pre-production incognito smoke on every PR (#175). Tests no longer expire on a date (#227). Flaky perf test fixed (#216).
+
+**Before releasing:** run `cd engine && python build_board.py --demo && cd .. && python tools/csa_browser_check.py` (13 checks), and confirm the latest scheduled sweep is green.
