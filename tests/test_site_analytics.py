@@ -22,11 +22,11 @@ def _read():
 
 def test_goatcounter_script_present():
     html = _read()
-    # async + the official count.js endpoint are the signatures
+    # async + the official, version-pinned count.v5.js (with SRI, JB-17 CSA) are the signatures
     assert re.search(
-        r'<script[^>]*data-goatcounter="https://attsis\.goatcounter\.com/count"[^>]*async[^>]*src="//gc\.zgo\.at/count\.js"[^>]*>',
+        r'<script[^>]*data-goatcounter="https://attsis\.goatcounter\.com/count"[^>]*async[^>]*src="https://gc\.zgo\.at/count\.v5\.js"[^>]*integrity="sha384-[^"]+"[^>]*>',
         html,
-    ), "GoatCounter script tag with the attsis URL + async + the official count.js src must be in site/index.html"
+    ), "GoatCounter script tag with the attsis URL + async + pinned count.v5.js + integrity must be in site/index.html"
 
 
 def test_goatcounter_is_in_footer_not_in_head():
