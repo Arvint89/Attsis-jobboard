@@ -6,7 +6,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "engine"))
 import jobfilter as jf
 
 
-def mk(title, desc="", loc="London, ON", posted="2026-09-15"):
+def _recent(days=5):
+    # a fresh posting date relative to TODAY (a fixed date expired on 2026-10-15)
+    from datetime import date, timedelta
+    return (date.today() - timedelta(days=days)).isoformat()
+
+
+def mk(title, desc="", loc="London, ON", posted=None):
+    posted = posted or _recent()
     return {"title": title, "description": desc, "location": loc, "posted": posted}
 
 
@@ -202,7 +209,7 @@ def test_jb66_classify_perf_under_budget():
     Trips if the regex cache ever regresses (pre-fix was 72s for 200 jobs)."""
     j = {"title": "Senior Firmware Engineer",
          "description": "ARM Cortex-M, FreeRTOS, Altium, PCB, SPI, I2C, Python " * 20,
-         "location": "London, ON", "posted": "2026-09-15"}
+         "location": "London, ON", "posted": _recent()}
     elapsed = _best_of(jf.classify, j)
     assert elapsed < PERF_BUDGET_S, f"classify perf regressed: {elapsed:.2f}s for 200 jobs (budget {PERF_BUDGET_S}s = 20ms/job)"
 

@@ -197,6 +197,25 @@ def resolve_registry_entries(entries, resolver):
     return promoted, still_unresolved
 
 
+def _age_fixtures(jobs: list, today=None) -> list:
+    """Shift fixture `posted` dates so the newest is yesterday, keeping every relative age
+    (a deliberately stale fixture stays stale). Without this the demo build and smoke test
+    expire once the fixtures pass the freshness window (it happened on 2026-10-15)."""
+    from datetime import date as _date, timedelta as _td
+    today = today or _date.today()
+    days = [_date.fromisoformat(j["posted"][:10]) for j in jobs if j.get("posted")]
+    if not days:
+        return jobs
+    shift = (today - _td(days=1)) - max(days)
+    out = []
+    for j in jobs:
+        j = dict(j)
+        if j.get("posted"):
+            j["posted"] = (_date.fromisoformat(j["posted"][:10]) + shift).isoformat() + j["posted"][10:]
+        out.append(j)
+    return out
+
+
 def gather(demo: bool):
     """Return (all_jobs, errors, unresolved)."""
     import time as _time
@@ -204,7 +223,7 @@ def gather(demo: bool):
     LAST_RESOLVER["cache"] = None
     if demo:
         with open(os.path.join(HERE, "fixtures.json"), encoding="utf-8") as f:
-            return json.load(f), [], []
+            return _age_fixtures(json.load(f)), [], []
     jobs, errors, unresolved = [], [], []
     known = set()
     # JB-43: one resolver, shared across registry-resolve + aggregator enrich phases,
