@@ -69,6 +69,7 @@ No email in v0 (no provider and no identity ADR; email would break "CV never lea
 - ✅ JB-93/94 ship tonight with a real destination; BT reads reports as GitHub issues today.
 - The feedback goes into **public** issues, so the UI says so beside every send button and never pre-fills CV data.
 - The existing footer "Report a problem" (#204) becomes "Give feedback" (`kind: feedback`).
+- **No email field** (JB-94 asked for an optional one): the issue is public, so an email typed there would be published, and collecting one brings in CASL. Revisit together with digest v1.
 - GoatCounter events (#204) stay as they are, with no change; they're counts, not the channel.
 - Moving to B later = replace `openFeedback()` with a POST + CSP edit. The schema and ingest stay.
 

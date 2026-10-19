@@ -17,14 +17,22 @@ import re
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 
+from company_key import company_key
+
 SCHEMA_V = 1
 BLOCK_RE = re.compile(r"```attsis-feedback[ \t]*\r?\n(.*?)\r?\n```", re.S)
 
 # JB-93 reason codes (mirrored by FB_REASONS in site/index.html; parity-tested)
 REASONS = frozenset({"link_404", "already_closed", "cannot_apply",
                      "wrong_title_vs_body", "wrong_location", "other"})
-KEYS = {"report": frozenset({"reason", "url", "company", "title", "job", "note"})}
-CAPS = {"url": 500, "company": 120, "title": 200, "job": 240, "note": 500, "ts": 40}
+KEYS = {"report": frozenset({"reason", "url", "company", "title", "job", "note"}),
+        "company": frozenset({"name", "careers_url", "city", "seen_days"}),       # JB-94
+        "feedback": frozenset({"text", "area"}),
+        "votes": frozenset({"votes"})}
+CAPS = {"url": 500, "company": 120, "title": 200, "job": 240, "note": 500, "ts": 40,
+        "name": 120, "city": 80, "text": 1000}
+AREAS = frozenset({"board", "map", "profile", "tracker", "other"})
+MAX_VOTES = 40
 
 
 def _clip(v, n):
@@ -68,7 +76,54 @@ def _validate_report(p, clean):
     return ""
 
 
-_VALIDATORS = {"report": _validate_report}
+def _validate_company(p, clean):
+    clean["name"] = _clip(p.get("name") or "", CAPS["name"])
+    if not clean["name"]:
+        return "name required"
+    if p.get("careers_url"):
+        if not _http(p["careers_url"]):
+            return "bad careers url (http/https only)"
+        clean["careers_url"] = _http(p["careers_url"])
+    if p.get("city"):
+        clean["city"] = _clip(p["city"], CAPS["city"])
+    if "seen_days" in p:
+        d = p["seen_days"]
+        if isinstance(d, bool) or not isinstance(d, int) or not 0 <= d <= 365:
+            return "bad seen_days (0-365)"
+        clean["seen_days"] = d
+    return ""
+
+
+def _validate_feedback(p, clean):
+    clean["text"] = _clip(p.get("text") or "", CAPS["text"])
+    if not clean["text"]:
+        return "text required"
+    if p.get("area") in AREAS:
+        clean["area"] = p["area"]
+    return ""
+
+
+def _validate_votes(p, clean):
+    good = []
+    for it in p.get("votes") if isinstance(p.get("votes"), list) else []:
+        if not isinstance(it, dict) or it.get("v") not in (1, -1):
+            continue
+        v = {"company": _clip(it.get("company") or "", CAPS["company"]), "v": it["v"]}
+        if _http(it.get("url")):
+            v["url"] = _http(it["url"])
+        elif it.get("job"):
+            v["job"] = _clip(it["job"], CAPS["job"])
+        else:
+            continue
+        good.append(v)
+    if not good:
+        return "no valid votes"
+    clean["votes"] = good[:MAX_VOTES]
+    return ""
+
+
+_VALIDATORS = {"report": _validate_report, "company": _validate_company,
+               "feedback": _validate_feedback, "votes": _validate_votes}
 
 
 def validate(p) -> tuple:
@@ -104,11 +159,20 @@ def target(rec) -> str:
     return rec.get("url") or rec.get("job") or ""
 
 
+def _dkey(r):
+    if r["kind"] == "report":
+        return (r["author"], "report", target(r), r.get("reason"))
+    if r["kind"] == "company":
+        return (r["author"], "company", company_key(r["name"]))
+    return (r["kind"], r["issue"], id(r))           # feedback/votes: every message counts
+
+
 def dedupe(recs: list) -> list:
-    """One record per (author, kind, target, reason): repeat reports by one person count once."""
+    """One report per (author, target, reason) and one suggestion per (author, company):
+    repeats by one person count once."""
     seen, out = set(), []
     for r in sorted(recs, key=lambda r: r["created"]):
-        k = (r["author"], r["kind"], target(r), r.get("reason"))
+        k = _dkey(r)
         if k not in seen:
             seen.add(k)
             out.append(r)
@@ -179,3 +243,71 @@ def reports_week_md(recs: list, today: str, days: int = 7) -> str:
                for c in cands] or ["None."])
     lines += ["", "Move a candidate into `engine/suppressed.json` with a reviewed PR to drop it from the board.", ""]
     return "\n".join(lines)
+
+
+def vote_tally(recs: list) -> dict:
+    """{target: {company, up, down}} from votes records; a person's latest vote on a job wins."""
+    last = {}
+    for r in sorted(recs, key=lambda r: r["created"]):
+        if r["kind"] != "votes":
+            continue
+        for v in r["votes"]:
+            t = v.get("url") or v.get("job")
+            last[(r["author"], t)] = (v["v"], v["company"])
+    out = {}
+    for (_a, t), (v, co) in last.items():
+        row = out.setdefault(t, {"company": co, "up": 0, "down": 0})
+        row["up" if v > 0 else "down"] += 1
+    return out
+
+
+def feedback_week_md(recs: list, today: str, known=(), days: int = 7) -> str:
+    """JB-94 weekly rollup (docs/status/FEEDBACK_WEEK.md): missing-company suggestions
+    (with a companies.json seed for the new ones), feedback by area, worst thumbs-down ratio."""
+    rows = dedupe(_recent(recs, today, days))
+    known_keys = {company_key(n) for n in known}
+    lines = [f"# Feedback: week to {today}", "",
+             "Source: GitHub issues with an `attsis-feedback` block (ADR-009).", ""]
+
+    sug = defaultdict(list)
+    for r in rows:
+        if r["kind"] == "company":
+            sug[company_key(r["name"])].append(r)
+    lines += ["## Missing-company suggestions", ""]
+    seeds = []
+    if sug:
+        lines += ["| company | people | careers | city | status | issues |", "|---|---|---|---|---|---|"]
+        for k, rs in sorted(sug.items(), key=lambda kv: (-len({r["author"] for r in kv[1]}), kv[0])):
+            url = next((r["careers_url"] for r in rs if r.get("careers_url")), "")
+            city = next((r["city"] for r in rs if r.get("city")), "")
+            status = "already tracked" if k in known_keys else "new"
+            lines.append(f"| {rs[0]['name']} | {len({r['author'] for r in rs})} | {url or '—'} | "
+                         f"{city or '—'} | {status} | {' '.join('#' + str(r['issue']) for r in rs)} |")
+            if status == "new":
+                seeds.append({"name": rs[0]["name"], "platform": "resolve", "careers_url": url,
+                              "city": city, "industry": "", "flags": []})
+        if seeds:
+            lines += ["", "Seed candidates for `engine/companies.json` (resolve the ATS before promoting):", "",
+                      "```json", json.dumps(seeds, indent=2, ensure_ascii=False), "```"]
+    else:
+        lines.append("None.")
+
+    fbk = [r for r in rows if r["kind"] == "feedback"]
+    lines += ["", "## Feedback", ""]
+    if fbk:
+        lines += ["| area | messages |", "|---|---|"]
+        lines += [f"| {k} | {n} |" for k, n in Counter(r.get("area", "other") for r in fbk).most_common()]
+        lines += [""] + [f"- #{r['issue']} ({r.get('area', 'other')}): {r['text']}" for r in fbk[-20:]]
+    else:
+        lines.append("None.")
+
+    tally = vote_tally(rows)
+    lines += ["", "## Thumbs (worst down-ratio first)", ""]
+    if tally:
+        lines += ["| posting | company | 👍 | 👎 |", "|---|---|---|---|"]
+        order = sorted(tally.items(), key=lambda kv: (-kv[1]["down"] / (kv[1]["up"] + kv[1]["down"]),
+                                                      -kv[1]["down"], kv[0]))
+        lines += [f"| {t} | {v['company']} | {v['up']} | {v['down']} |" for t, v in order[:20]]
+    else:
+        lines.append("None.")
+    return "\n".join(lines + [""])

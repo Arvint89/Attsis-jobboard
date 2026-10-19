@@ -123,6 +123,7 @@ Suggested version on release: **v0.12.0** (MINOR: many features, no breaking dat
 - Tracker v2: stats, "Needs your answer" nudges, thank-you and "heard back?" after interviews (#198, #231).
 - Rankings follow **your** CV: skills from your CV count 4× more than generic skills-DB terms (JB-80, #197).
 - **Report this job** on every expanded card (broken link, closed, can't apply, wrong title/location). It opens a prefilled GitHub issue, and the card remembers you reported it (JB-93, ADR-009).
+- Footer: **Give feedback**, **Suggest a company**, **Share your 👍/👎**, each with a real destination (prefilled GitHub issue) and a weekly rollup (JB-94, ADR-009).
 - Prep plan from your gaps (#202). 👍/👎 and "Report a problem" (#204).
 - First card on a throttled phone: 8.8 s → 5.6 s (#209). Phone header fixed (#214). Accessibility: 0 axe violations (#213).
 - Tailor buttons greyed out until payments are live (#172). Name: "Attsis Job Board" (#173).
