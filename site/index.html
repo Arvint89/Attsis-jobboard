@@ -704,6 +704,14 @@ function loadSkillsDb(db){
   DB_SKILLS=[...new Set(DB_SKILLS)]; DB_TITLES=[...new Set(DB_TITLES)];
 }
 function titleVariants(ts){const out=[...ts];ts.forEach(t=>{if(t.endsWith(" engineer")&&!VARIANT_SKIP.has(t)){const r=t.slice(0,-9);out.push(r+" designer",r+" developer",r+" engineering");}});return [...new Set(out)];}
+/* JB-80 (#197) option C: CV skill hits x1, DB-only hits x0.25, same 8/4/1 steps.
+   Mirrors engine/jobfilter.py skill_bump(); parity tested in tests/test_scoring_jb80.py. */
+/* SKILLBUMP-PURE-BEGIN */
+function skillBump(cvHits, dbHits){
+  const w=cvHits+0.25*dbHits;
+  return w>=8?3:w>=4?2:w>=1?1:0;
+}
+/* SKILLBUMP-PURE-END */
 function scoreJob(j, p){
   const title=(j.title||"").toLowerCase(), body=(j.text||j.snippet||"").toLowerCase(), loc=(j.location||"").toLowerCase();
   const descLen=Math.max(0, body.length-title.length-2);          // j.text = title + ". " + description
@@ -722,9 +730,9 @@ function scoreJob(j, p){
   if(!titleHit.length && conf.length<2) return {verdict:"excluded"};
   let score = titleHit.length?5:2, reasons=[];                    // your CV's own titles count as core
   reasons.push(titleHit.length?("title match: "+titleHit.slice(0,2).join(", ")):"keyword-only match");
-  const bump = conf.length>=8?3:conf.length>=4?2:conf.length>=1?1:0;
-  score+=bump;
-  if(conf.length) reasons.push("skills x"+conf.length);
+  const cvN=new Set(cvConf).size;
+  score+=skillBump(cvN, conf.length-cvN);
+  if(conf.length) reasons.push("skills x"+conf.length+" ("+cvN+" from CV)");
   else if(descLen>=200){score-=1;reasons.push("no skills in body");}
   else reasons.push("no description from source");
   if(/senior|lead|principal|staff/.test(title)){score+=1;reasons.push("senior/lead(+1)");}
