@@ -2,12 +2,18 @@
 these encode the acceptance criteria from SPEC.md (FR-3). Run: pytest -q
 Each rule has happy / empty / exclusion coverage per the PD rules (min 3)."""
 import os, sys
+from datetime import datetime, timedelta, timezone
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "engine"))
 import jobfilter as jf
 
 
-def mk(title, desc="", loc="London, ON", posted="2026-09-15"):
-    return {"title": title, "description": desc, "location": loc, "posted": posted}
+_FRESH_ISO = (datetime.now(timezone.utc) - timedelta(days=5)).strftime("%Y-%m-%d")
+_STALE_ISO = (datetime.now(timezone.utc) - timedelta(days=120)).strftime("%Y-%m-%d")
+
+
+def mk(title, desc="", loc="London, ON", posted=None):
+    return {"title": title, "description": desc, "location": loc,
+            "posted": posted if posted is not None else _FRESH_ISO}
 
 
 # --- happy path: strong on-profile roles must score >= 7 (match) --------------
@@ -75,7 +81,7 @@ def test_long_description_without_skills_is_penalised():
 
 
 def test_stale_posting_excluded():
-    j = mk("Embedded Engineer", "firmware, ARM, RTOS", posted="2026-01-01")
+    j = mk("Embedded Engineer", "firmware, ARM, RTOS", posted=_STALE_ISO)
     assert jf.classify(j)["verdict"] == "excluded"
 
 
@@ -115,7 +121,7 @@ def test_explanation_for_excluded_pure_software():
 
 def test_explanation_for_stale_posting():
     r = jf.classify(mk("Embedded Engineer", "firmware ARM RTOS",
-                       posted="2026-01-01"))
+                       posted=_STALE_ISO))
     s = jf.score_explanation(r)
     assert s.startswith("Excluded:")
     assert "old" in s or "stale" in s
@@ -187,7 +193,7 @@ def test_jb66_classify_perf_under_budget():
     import time
     j = {"title": "Senior Firmware Engineer",
          "description": "ARM Cortex-M, FreeRTOS, Altium, PCB, SPI, I2C, Python " * 20,
-         "location": "London, ON", "posted": "2026-09-15"}
+         "location": "London, ON", "posted": _FRESH_ISO}
     t0 = time.time()
     for _ in range(200):
         jf.classify(j)

@@ -20,7 +20,7 @@ import argparse
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta as _td
 
 import ats
 import ats_detect
@@ -204,7 +204,14 @@ def gather(demo: bool):
     LAST_RESOLVER["cache"] = None
     if demo:
         with open(os.path.join(HERE, "fixtures.json"), encoding="utf-8") as f:
-            return json.load(f), [], []
+            demo_jobs = json.load(f)
+        # Keep fixtures evergreen: anchor every posted date to "today - 5 days" so
+        # the demo build never rots past jobfilter's freshness gate (FRESH_DAYS=30).
+        _fresh = (datetime.now(timezone.utc) - _td(days=5)).strftime("%Y-%m-%d")
+        for _row in demo_jobs:
+            if "posted" in _row:
+                _row["posted"] = _fresh
+        return demo_jobs, [], []
     jobs, errors, unresolved = [], [], []
     known = set()
     # JB-43: one resolver, shared across registry-resolve + aggregator enrich phases,

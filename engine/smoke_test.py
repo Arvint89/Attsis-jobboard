@@ -43,9 +43,11 @@ check("every company has name+ring+platform", all({"name","ring","platform"} <= 
 # 2 filter imports and classifies the three canonical cases
 sys.path.insert(0, HERE)
 import jobfilter as jf
-m = jf.classify({"title":"Senior Electrical Engineer","description":"mixed-signal PCB, ISO 13485, IEC 60601, Altium, ARM Cortex-M","location":"London, ON","posted":"2026-09-15"})
+from datetime import datetime, timedelta, timezone
+_FRESH_POSTED = (datetime.now(timezone.utc) - timedelta(days=5)).strftime("%Y-%m-%d")
+m = jf.classify({"title":"Senior Electrical Engineer","description":"mixed-signal PCB, ISO 13485, IEC 60601, Altium, ARM Cortex-M","location":"London, ON","posted":_FRESH_POSTED})
 check("strong role -> match (generic)", m["verdict"]=="match" and m["score"]>=7)
-check("power role -> low score (not surfaced)", jf.classify({"title":"Electrical Engineer","description":"substation switchgear high-voltage grid","location":"London","posted":"2026-09-15"})["verdict"]!="match")
+check("power role -> low score (not surfaced)", jf.classify({"title":"Electrical Engineer","description":"substation switchgear high-voltage grid","location":"London","posted":_FRESH_POSTED})["verdict"]!="match")
 
 # 2b CV parsing produces a usable profile
 import cv_parse
