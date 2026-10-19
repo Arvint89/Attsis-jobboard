@@ -86,6 +86,10 @@ _TECH_TITLE_CATS = {
     "software_specialized", "software_by_lang", "software_by_framework",
     "additional_data_ml",
 }
+# JB-80: the profile's own skills, frozen before the DB widens the pool. Hits on these
+# count x1 toward the skill bump; DB-only hits count x0.25 (option C, #197).
+CV_SKILLS = frozenset(SKILL_CONFIRMERS)
+DB_SKILL_WEIGHT = 0.25
 try:
     import skills_db as _sdb
     _db = _sdb.load_db()
@@ -185,6 +189,13 @@ def _title_hit(title):
     return None, None
 
 
+def skill_bump(cv_hits, db_hits):
+    """JB-80: score bump from skill hits. CV x1 + DB-only x0.25, same 8/4/1 steps as before.
+    Mirrored by skillBump() in site/index.html (SKILLBUMP-PURE block)."""
+    w = cv_hits + DB_SKILL_WEIGHT * db_hits
+    return 3 if w >= 8 else 2 if w >= 4 else 1 if w >= 1 else 0
+
+
 def days_old(posted):
     if not posted:
         return None
@@ -258,8 +269,9 @@ def classify(job, extra_flags=None):
     reasons.append("title match: " + ", ".join(title_hits[:2]) if title_hits else "keyword-only match")
     matched += title_hits
     if conf:
-        score += 3 if len(conf) >= 8 else 2 if len(conf) >= 4 else 1
-        reasons.append(f"skills x{len(conf)}")
+        cv_n = sum(1 for c in conf if c in CV_SKILLS)
+        score += skill_bump(cv_n, len(conf) - cv_n)
+        reasons.append(f"skills x{len(conf)} ({cv_n} from CV)")
         matched += conf
     elif len(body) >= MIN_BODY:
         score -= 1
@@ -330,10 +342,13 @@ def score_explanation(result: dict) -> str:
             titles = r.split(":", 1)[1].strip()
             parts.append(f"the title names {titles}, which maps to a role you target (+4-5 base)")
         elif r.startswith("skills x"):
-            n = r.replace("skills x", "").strip()
-            boost = "+1" if int(n) < 4 else "+2" if int(n) < 8 else "+3"
+            m = _re.match(r"skills x(\d+)(?: \((\d+) from CV\))?", r)
+            n = int(m.group(1)) if m else 0
+            cv_n = int(m.group(2)) if m and m.group(2) is not None else n
+            boost = skill_bump(cv_n, n - cv_n)
             sample = ", ".join(matched[:3])
-            parts.append(f"your CV lists {n} skills that appear in the description ({boost}: {sample}{'...' if len(matched)>3 else ''})")
+            parts.append(f"{n} skills that appear in the description, {cv_n} from your CV "
+                         f"(+{boost}: {sample}{'...' if len(matched)>3 else ''})")
         elif r == "no skills in body":
             parts.append("none of your CV skills appear in the description text (-1)")
         elif r == "no description from source":
