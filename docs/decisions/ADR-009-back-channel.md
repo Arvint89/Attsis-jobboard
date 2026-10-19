@@ -40,7 +40,7 @@ The human text goes above the block. **Ingest reads only the block**, so labels 
 
 | kind | required | optional | caps |
 |---|---|---|---|
-| `report` (JB-93) | `reason` ∈ {`link_404`,`already_closed`,`cannot_apply`,`wrong_title_vs_body`,`wrong_location`,`other`}, `url`, `company` | `title`, `job`, `note` | note ≤ 500 |
+| `report` (JB-93) | `reason` ∈ {`link_404`,`already_closed`,`cannot_apply`,`wrong_title_vs_body`,`wrong_location`,`other`}, `url` (or `job` key when the posting has no link), `company` | `title`, `job`, `note` | note ≤ 500 |
 | `company` (JB-94) | `name` | `careers_url`, `city`, `seen_days` (int 0–365) | name ≤ 120 |
 | `feedback` (JB-94) | `text` | `area` ∈ {`board`,`map`,`profile`,`tracker`,`other`} | text ≤ 1000 |
 | `votes` (JB-94) | `votes`: [{`company`,`url`,`v`∈{1,-1}}] | — | ≤ 40 items |

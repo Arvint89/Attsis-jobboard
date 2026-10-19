@@ -1,0 +1,27 @@
+name: feedback-ingest
+# ADR-009 D4: read user reports/feedback from GitHub issues (attsis-feedback blocks) and
+# publish JSONL + weekly rollups as a workflow artifact. Read-only: no commit, no deploy,
+# never touches production (the sweep is a separate workflow).
+on:
+  schedule:
+    - cron: "17 13 * * 1"     # Mondays 09:17 America/Toronto
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: read
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Ingest feedback issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/feedback_ingest.py --from-gh --out feedback_out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: feedback-${{ github.run_id }}
+          path: feedback_out
+          retention-days: 90

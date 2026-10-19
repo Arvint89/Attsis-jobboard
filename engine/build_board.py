@@ -367,6 +367,20 @@ def dedupe(jobs):
     return out
 
 
+SUPPRESSED_PATH = os.path.join(HERE, "suppressed.json")
+
+
+def drop_suppressed(jobs):
+    """JB-93 / ADR-009 D5: drop postings listed in engine/suppressed.json ({"urls": [...]}).
+    Urls get there by a reviewed PR from tools/feedback_ingest.py's suppress candidates."""
+    try:
+        with open(SUPPRESSED_PATH, encoding="utf-8") as f:
+            urls = set(json.load(f).get("urls") or [])
+    except (OSError, ValueError, AttributeError):
+        return jobs
+    return [j for j in jobs if j.get("url") not in urls] if urls else jobs
+
+
 PER_COMPANY_CAP = 8   # JB-20: no single employer may flood the board
 
 
@@ -398,7 +412,7 @@ def build(demo=False, min_score=jobfilter.REPORT_THRESHOLD):
     home, person, initials = load_home()
     raw, errors, unresolved = gather(demo)
     _t = _time.monotonic()
-    raw = [ _defaults(j) for j in dedupe(raw) ]
+    raw = [ _defaults(j) for j in drop_suppressed(dedupe(raw)) ]
     _say(f"[build] dedupe+defaults: {_time.monotonic()-_t:.1f}s -> {len(raw)} jobs")
     # JB-52: Workday search endpoint returns titles with empty bodies; most Workday
     # rows end up in `below` because the scorer sees no description. Fill via the

@@ -1,0 +1,4 @@
+{
+  "_note": "JB-93 / ADR-009 D5: postings dropped from the board. Add urls only via a reviewed PR from tools/feedback_ingest.py suppress_candidates.json.",
+  "urls": []
+}
