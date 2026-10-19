@@ -286,6 +286,12 @@
   .fbnote{font-size:12px;color:var(--subtle);margin:12px 0 4px}
   .fberr{color:#ff8a8a;font-size:12px;min-height:1em;margin:4px 0}
   .fbbtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  /* JB-92 digest v0 */
+  .chip.new{color:#ffd166;border-color:#6b5a1f}
+  .newchip{background:transparent;border:1px solid #6b5a1f;color:#ffd166;border-radius:999px;padding:3px 10px;font-family:var(--font-mono);font-size:12px;cursor:pointer}
+  .newchip.on{background:rgba(255,209,102,.12)}
+  .freshbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 12px;padding:10px 14px;border:1px solid #6b5a1f;border-radius:10px;background:rgba(255,209,102,.08);font-size:14px}
+  .freshbar button{background:#ffd166;color:#1a1400;border:none;border-radius:6px;padding:5px 12px;font-weight:600;cursor:pointer}
   .fbvotes{margin:0;padding-left:18px;max-height:220px;overflow:auto;font-size:13px;color:var(--dim)}
   .fbbtns .btnlink{background:var(--hi);color:#04101f;border-radius:6px;padding:7px 12px;font-weight:600;text-decoration:none;font-size:13px}
   .vthanks{color:var(--good)}
@@ -469,7 +475,7 @@
     </section>
     <div id="demoBanner" class="banner" style="display:none">Showing <b>demo data</b> — sample roles to preview the board. Live roles populate when the fetcher runs (GitHub Action or <code>python build_board.py</code>).</div>
     <div class="boardtop">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="count" id="count" style="margin:0"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="count" id="count" style="margin:0"></div><button type="button" class="newchip" id="newChip" hidden></button>
         <button class="placechip" id="placeChip" style="display:none" title="Clear location filter"></button></div>
       <div class="modebar" role="group" aria-label="Layout">
         <button id="modeList" data-mode="list">☰ List</button>
@@ -502,6 +508,7 @@
         <div style="margin-top:8px"><button class="btn ghost" id="jdBtn">Analyze JD</button></div>
         <div id="jdOut"></div>
       </details>
+      <div class="freshbar" id="freshBar" role="status" hidden><span id="freshText"></span><button type="button" id="freshBtn">Show them</button></div>
       <div id="matches"><div class="empty">Loading live roles…</div></div>
     </div>
     <div id="mapView">
@@ -997,6 +1004,7 @@ function jobCard(j,bucket,i){
   const more=j.n_locations>1?` <span class="more" title="${escH(j.location)}">+${j.n_locations-1} more</span>`:'';
   const dl=distLabel(j), age=relAge(j.posted), dc=distCheck(j), why=whyLine(j);
   const chips=[
+    isNew(j)?'<span class="chip new" title="New since your last visit">New</span>':'',
     j.salary?`<span class="chip sal">${escH(j.salary)}</span>`:'<span class="chip nosal">Salary not listed</span>',
     arr?`<span class="chip arr">${arr}</span>`:'',
     j.industry&&j.industry!=='other'?`<span class="chip ind">${escH(j.industry)}</span>`:'',
@@ -1052,13 +1060,86 @@ function salVal(s){
   if(!nums.length) return -1; const v=Math.max(...nums); return /hour/i.test(s)?v*2080:v;
 }
 /* JB-18: ONE filter shared by the list and the map, so both describe the same roles */
+/* JB-92 digest v0 (ADR-009 D6): "new since your last visit", browser-only. */
+/* DIGEST-PURE-BEGIN */
+const DIGEST_CAP=5000;
+// FNV-1a: a short stable id per job, so thousands of seen jobs fit in localStorage
+function digestId(key){ let h=0x811c9dc5; const s=String(key||''); for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return h.toString(36); }
+// First visit (no or corrupt state): everything becomes the baseline, nothing is "new".
+function digestStep(state,ids,now,cap){
+  cap=cap||DIGEST_CAP; ids=[...new Set(ids||[])];
+  if(!state||!Array.isArray(state.seen)) return {state:{seen:ids.slice(-cap),last_visit:now,prev_visit:null},fresh:[]};
+  const seen=new Set(state.seen), fresh=ids.filter(k=>!seen.has(k));
+  return {state:{...state,seen:[...state.seen,...fresh].slice(-cap)},fresh};
+}
+function digestVisit(state,now){ state=state||{seen:[]}; return {...state,prev_visit:state.last_visit||null,last_visit:now}; }
+/* DIGEST-PURE-END */
+/* DIGEST-UI-BEGIN */
+// Seen ids live in localStorage (jobboard_seen); this session's "new" set in sessionStorage,
+// so a reload keeps the badges. Nothing leaves the browser.
+let NEW_IDS=new Set(), DIGEST_ONLY=location.hash==='#new', DIGEST_SINCE=null, FRESH=null;
+const DIGEST_RECHECK_MS=30*60*1000;
+function isNew(j){ return NEW_IDS.size>0&&NEW_IDS.has(digestId(jobKey(j))); }
+function digestMark(jobs){
+  let st=null, sess=null, now=new Date().toISOString();
+  try{ st=JSON.parse(localStorage.getItem('jobboard_seen')||'null'); }catch(e){}
+  try{ sess=JSON.parse(sessionStorage.getItem('jobboard_new')||'null'); }catch(e){}
+  if(!sess||!Array.isArray(sess.ids)){
+    const first=!st||!Array.isArray(st.seen);
+    if(!first) st=digestVisit(st,now);
+    sess={first,since:first?null:st.prev_visit,ids:[]};
+  }
+  const r=digestStep(st,(jobs||[]).map(j=>digestId(jobKey(j))),now);
+  if(!sess.first) sess.ids=[...new Set([...sess.ids,...r.fresh])];   // first visit: all baseline, even late-loading roles
+  try{ localStorage.setItem('jobboard_seen',JSON.stringify(r.state)); }catch(e){}
+  try{ sessionStorage.setItem('jobboard_new',JSON.stringify(sess)); }catch(e){}
+  NEW_IDS=new Set(sess.ids); DIGEST_SINCE=sess.since;
+}
+function updateNewChip(){
+  const c=$('#newChip'); if(!c) return;
+  const n=(POOL||[]).filter(isNew).length;
+  if(DIGEST_ONLY&&!NEW_IDS.size){ DIGEST_ONLY=false; }
+  c.hidden=!n&&!DIGEST_ONLY;
+  const since=DIGEST_SINCE?' since '+new Date(DIGEST_SINCE).toLocaleDateString('en-CA',{month:'short',day:'numeric'}):'';
+  c.textContent=DIGEST_ONLY?`✦ Showing ${n} new · show all`:`✦ ${n} new${since}`;
+  c.classList.toggle('on',DIGEST_ONLY);
+}
+function onDigestHash(){ DIGEST_ONLY=location.hash==='#new'; renderBoard(); if(typeof mapVisible==='function'&&mapVisible()) renderMap(); }
+function setDigestOnly(on){
+  if(on) location.hash='new';                                      // bookmarkable: …/#new
+  else { history.replaceState(null,'',location.pathname+location.search); onDigestHash(); }
+}
+// While the tab stays open, look for a newer sweep (same-origin file; the CSP allows nothing else).
+function digestRecheck(){
+  if(document.hidden||!JOBS) return;
+  fetch('./data/jobs_matches.json?_='+Date.now()).then(r=>r.ok?r.json():null).then(d=>{
+    if(!d||!Array.isArray(d.matches)||d.generated===JOBS.generated) return;
+    const have=new Set([...(JOBS.matches||[]),...(JOBS.below||[])].map(jobKey));
+    const add=d.matches.filter(j=>!have.has(jobKey(j)));
+    FRESH=d; if(!add.length) return;
+    $('#freshText').textContent=`${add.length} new role${add.length===1?'':'s'} since this page opened.`;
+    $('#freshBar').hidden=false;
+  }).catch(()=>{});
+}
+function applyFresh(){
+  if(!FRESH) return;
+  JOBS.matches=_tvalid(TENANT)?tenantFilter(FRESH.matches):FRESH.matches; JOBS.generated=FRESH.generated; FRESH=null;
+  $('#freshBar').hidden=true;
+  rescore(); digestMark(JOBS.matches); renderBoard(); if(mapVisible()) renderMap();
+}
+$('#newChip').addEventListener('click',()=>setDigestOnly(!DIGEST_ONLY));
+$('#freshBtn').addEventListener('click',applyFresh);
+window.addEventListener('hashchange',onDigestHash);
+setInterval(digestRecheck,DIGEST_RECHECK_MS);
+/* DIGEST-UI-END */
 function listFilter(){
   const q=$('#q').value.toLowerCase(),arr=$('#arrangement').value,cty=$('#country').value,ind=$('#industry').value,
         mn=+($('#minScore').value||0),ring=$('#ring').value;
   return j=>j.score>=mn
     &&(!q||(j.company+' '+j.title+' '+(j.matched||[]).join(' ')).toLowerCase().includes(q))
     &&(arr===''||j.arrangement===arr)&&(cty===''||j.country===cty)&&(ind===''||j.industry===ind)
-    &&(ring===''||String(j.ring)===ring);
+    &&(ring===''||String(j.ring)===ring)
+    &&(!DIGEST_ONLY||isNew(j));                                   // JB-92: #new view
 }
 function renderBoard(){
   const sortBy=$('#sortBy').value,perCo=+($('#perCo').value||0);
@@ -1079,6 +1160,7 @@ function renderBoard(){
   const strong=m.filter(j=>j.score>=7).length;
   $('#count').textContent=`${m.length} role${m.length!==1?'s':''} shown · ${strong} strong (7+)`+(perCo?` · ≤${perCo}/company`:' · all per company')
     +(pc?` · in map view (${pc.outside} outside, ${pc.unplaced} with no location)`:'');
+  updateNewChip();
 }
 const VIEW_IDS=['boardView','trackerView','prepView','tailorView','setupView'];
 const TAB_TO_VIEW={roles:'boardView',tracker:'trackerView',prep:'prepView',tailor:'tailorView',profile:'setupView'};
@@ -1103,6 +1185,7 @@ function showBoard(){
   $('#industry').innerHTML='<option value="">Any</option>'+(fc.industry||[]).map(v=>`<option>${v}</option>`).join('');
   restoreFilters();
   if(JOBS.mode==='demo')$('#demoBanner').style.display='block';
+  digestMark([...(JOBS.matches||[]),...(JOBS.below||[])]);
   rescore();renderBoard();
   showTab('roles');
   renderHero();
@@ -1702,6 +1785,7 @@ _matchesP
         if(!b||!b.below)return;
         JOBS.below=_tvalid(TENANT)?tenantFilter(b.below):b.below;
         if(JOBS.counts) JOBS.counts.below=(JOBS.below||[]).length;
+        digestMark(JOBS.below);
         // JB-74: no-profile visitors see the board too, so refresh regardless of PROFILE
         rescore(); if($('#boardView').style.display!=='none'){ renderBoard(); renderHero(); if(mapVisible()) renderMap(); }
       })
