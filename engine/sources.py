@@ -51,6 +51,7 @@ HEADERS = {
 DEFAULT_QUERIES = [
     "embedded", "firmware", "hardware", "electronics", "PCB", "electrical",
     "FPGA", "altium", "test engineer", "signal", "power",
+    "mechanical", "mechatronics", "robotics",          # JB-95
 ]
 
 
