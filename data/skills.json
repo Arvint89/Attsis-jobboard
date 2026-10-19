@@ -5007,6 +5007,295 @@
         "revops"
       ],
       "category": "multi_word_concepts"
+    },
+    {
+      "canonical": "SolidWorks",
+      "aliases": [
+        "solid works",
+        "solidworks pdm"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "GD&T",
+      "aliases": [
+        "geometric dimensioning and tolerancing",
+        "gdt"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "CATIA",
+      "aliases": [
+        "catia v5"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "Creo",
+      "aliases": [
+        "ptc creo",
+        "pro/engineer",
+        "pro engineer"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "Siemens NX",
+      "aliases": [
+        "unigraphics",
+        "nx cad"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "Autodesk Inventor",
+      "aliases": [
+        "inventor cad"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "Fusion 360",
+      "aliases": [
+        "autodesk fusion 360"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "AutoCAD",
+      "aliases": [
+        "autocad mechanical"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "ANSYS",
+      "aliases": [
+        "ansys mechanical",
+        "ansys workbench"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "finite element analysis",
+      "aliases": [
+        "fea",
+        "fem analysis"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "computational fluid dynamics",
+      "aliases": [
+        "cfd"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "thermal analysis",
+      "aliases": [
+        "thermal simulation"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "sheet metal",
+      "aliases": [
+        "sheet metal design"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "injection molding",
+      "aliases": [
+        "injection moulding",
+        "plastic part design"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "tolerance analysis",
+      "aliases": [
+        "tolerance stack-up",
+        "tolerance stackup",
+        "stack-up analysis"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "DFMA",
+      "aliases": [
+        "design for manufacture and assembly"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "machine design",
+      "aliases": [
+        "machine element design"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "mechanical design",
+      "aliases": [],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "3D printing",
+      "aliases": [
+        "additive manufacturing",
+        "rapid prototyping"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "CNC machining",
+      "aliases": [
+        "cnc",
+        "cnc programming"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "PLC",
+      "aliases": [
+        "plc programming",
+        "programmable logic controller",
+        "ladder logic"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "ROS",
+      "aliases": [
+        "ros2",
+        "robot operating system"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "Simulink",
+      "aliases": [],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "motion control",
+      "aliases": [
+        "motion controller"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "servo motors",
+      "aliases": [
+        "servo",
+        "servo drives"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "stepper motors",
+      "aliases": [
+        "stepper motor"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "actuators",
+      "aliases": [
+        "linear actuators"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "pneumatics",
+      "aliases": [
+        "pneumatic systems"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "hydraulics",
+      "aliases": [
+        "hydraulic systems"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "robotics",
+      "aliases": [
+        "industrial robots",
+        "robotic systems",
+        "robot arms"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "kinematics",
+      "aliases": [
+        "inverse kinematics",
+        "forward kinematics"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "PID control",
+      "aliases": [
+        "pid controller",
+        "pid tuning"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "mechatronics",
+      "aliases": [
+        "mechatronic systems"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "LabVIEW",
+      "aliases": [],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "FMEA",
+      "aliases": [
+        "dfmea",
+        "pfmea",
+        "failure mode and effects analysis"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "PLM",
+      "aliases": [
+        "windchill",
+        "teamcenter",
+        "product lifecycle management"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "PPAP",
+      "aliases": [
+        "production part approval process"
+      ],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "APQP",
+      "aliases": [],
+      "category": "mechanical"
+    },
+    {
+      "canonical": "8D problem solving",
+      "aliases": [
+        "8d report"
+      ],
+      "category": "mechanical"
     }
   ],
   "titles": [
