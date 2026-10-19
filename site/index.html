@@ -286,6 +286,7 @@
   .fbnote{font-size:12px;color:var(--subtle);margin:12px 0 4px}
   .fberr{color:#ff8a8a;font-size:12px;min-height:1em;margin:4px 0}
   .fbbtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .fbvotes{margin:0;padding-left:18px;max-height:220px;overflow:auto;font-size:13px;color:var(--dim)}
   .fbbtns .btnlink{background:var(--hi);color:#04101f;border-radius:6px;padding:7px 12px;font-weight:600;text-decoration:none;font-size:13px}
   .vthanks{color:var(--good)}
   /* JB-78 prep plan */
@@ -608,7 +609,7 @@
   </div>
 
 </div>
-<footer><span>Attsis Job Board · A GLOBAL ATTSIS PRODUCT · <a id="reportLink" href="https://github.com/Arvint89/Attsis-jobboard/issues/new?labels=type%3Abug&amp;title=Problem%20report&amp;body=What%20happened%3A%0A%0AWhat%20you%20expected%3A%0A%0APage%3A%20" target="_blank" rel="noopener">Report a problem</a></span><span>PULLED FROM EMPLOYER ATS · SCORED IN YOUR BROWSER · NO LLM IN THE LOOP · <span id="foot"></span></span></footer>
+<footer><span>Attsis Job Board · A GLOBAL ATTSIS PRODUCT · <a id="feedbackLink" href="https://github.com/Arvint89/Attsis-jobboard/issues/new?title=Feedback" target="_blank" rel="noopener">Give feedback</a> · <a id="suggestLink" href="https://github.com/Arvint89/Attsis-jobboard/issues/new?title=Missing%20company" target="_blank" rel="noopener">Suggest a company</a><span id="votesWrap" hidden> · <a id="votesLink" href="#">Share your 👍/👎</a></span></span><span>PULLED FROM EMPLOYER ATS · SCORED IN YOUR BROWSER · NO LLM IN THE LOOP · <span id="foot"></span></span></footer>
 <!-- ADR-009: one dialog for every back-channel kind (JB-93 report, JB-94 company/feedback/votes) -->
 <dialog id="fbDialog" aria-labelledby="fbTitle">
   <h3 id="fbTitle">Report this job</h3>
@@ -844,7 +845,29 @@ function fbIssueUrl(title,human,payload){
   if(url.length>FB_MAX_URL){ h=h.split('\n\n').slice(0,2).join('\n\n'); url=mk(h,p); }   // drop the free text from the human part first
   while(url.length>FB_MAX_URL&&p.note){ p.note=p.note.slice(0,-40); if(!p.note) delete p.note; url=mk(h,p); }
   while(url.length>FB_MAX_URL&&p.title){ p.title=p.title.slice(0,-40); url=mk(h,p); }
+  while(url.length>FB_MAX_URL&&p.votes&&p.votes.length>1){ p.votes=p.votes.slice(0,-1); url=mk(h,p); }
+  while(url.length>FB_MAX_URL&&p.text&&p.text.length>40){ p.text=p.text.slice(0,-40); url=mk(h,p); }
   return url;
+}
+/* JB-94 kinds */
+const FB_AREAS=['board','map','profile','tracker','other'], FB_MAX_VOTES=40;
+function companyPayload(f,ts){
+  f=f||{}; const name=fbClip(f.name,120); if(!name) return null;
+  const p={v:1,kind:'company',name,ts:String(ts||'')};
+  const u=fbHttp(f.careers_url); if(u) p.careers_url=u;
+  const c=fbClip(f.city,80); if(c) p.city=c;
+  const d=parseInt(f.seen_days,10); if(d>=0&&d<=365) p.seen_days=d;
+  return p;
+}
+function feedbackPayload(text,area,ts){
+  const t=fbClip(text,1000); if(!t) return null;
+  const p={v:1,kind:'feedback',text:t,ts:String(ts||'')}; if(FB_AREAS.includes(area)) p.area=area;
+  return p;
+}
+function votesPayload(list,ts){
+  const votes=(list||[]).map(x=>{ const o={company:fbClip(x.company,120),v:x.v>0?1:-1}, u=fbHttp(x.url);
+    if(u) o.url=u; else if(x.job) o.job=fbClip(x.job,240); else return null; return o; }).filter(Boolean).slice(0,FB_MAX_VOTES);
+  return votes.length?{v:1,kind:'votes',votes,ts:String(ts||'')}:null;
 }
 function outboxAdd(ob,entry,ts){ const o=(Array.isArray(ob)?ob:[]).filter(e=>e&&e.id!==entry.id); o.push({...entry,opened_at:ts}); return o.slice(-FB_OUTBOX_CAP); }
 function outboxHas(ob,id){ return (ob||[]).some(e=>e&&e.id===id); }
@@ -869,12 +892,57 @@ function openReport(j,row){
     Object.entries(FB_REASONS).map(([k,v])=>`<label class="fbopt"><input type="radio" name="fbReason" value="${k}"> ${escH(v)}</label>`).join('')+
     '<label class="fblbl" for="fbNote">Details (optional)</label><textarea id="fbNote" maxlength="500" rows="3" placeholder="What did you see?"></textarea>');
 }
-// Each kind returns {id, payload, title, human} or {err}. JB-94 adds kinds here.
+function openFeedback(){
+  fbOpen({kind:'feedback'},'Give feedback',"What works, what doesn't, what you'd like next.",
+    `<label class="fblbl" for="fbArea">About</label><select id="fbArea">${FB_AREAS.map(a=>`<option value="${a}">${a}</option>`).join('')}</select>`+
+    '<label class="fblbl" for="fbText">Your feedback</label><textarea id="fbText" maxlength="1000" rows="5"></textarea>');
+}
+function openSuggest(){
+  fbOpen({kind:'company'},'Suggest a missing company',"We'll check it and add it to the companies the board tracks.",
+    '<label class="fblbl" for="fbName">Company name</label><input type="text" id="fbName" maxlength="120" autocomplete="organization">'+
+    '<label class="fblbl" for="fbUrl">Careers page (optional)</label><input type="url" id="fbUrl" maxlength="500" placeholder="https://">'+
+    '<label class="fblbl" for="fbCity">City (optional)</label><input type="text" id="fbCity" maxlength="80">'+
+    '<label class="fblbl" for="fbSeen">Saw a role there how many days ago? (optional)</label><input type="number" id="fbSeen" min="0" max="365">');
+}
+function voteList(){
+  const byKey={}; (typeof POOL!=='undefined'&&POOL||[]).forEach(j=>{ byKey[jobKey(j)]=j; });
+  return Object.entries(VOTES).map(([k,v])=>{ const j=byKey[k]; return {company:j?j.company:'',url:j?j.url:k,job:k,title:j?j.title:'',v}; });
+}
+function updateVotesLink(){
+  const n=Object.keys(VOTES).length, w=$('#votesWrap'), a=$('#votesLink');
+  if(w) w.hidden=!n; if(a) a.textContent=`Share your 👍/👎 (${n})`;
+}
+function openVotes(){
+  const vs=voteList();
+  fbOpen({kind:'votes',after:updateVotesLink},'Share your 👍/👎',`${vs.length} vote${vs.length===1?'':'s'}. Only the company and posting link go with each one.`,
+    `<ul class="fbvotes">${vs.slice(0,FB_MAX_VOTES).map(x=>`<li>${x.v>0?'👍':'👎'} ${escH(x.company||'?')}${x.title?' · '+escH(x.title):''}</li>`).join('')}</ul>`);
+}
+// Each kind returns {id, payload, title, human} or {err}.
 const FB_BUILD={
   report(ctx,ts){
     const r=(document.querySelector('input[name="fbReason"]:checked')||{}).value, note=($('#fbNote')||{}).value||'';
     const p=reportPayload(ctx.j,r,note,ts); if(!p) return {err:'Pick what went wrong first.'};
     return {id:'report:'+fbJobKey(ctx.j), payload:p, title:reportTitle(ctx.j,r), human:reportHuman(ctx.j,r,note)};
+  },
+  company(ctx,ts){
+    const url=$('#fbUrl').value.trim();
+    const p=companyPayload({name:$('#fbName').value,careers_url:url,city:$('#fbCity').value,seen_days:$('#fbSeen').value},ts);
+    if(!p) return {err:'Add the company name.'};
+    if(url&&!p.careers_url) return {err:'The careers link must start with http:// or https://'};
+    return {id:'company:'+p.name.toLowerCase(), payload:p, title:'[company] '+p.name,
+      human:`**Missing company:** ${p.name}\nCareers: ${p.careers_url||'—'}\nCity: ${p.city||'—'}`+(p.seen_days!=null?`\nSaw a role there ${p.seen_days} days ago`:'')};
+  },
+  feedback(ctx,ts){
+    const p=feedbackPayload($('#fbText').value,$('#fbArea').value,ts);
+    if(!p) return {err:'Write a few words first.'};
+    return {id:'feedback:'+ts, payload:p, title:'[feedback] '+(p.area||'other')+': '+p.text.slice(0,80), human:p.text+`\n\nPage: ${location.origin}${location.pathname}`};
+  },
+  votes(ctx,ts){
+    const p=votesPayload(voteList(),ts);
+    if(!p) return {err:'No votes to share yet.'};
+    const up=p.votes.filter(x=>x.v>0).length;
+    return {id:'votes:'+ts, payload:p, title:`[votes] ${up} up, ${p.votes.length-up} down`,
+      human:p.votes.map(x=>`${x.v>0?'👍':'👎'} ${x.company||'?'} ${x.url||''}`).join('\n')};
   },
 };
 function fbBuild(){
@@ -895,6 +963,10 @@ $('#fbCopy').addEventListener('click',()=>{
   try{ navigator.clipboard.writeText(t).then(()=>{ $('#fbErr').textContent='Copied. Paste it into a new issue at github.com/Arvint89/Attsis-jobboard.'; },fail); }catch(err){ fail(); }
 });
 $('#fbCancel').addEventListener('click',fbClose);
+[['#feedbackLink',openFeedback],['#suggestLink',openSuggest],['#votesLink',openVotes]].forEach(([id,fn])=>{
+  const a=$(id); if(a) a.addEventListener('click',e=>{ e.preventDefault(); fn(); });
+});
+updateVotesLink();
 /* FEEDBACK-UI-END */
 /* JB-75 job card v2 (docs/design/DESIGN_jb75_job_card.md) */
 /* CARD-PURE-BEGIN */
@@ -1309,7 +1381,6 @@ $('#heroCv').onclick=()=>openUpload('#cvText');
 $('#heroCover').onclick=()=>openUpload('#clText');
 $('#heroLinkedin').onclick=()=>openUpload('#cvText');
 $('#heroBuild').onclick=()=>openUpload('#cvText');
-{ const rl=$('#reportLink'); if(rl) rl.addEventListener('click',()=>{ rl.href=rl.href.split('Page%3A%20')[0]+'Page%3A%20'+encodeURIComponent(location.href); }); }
 $('#heroHome').onclick=e=>{ e.preventDefault(); showTab('profile'); };
 $('#qsCvBtn').onclick=()=>{ $('#uploadPanel').scrollIntoView({behavior:'smooth'}); setTimeout(()=>$('#cvText').focus(),300); };
 document.querySelectorAll('#topTabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
@@ -1492,6 +1563,7 @@ $('#matches').addEventListener('click',e=>{
     const k=jobKey(j), v=+vb.dataset.v, prev=VOTES[k]||0;
     if(prev===v) delete VOTES[k]; else { VOTES[k]=v; track('vote/'+(v>0?'up':'down')+'/'+slug(j.company),'vote '+(v>0?'up':'down')); }
     try{ localStorage.setItem('jobboard_votes',JSON.stringify(VOTES)); }catch(err){}
+    updateVotesLink();
     const row=vb.closest('.vote'); if(row) row.outerHTML=voteRow(j);
     return;
   }

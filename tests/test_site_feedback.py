@@ -26,9 +26,11 @@ def test_votes_in_card_body_and_persisted():
     assert "${voteRow(j)}" in h and "jobboard_votes" in h
 
 
-def test_report_link_in_footer():
+def test_feedback_link_in_footer():
+    # JB-94 / ADR-009: "Report a problem" became "Give feedback" (dialog + payload);
+    # the href stays a plain new-issue link as the no-JS fallback.
     h = _html()
-    assert 'id="reportLink"' in h and "issues/new?labels=type%3Abug" in h
+    assert 'id="feedbackLink" href="https://github.com/Arvint89/Attsis-jobboard/issues/new' in h
 
 
 def test_no_cv_data_in_events():

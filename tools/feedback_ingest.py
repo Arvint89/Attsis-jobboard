@@ -7,7 +7,9 @@
 
 Writes (all under --out, gitignored by default):
   reports/YYYY-MM-DD.jsonl     one valid report payload per line (+ issue, author, created)
-  REPORTS_WEEK.md              weekly rollup (copy into docs/status/ via a PR to keep it)
+  feedback/YYYY-MM-DD.jsonl    company suggestions, feedback, votes (JB-94)
+  REPORTS_WEEK.md              weekly rollups (copy into docs/status/ via a PR to keep them)
+  FEEDBACK_WEEK.md
   suppress_candidates.json     link_404 from >=3 people in 48 h (review before engine/suppressed.json)
 Read-only against GitHub; never commits.
 """
@@ -27,6 +29,15 @@ def load_issues(args):
         return json.loads(subprocess.run(GH_ARGS, capture_output=True, text=True, check=True).stdout or "[]")
     with open(args.issues, encoding="utf-8") as f:
         return json.load(f)
+
+
+def registry_names():
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "engine", "companies.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return [c.get("name", "") for c in json.load(f).get("companies", [])]
+    except (OSError, ValueError):
+        return []
 
 
 def write_jsonl(recs, out_dir):
@@ -53,6 +64,9 @@ def main(argv=None):
     write_jsonl(reports, os.path.join(args.out, "reports"))
     with open(os.path.join(args.out, "REPORTS_WEEK.md"), "w", encoding="utf-8") as f:
         f.write(fb.reports_week_md(recs, args.today))
+    write_jsonl([r for r in recs if r["kind"] != "report"], os.path.join(args.out, "feedback"))
+    with open(os.path.join(args.out, "FEEDBACK_WEEK.md"), "w", encoding="utf-8") as f:
+        f.write(fb.feedback_week_md(recs, args.today, known=registry_names()))
     cands = fb.suppress_candidates(recs)
     with open(os.path.join(args.out, "suppress_candidates.json"), "w", encoding="utf-8") as f:
         json.dump(cands, f, indent=2)
