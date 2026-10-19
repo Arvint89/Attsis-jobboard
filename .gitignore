@@ -42,3 +42,10 @@ Claude Design/
 # per-user Claude Code overrides (project-scoped rules in .claude/settings.json ARE checked in)
 .claude/settings.local.json
 .claude/*.local.json
+
+# ADR-009 feedback ingest outputs (GitHub issues are the source of truth)
+data/reports/
+data/feedback/
+data/REPORTS_WEEK.md
+data/FEEDBACK_WEEK.md
+data/suppress_candidates.json

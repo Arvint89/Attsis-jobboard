@@ -272,6 +272,21 @@
   .vote{display:flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--font-mono);font-size:12px;color:var(--subtle)}
   .vbtn{background:transparent;border:1px solid var(--edge);border-radius:999px;padding:3px 10px;cursor:pointer;font-size:14px;line-height:1.2}
   .vbtn:hover{border-color:var(--hi-line)}.vbtn.on{border-color:var(--hi);background:var(--hi-soft)}
+  /* JB-93 / ADR-009: per-job report + shared feedback dialog */
+  .rptrow{margin-top:8px}
+  .rptbtn{background:none;border:none;color:var(--subtle);font-family:var(--font-mono);font-size:12px;cursor:pointer;padding:2px 0}
+  .rptbtn:hover{color:var(--ink);text-decoration:underline}
+  #fbDialog{background:var(--bg-elev);color:var(--ink);border:1px solid var(--edge);border-radius:12px;padding:20px;width:min(460px,calc(100vw - 32px));box-sizing:border-box}
+  #fbDialog::backdrop{background:rgba(4,8,18,.6)}
+  #fbDialog h3{margin:0 0 4px;font-size:17px}
+  .fbsub{margin:0 0 12px;color:var(--dim);font-size:13px}
+  .fbopt{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:14px;cursor:pointer}
+  .fblbl{display:block;margin:10px 0 4px;font-size:12px;color:var(--dim)}
+  #fbDialog textarea,#fbDialog input[type=text],#fbDialog input[type=url],#fbDialog input[type=number],#fbDialog select{width:100%;box-sizing:border-box;background:var(--card);color:var(--ink);border:1px solid var(--edge);border-radius:6px;padding:8px;font:inherit}
+  .fbnote{font-size:12px;color:var(--subtle);margin:12px 0 4px}
+  .fberr{color:#ff8a8a;font-size:12px;min-height:1em;margin:4px 0}
+  .fbbtns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .fbbtns .btnlink{background:var(--hi);color:#04101f;border-radius:6px;padding:7px 12px;font-weight:600;text-decoration:none;font-size:13px}
   .vthanks{color:var(--good)}
   /* JB-78 prep plan */
   #prepPlan{margin-bottom:6px}
@@ -594,6 +609,15 @@
 
 </div>
 <footer><span>Attsis Job Board · A GLOBAL ATTSIS PRODUCT · <a id="reportLink" href="https://github.com/Arvint89/Attsis-jobboard/issues/new?labels=type%3Abug&amp;title=Problem%20report&amp;body=What%20happened%3A%0A%0AWhat%20you%20expected%3A%0A%0APage%3A%20" target="_blank" rel="noopener">Report a problem</a></span><span>PULLED FROM EMPLOYER ATS · SCORED IN YOUR BROWSER · NO LLM IN THE LOOP · <span id="foot"></span></span></footer>
+<!-- ADR-009: one dialog for every back-channel kind (JB-93 report, JB-94 company/feedback/votes) -->
+<dialog id="fbDialog" aria-labelledby="fbTitle">
+  <h3 id="fbTitle">Report this job</h3>
+  <p class="fbsub" id="fbSub"></p>
+  <div id="fbFields"></div>
+  <p class="fbnote">Sending opens a <b>public GitHub issue</b> with this text. You review it and press <i>Submit</i> there (needs a GitHub account). Nothing from your CV is included.</p>
+  <p class="fberr" id="fbErr" role="alert"></p>
+  <div class="fbbtns"><a id="fbSend" class="btnlink" href="https://github.com/Arvint89/Attsis-jobboard/issues/new" target="_blank" rel="noopener">Open GitHub to send ↗</a><button type="button" class="btn ghost sm" id="fbCopy">Copy text</button><button type="button" class="btn ghost sm" id="fbCancel">Cancel</button></div>
+</dialog>
 <!-- JB-174: GoatCounter is a privacy-first (no cookies, GDPR-safe) pageview tracker.
      Free up to 100k pageviews/month. Setup: BT creates an account at goatcounter.com,
      adds a site called "attsis", then changes the data-goatcounter URL below to his
@@ -793,6 +817,85 @@ function voteRow(j){
   const v=VOTES[jobKey(j)]||0;
   return `<div class="vote"><span>Good match?</span><button type="button" class="vbtn${v===1?' on':''}" data-v="1" title="Good match">👍</button><button type="button" class="vbtn${v===-1?' on':''}" data-v="-1" title="Not a good match">👎</button><span class="vthanks">${v?'Thanks — noted.':''}</span></div>`;
 }
+/* ADR-009 back channel: payload builders (pure; run in node by tests/test_site_report.py and
+   parsed back by engine/feedback.py, so browser and ingest can't drift). */
+/* FEEDBACK-PURE-BEGIN */
+const FB_REPO='https://github.com/Arvint89/Attsis-jobboard/issues/new', FB_MAX_URL=7500, FB_OUTBOX_CAP=50;
+const FB_REASONS={link_404:'This link is broken',already_closed:'Posting is closed / role filled',cannot_apply:'Apply button goes nowhere',wrong_title_vs_body:"Title doesn't match the role",wrong_location:'Location differs from what the board shows',other:'Something else'};
+function fbClip(s,n){ return String(s==null?'':s).replace(/[\u0000-\u001f]+/g,' ').trim().slice(0,n); }
+function fbHttp(u){ u=String(u==null?'':u).trim(); return /^https?:\/\//i.test(u)?u.slice(0,500):''; }
+function fbJobKey(j){ return fbClip(j.url||`${j.company}::${j.title}::${j.location||''}`,240); }
+function reportPayload(j,reason,note,ts){
+  if(!Object.prototype.hasOwnProperty.call(FB_REASONS,reason)) return null;
+  const p={v:1,kind:'report',reason,company:fbClip(j.company,120)||'unknown',title:fbClip(j.title,200),ts:String(ts||'')};
+  const u=fbHttp(j.url); if(u) p.url=u; else p.job=fbJobKey(j);
+  const n=fbClip(note,500); if(n) p.note=n;
+  return p;
+}
+function reportTitle(j,reason){ return fbClip(`[report] ${reason} — ${j.company||'?'} — ${j.title||'?'}`,150); }
+function reportHuman(j,reason,note){
+  const n=fbClip(note,500);
+  return `**${FB_REASONS[reason]||reason}**\n\nPosting: ${fbHttp(j.url)||'(no link)'}\nCompany: ${fbClip(j.company,120)}\nRole: ${fbClip(j.title,200)}`+(n?`\n\n${n}`:'');
+}
+function fbBody(human,payload){ return human+'\n\n<!-- machine-readable, please leave as is -->\n```attsis-feedback\n'+JSON.stringify(payload)+'\n```\n'; }
+function fbIssueUrl(title,human,payload){
+  const mk=(h,p)=>FB_REPO+'?title='+encodeURIComponent(fbClip(title,150))+'&body='+encodeURIComponent(fbBody(h,p));
+  let h=human, p={...payload}, url=mk(h,p);
+  if(url.length>FB_MAX_URL){ h=h.split('\n\n').slice(0,2).join('\n\n'); url=mk(h,p); }   // drop the free text from the human part first
+  while(url.length>FB_MAX_URL&&p.note){ p.note=p.note.slice(0,-40); if(!p.note) delete p.note; url=mk(h,p); }
+  while(url.length>FB_MAX_URL&&p.title){ p.title=p.title.slice(0,-40); url=mk(h,p); }
+  return url;
+}
+function outboxAdd(ob,entry,ts){ const o=(Array.isArray(ob)?ob:[]).filter(e=>e&&e.id!==entry.id); o.push({...entry,opened_at:ts}); return o.slice(-FB_OUTBOX_CAP); }
+function outboxHas(ob,id){ return (ob||[]).some(e=>e&&e.id===id); }
+/* FEEDBACK-PURE-END */
+/* FEEDBACK-UI-BEGIN */
+// The send button is a link the user clicks: the CSP (connect-src 'self', form-action 'none')
+// forbids posting anywhere, and nothing leaves until they press Submit on GitHub.
+let OUTBOX=[]; try{ OUTBOX=JSON.parse(localStorage.getItem('jobboard_outbox')||'[]')||[]; }catch(e){ OUTBOX=[]; }
+function saveOutbox(){ try{ localStorage.setItem('jobboard_outbox',JSON.stringify(OUTBOX)); }catch(e){} }
+function reportRow(j){
+  const done=outboxHas(OUTBOX,'report:'+fbJobKey(j));
+  return `<div class="rptrow"><button type="button" class="rptbtn">${done?'⚑ Reported ✓ · report again':'⚑ Report this job'}</button></div>`;
+}
+let FB_CTX=null;
+function fbOpen(ctx,title,sub,fields){
+  FB_CTX=ctx; $('#fbTitle').textContent=title; $('#fbSub').textContent=sub||''; $('#fbFields').innerHTML=fields; $('#fbErr').textContent='';
+  const d=$('#fbDialog'); if(d.showModal) d.showModal(); else d.setAttribute('open','');
+}
+function fbClose(){ const d=$('#fbDialog'); if(d.close) d.close(); else d.removeAttribute('open'); }
+function openReport(j,row){
+  fbOpen({kind:'report',j,row},'Report this job',`${j.company||''} · ${j.title||''}`,
+    Object.entries(FB_REASONS).map(([k,v])=>`<label class="fbopt"><input type="radio" name="fbReason" value="${k}"> ${escH(v)}</label>`).join('')+
+    '<label class="fblbl" for="fbNote">Details (optional)</label><textarea id="fbNote" maxlength="500" rows="3" placeholder="What did you see?"></textarea>');
+}
+// Each kind returns {id, payload, title, human} or {err}. JB-94 adds kinds here.
+const FB_BUILD={
+  report(ctx,ts){
+    const r=(document.querySelector('input[name="fbReason"]:checked')||{}).value, note=($('#fbNote')||{}).value||'';
+    const p=reportPayload(ctx.j,r,note,ts); if(!p) return {err:'Pick what went wrong first.'};
+    return {id:'report:'+fbJobKey(ctx.j), payload:p, title:reportTitle(ctx.j,r), human:reportHuman(ctx.j,r,note)};
+  },
+};
+function fbBuild(){
+  if(!FB_CTX||!FB_BUILD[FB_CTX.kind]) return {err:'Nothing to send.'};
+  return FB_BUILD[FB_CTX.kind](FB_CTX,new Date().toISOString());
+}
+$('#fbSend').addEventListener('click',e=>{
+  const b=fbBuild(); if(b.err){ e.preventDefault(); $('#fbErr').textContent=b.err; return; }
+  e.currentTarget.href=fbIssueUrl(b.title,b.human,b.payload);
+  OUTBOX=outboxAdd(OUTBOX,{id:b.id,kind:b.payload.kind,payload:b.payload},b.payload.ts); saveOutbox();
+  track('feedback/'+b.payload.kind+(b.payload.reason?'/'+b.payload.reason:''),'feedback sent');
+  const ctx=FB_CTX; setTimeout(()=>{ fbClose(); if(ctx&&ctx.after) ctx.after(); else if(ctx&&ctx.row&&ctx.j) ctx.row.outerHTML=reportRow(ctx.j); },0);
+});
+$('#fbCopy').addEventListener('click',()=>{
+  const b=fbBuild(); if(b.err){ $('#fbErr').textContent=b.err; return; }
+  const t=b.title+'\n\n'+fbBody(b.human,b.payload);
+  const fail=()=>{ $('#fbErr').textContent='Copy failed. Use "Open GitHub to send" instead.'; };
+  try{ navigator.clipboard.writeText(t).then(()=>{ $('#fbErr').textContent='Copied. Paste it into a new issue at github.com/Arvint89/Attsis-jobboard.'; },fail); }catch(err){ fail(); }
+});
+$('#fbCancel').addEventListener('click',fbClose);
+/* FEEDBACK-UI-END */
 /* JB-75 job card v2 (docs/design/DESIGN_jb75_job_card.md) */
 /* CARD-PURE-BEGIN */
 // JB-17 CSA: links built from job data must be http(s) only (a javascript: URL ran on click)
@@ -861,6 +964,7 @@ function cardBody(j,bucket,i){
   const about=j.snippet?`<div class="sect"><div class="sectlbl">About the role</div><p class="snip">${escH(j.snippet)}</p></div>`:'';
   return `<div class="bodygrid"><div class="sect"><div class="sectlbl">Why it fits</div>${fits||'<p class="hint">—</p>'}</div><div class="sect"><div class="sectlbl">Gaps to address</div>${gaps}</div></div>${about}
     ${voteRow(j)}
+    ${reportRow(j)}
     <div class="jobactions">${httpUrl(j.url)?`<a class="btnlink primary" href="${escH(httpUrl(j.url))}" target="_blank" rel="noopener">Open posting ↗</a>`:''}
       ${_tailorPayReady()?`<button onclick="openTailor('${bucket}',${i})">✎ Tailor CV</button>`:`<button disabled title="Coming soon — payment integration pending">✎ Tailor CV</button>`}
       <span class="chip src">via ${escH(j.source||'ats')}</span></div>`;
@@ -1381,6 +1485,8 @@ $('#matches').addEventListener('mouseleave',()=>hlPin(null));
 $('#matches').addEventListener('click',e=>{
   const card=e.target.closest('.job'); if(!card) return;
   const b=card.dataset.b, i=+card.dataset.i, j=window.VIS&&window.VIS[b]&&window.VIS[b][i]; if(!j) return;
+  const rb=e.target.closest('.rptbtn');
+  if(rb){ openReport(j,rb.closest('.rptrow')); return; }
   const vb=e.target.closest('.vbtn');
   if(vb){
     const k=jobKey(j), v=+vb.dataset.v, prev=VOTES[k]||0;
